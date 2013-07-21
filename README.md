@@ -4,7 +4,7 @@ CcPy
 Introduction
 ---------------------
 
-CruisecControl.py (CcPy) is (yet another) Automatic Continuous Integration Server written in Python.
+CcPy ( **C**ruise **C**ontrol written in **Py**thon) is (yet another) automatic continuous integration Server.
 
 
 Features
