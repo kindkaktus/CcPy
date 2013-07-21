@@ -1,0 +1,385 @@
+============================
+= CcPy
+============================
+
+Introduction
+---------------------
+
+CruisecControl.py (CcPy) is (yet another) Automatic Continuous Integration Server. 
+The development is inspired by the CruiseControl Continuous Integration Server 
+(http://confluence.public.thoughtworks.org/display/CCNET/Welcome+to+CruiseControl.NET).
+The main idea is to create a backend capable of running on various *nix flavours while making it possible 
+to use conventional CruiseControl.NET frontend tools such as http://ccnet.sourceforge.net/CCNET/CCTray.html
+to control a build process.
+
+CcPy is written in Python.
+
+
+Features
+---------------------
+- Runs on any unix-derived system (written in Python)
+- Supports svn repositories
+- Can run on schedule or on demand
+- Notifies on build results by email
+
+
+Quick start
+---------------------
+
+Prerequisites:
+    CcPy requires Python 2.5+ and python-expat module
+
+To install CcPy:
+  python setup.py [install]
+
+The installation script merely copies CcPy config files ccpy.conf and ccpyd.conf to /etc dir. 
+You have to edit these configs first before starting with CcPy. Please refer to the 'Configuring CcPy' section in this README.
+
+Once you configured CcPy, you can start CcPy daemon: 
+    python ccpyd.py [--force-continue|--force-once] 
+    
+Specifying --force-continue or --force-once option forces CcPy daemon to start the build immidiately ignoring the schedule in /etc/ccpyd.conf (which is the default behavior).
+The difference between these options is that --force-continue leaves the daemon running while --force-once stops the daemon when the build finishes.
+The default location of CcPy log file is /var/log/ccpyd.log, you can change it in /etc/ccpyd.conf
+
+To stop CcPy daemon: 
+    kill `cat /var/run/ccpyd.pid`
+
+A shortcut to stop and start the daemon thus making it re-read /etc/ccpyd.conf: ./restart_ccpy.sh [--force-continue|--force-once] 
+
+To uninstall CcPy, type
+   python setup.py uninstall
+
+The uninstallation script removes config files created during installation and cleans up temporary files created by CcPy daemon.
+
+
+Configuring CcPy
+---------------------
+
+CcPy uses two config files (xml format): 
+  ccpyd.conf  - configure CcPy daemon settings
+  ccpy.conf  - configure projects to be built
+
+  Daemon settings (ccpyd.conf)
+  -------------------
+    Example config file:
+
+    <ccpyd>
+      <ccpyConfig>/etc/ccpy.conf</ccpyConfig>
+      <schedule time="06:30"/>
+      <logging enabled="on">
+        <file>/var/log/ccpyd.log</file>
+        <level>DEBUG</level>
+      </logging>
+    </ccpyd>
+
+
+    Node        : ccpyConfig
+    Description : location of the projects configuration file 
+    Type        : string
+    Default     : /etc/ccpy.conf
+    Required    : no
+
+    Node        : schedule
+    Description : schedule to start build. 
+    
+                  If absent CcPy daemon will execute the build only once and exit and is equivalent to specifying --force-once command-line option
+                  This may be useful when triggering CcPy builds by an external job scheduler (e.g. cron)
+    Type        : element with schedule attributes
+    Default     : no schedule
+    Required    : no
+
+        Node        : time (attribute of the "schedule" element)
+        Description : build start time
+        Type        : time as hh:mm
+        Default     : N/A
+        Required    : yes
+
+    Node        : logging
+    Description : logging settings element
+    Type        : element with logging attributes and subelements
+    Default     : logging is disabled
+    Required    : no
+    
+      Node        : enabled (attribute of the "logging" element)
+      Description : logging enabled flag 
+      Type        : boolean ("on/yes/true" or "off/no/false")
+      Default     : "off"
+      Required    : no
+
+      Node        : file (subelement of the "logging" element)
+      Description : log file location
+      Type        : string
+      Default     : "/var/log/ccpyd.log"
+      Required    : yes if logging is enabled
+
+      Node        : level (subelement of the "logging" element)
+      Description : logging threshold
+      Type        : "DEBUG" or "INFO" or "WARN" or "ERROR"
+      Default     : "DEBUG" 
+      Required    : yes if logging is enabled
+      Notes       : this element is currently ignored
+
+
+  Projects settings (ccpy.conf)
+  -------------------
+    Example config file:
+
+    <ccpy>
+
+      <!--  *************************************  CoolProduct version 2  ****************************************************** -->
+      <project name="CoolProduct v2">
+        <failOnError>yes</failOnError>
+        <skipIfNoModifications>yes</skipIfNoModifications>
+
+        <tasks>
+          <sourcecontrol type="svn">
+            <trunkUrl>https://company.com/repos/coolproductv2/Trunk/Import</trunkUrl>
+            <workingDirectory>/CoolProductBuilds/Import</workingDirectory>
+            <preCleanWorkingDirectory>yes</preCleanWorkingDirectory>
+          </sourcecontrol>
+          <sourcecontrol type="svn">
+            <trunkUrl>https://company.com/repos/coolproductv2/Trunk/</trunkUrl>
+            <workingDirectory>/CoolProductBuilds/SysInfra</workingDirectory>
+          </sourcecontrol>
+
+          <make>
+            <workingDirectory>/CoolProductBuilds/core</workingDirectory>
+            <args>clean release</args>
+            <timeout>140</timeout>
+          </make>
+           <make>
+            <workingDirectory>/CoolProductBuilds/ui</workingDirectory>
+            <args>clean release</args>
+            <timeout>140</timeout>
+          </make>
+          <make>
+            <workingDirectory>/CoolProductBuilds/tests</workingDirectory>
+            <args>cleanthis</args>
+            <timeout>20</timeout>
+          </make>
+
+          <exec>
+            <executable>coretests</executable>
+            <workingDirectory>/CoolProductBuilds/tests/coretests</workingDirectory>
+            <timeout>30</timeout>
+          </exec>
+          <exec>
+            <executable>taLoggingTests</executable>
+            <args>--xmlout</args>
+            <workingDirectory>/CoolProductBuilds/tests/uitests</workingDirectory>
+            <timeout>30</timeout>
+          </exec>
+        </tasks>
+
+        <emailNotification>
+          <from>buildserver@company.com</from>
+          <to>developer@company.com, buildmaster@company.com</to>
+        </emailNotification>
+      </project>
+
+      <!--  *************************************  CoolProduct version 3  ****************************************************** -->
+      <project name="CoolProduct v3">
+
+        <tasks>
+          <sourcecontrol type="svn">
+            <trunkUrl>https://company.com/repos/coolproductv3/Trunk/Import</trunkUrl>
+            <workingDirectory>/CoolProductBuilds/Import</workingDirectory>
+          </sourcecontrol>
+          <sourcecontrol type="svn">
+            <trunkUrl>https://company.com/repos/coolproductv3/Trunk/</trunkUrl>
+            <workingDirectory>/CoolProductBuilds/SysInfra</workingDirectory>
+          </sourcecontrol>
+
+          <make>
+            <workingDirectory>/CoolProductBuildsv3/core</workingDirectory>
+            <args>clean release</args>
+          </make>
+        </tasks>
+
+        <emailNotification>
+            <from>buildserver@company.com</from>
+            <to>buildmaster@company.com</to>
+            <format>plain</format>
+            <server>smtp.mail.com</server>
+            <port>2525</port>
+            <username>tom</username>
+            <password>secret</password>
+        </emailNotification>
+      </project>
+
+    </ccpy>
+
+    Projects config file contains the ordered list of projectsts, each project contains the ordered list of tasks.
+    The following task types are supported: "svn", "make" and "execute". 
+
+    Node        : project
+    Description : project settings element
+    Type        : element with project name attribute and subelements
+    Default     : N/A
+    Required    : no
+
+      Node        : name (attribute of the "project" element)
+      Description : project name
+      Type        : string 
+      Default     : N/A
+      Required    : yes
+
+      Node        : skipIfNoModifications (subelement of the "project" element)
+      Description : This flag controls whether CcPy should skip building/execution of the source code which has not been changed since the last checkout.
+                    When set to true, each sourcecontrol task performs a check for modifications on the server. If no modifications exist,
+                    all subsequent non-sourcecontrol task will be skipped until either the end of project is reached or sourcecontrol task is met which reports 
+                    that modifications exist.
+                    Note: Be careful when enabling this flag because if two or more projects use the same working directory, then no repository modifications 
+                    corresponding to this working directory will be detected for the second and subsequent projects. Also enabling this flag makes projects insensitive
+                    to the changes affecting the integration server environment performed outside the version control e.g. setting up some test fixtures in the config files 
+                    not included in the version control. For this reasons this flag is disabled by default
+      Type        : boolean ("on/yes/true" or "off/no/false")
+      Default     : no
+      Required    : no
+
+      Node        : failOnError (subelement of the "project" element)
+      Description : This flag controls whether CcPy should immidiately stop executing the rest project tasks  
+                    and render the entire project status to FAILED once one of the project tasks fails
+      Type        : boolean ("on/yes/true" or "off/no/false")
+      Default     : yes
+      Required    : no
+
+        Node        : sourcecontrol (subelement of the "project/tasks" element)
+        Description : source control settings element
+        Type        : element with sourcecontrol type attribute and subelements 
+        Default     : N/A
+        Required    : no
+
+          Node        : type (attribute of the "sourcecontrol" element)
+          Description : source control type.
+          Type        : string. Only "svn" is supported for this moment. 
+          Default     : N/A
+          Required    : yes
+
+          Node        : trunkUrl (subelement of the "sourcecontrol" element)
+          Description : the URL of the repository
+          Type        : string
+          Default     : N/A
+          Required    : yes
+
+          Node        : workingDirectory (subelement of the "sourcecontrol" element)
+          Description : working directory for svn
+          Type        : string
+          Default     : current directory
+          Required    : no
+          
+          Node        : preCleanWorkingDirectory (subelement of the "sourcecontrol" element)
+          Description : clean working directory before checking out
+          Type        : boolean ("on/yes/true" or "off/no/false")
+          Default     : off
+          Required    : no
+
+        Node        : make (subelement of the "project/tasks" element)
+        Description : make settings element used to execute makefiles
+        Type        : element with subelements 
+        Default     : N/A
+        Required    : no
+
+          Node        : workingDirectory (subelement of the "make" element)
+          Description : working directory for make
+          Type        : string
+          Default     : current directory
+          Required    : no
+
+          Node        : args (subelement of the "make" element)
+          Description : make arguments
+          Type        : string
+          Default     : empty
+          Required    : no
+
+          Node        : timeout (subelement of the "make" element)
+          Description : number of seconds to wait before assuming that the make has hung and should be killed
+          Type        : unsigned integer
+          Default     : 600 (10 minutes)
+          Required    : no
+
+       Node        : exec (subelement of the "project/tasks" element)
+       Description : element used to launch executables 
+       Type        : element with subelements 
+       Default     : N/A
+       Required    : no
+
+         Node        : executable (subelement of the "exec" element)
+         Description : executable to launch
+         Type        : string
+         Default     : no
+         Required    : yes
+
+         Node        : args (subelement of the "exec" element)
+         Description : executable arguments
+         Type        : string
+         Default     : empty
+         Required    : no
+
+         Node        : workingDirectory (subelement of the "exec" element)
+         Description : working directory for the executable
+         Type        : string
+         Default     : current directory
+         Required    : no
+
+         Node        : timeout (subelement of the "exec" element)
+         Description : number of seconds to wait before assuming that the executable has hung and should be killed
+         Type        : unsigned integer
+         Default     : 600 (10 minutes)
+         Required    : no
+
+      Node        : emailNotification (subelement of the "project" element)
+      Description : contains settings for sending email notifications with integration results 
+      Type        : element with subelements 
+      Default     : N/A
+      Required    : no
+
+        Node        : from (subelement of the "emailNotification" element)
+        Description : sender's email address 
+        Type        : string
+        Default     : empty
+        Required    : no
+
+        Node        : to (subelement of the "emailNotification" element)
+        Description : contains correspondents to receive email notifications with integration results 
+        Type        : comma-separated list of strings
+        Default     : empty list
+        Required    : no
+        
+        Node        : server (subelement of the "emailNotification" element)
+        Description : SMTP server host 
+        Type        : string
+        Default     : 'localhost'
+        Required    : no
+        
+        Node        : port (subelement of the "emailNotification" element)
+        Description : SMTP server port 
+        Type        : integer
+        Default     : 25
+        Required    : no
+
+        Node        : server (subelement of the "emailNotification" element)
+        Description : SMTP server username 
+        Type        : string
+        Default     : not supplied
+        Required    : no
+
+        Node        : server (subelement of the "emailNotification" element)
+        Description : SMTP server password 
+        Type        : string
+        Default     : not supplied
+        Required    : no        
+
+
+
+Author
+---------------------
+
+Andrei Korostelev andrei at korostelev dot net
+2008-2013
+
+
+Licensing
+---------------------
+BSD license. See LICENSE.

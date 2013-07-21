@@ -1,0 +1,212 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>CcPy Project Page</title>
+    <link href="./css/all.css" media="all" rel="Stylesheet" type="text/css" />
+    <meta name="author" content="Andrei Korostelev"/>
+    <meta name="keywords" content="continuous integration, build server, python"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta content="CcPy is Automatic Continuous Integration Server" name="description"/>
+</head>
+<body class="composite">
+    <div id="banner">
+        <a href="./index.htm"><img src="./img/ccpy.jpg" alt=""></a>
+        <div id="splitter"></div>
+    </div>
+
+    <div id="leftColumn">
+        <div id="navcolumn">
+            <h5>
+                CcPy
+            </h5>
+            <ul>
+                <li class="none"><a href="./quickstart.htm">Quick Start</a> </li>
+                <li class="none"><a href="./ccpyd.htm">ccpyd.conf</a></li>
+                <li class="none"><a href="./ccpy.htm">ccpy.conf</a> </li>
+				        <li class="none"><a href="./changelog.htm">Change Log</a></li>
+                <li class="none"><a href="./download.htm">Download</a></li>              
+            </ul>
+            <h5>
+                CI Links
+            </h5>
+            <ul>
+                <li class="none"><a href="http://en.wikipedia.org/wiki/Continuous_Integration">Continuous Integration</a> </li>
+                <li class="none"><a href="http://confluence.public.thoughtworks.org/display/CCNET/Welcome+to+CruiseControl.NET">CruiseControl.NET</a> </li>
+                <li class="none"><a href="http://confluence.public.thoughtworks.org/display/CC/CI+Feature+Matrix">Continuous Integration Servers Feature Matrix</a> </li>
+                <li class="none"><a href="http://www.google.com/alpha/Top/Computers/Software/Build_Management/Build_Manager_Tools/">Build Manager Tools</a> </li>
+                <li class="none"><a href="http://www.martinfowler.com/articles/continuousIntegration.html">Continuous Integration Intro by Martin Fowler</a> </li>
+            </ul>
+			<h5>
+                Partner Links
+            </h5>
+            <ul>
+                <li class="none"><a href="http://vertaalpraktijk.com/">VertaalPraktijk.com: translate documents Dutch<->Russian</a> </li>
+                <li class="none"><a href="http://ibooksmart.com/">IBookSmart.com: online car rental</a> </li>
+           </ul>			
+        </div>
+    </div>
+    <div id="bodyColumn">
+        <div id="contentBox">
+            <div class="section">
+                <h2>
+  Projects settings (ccpy.conf)
+</h2>
+<p>
+  <h3>Example config file</h3>
+<code class="codeblock_xbig">
+
+  &lt;ccpy&gt;<br/>
+  &nbsp;&nbsp;&lt;!-- ***************************  CoolProduct version 2 *************************** --&gt;<br/>
+  &nbsp;&nbsp;&lt;project name="CoolProduct v2"&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&lt;failOnError&gt;yes&lt;/failOnError&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&lt;skipIfNoModifications&gt;yes&lt;/skipIfNoModifications&gt;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&lt;tasks&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;sourcecontrol type="svn"&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;trunkUrl&gt;https://company.com/repos/coolproductv2/Trunk/Import&lt;/trunkUrl&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;workingDirectory&gt;/CoolProductBuilds/Import&lt;/workingDirectory&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;preCleanWorkingDirectory&gt;true&lt;/preCleanWorkingDirectory&gt;<br/>  
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/sourcecontrol&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;sourcecontrol type="svn"&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;trunkUrl&gt;https://company.com/repos/coolproductv2/Trunk/&lt;/trunkUrl&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;workingDirectory&gt;/CoolProductBuilds/SysInfra&lt;/workingDirectory&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/sourcecontrol&gt;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;make&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;workingDirectory&gt;/CoolProductBuilds/core&lt;/workingDirectory&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;args&gt;clean release&lt;/args&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;timeout&gt;140&lt;/timeout&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/make&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;make&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;workingDirectory&gt;/CoolProductBuilds/ui&lt;/workingDirectory&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;args&gt;clean release&lt;/args&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;timeout&gt;140&lt;/timeout&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/make&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;make&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;workingDirectory&gt;/CoolProductBuilds/tests&lt;/workingDirectory&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;args&gt;cleanthis&lt;/args&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;timeout&gt;20&lt;/timeout&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/make&gt;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;exec&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;executable&gt;coretests&lt;/executable&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;workingDirectory&gt;/CoolProductBuilds/tests/coretests&lt;/workingDirectory&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;timeout&gt;30&lt;/timeout&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/exec&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;exec&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;executable&gt;taLoggingTests&lt;/executable&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;args&gt;--xmlout&lt;/args&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;workingDirectory&gt;/CoolProductBuilds/tests/uitests&lt;/workingDirectory&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;timeout&gt;30&lt;/timeout&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/exec&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/tasks&gt;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&lt;emailNotification&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;from&gt;buildserver@company.com&lt;/from&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;to&gt;developer@company.com, buildmaster@company.com&lt;/to&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&lt;/emailNotification&gt;<br/>
+  &nbsp;&nbsp;&lt;/project&gt;<br/>
+  <br/>
+  &nbsp;&nbsp;&lt;!-- ***************************  CoolProduct version 3  *************************** --&gt;<br/>
+  &nbsp;&nbsp;&lt;project name="CoolProduct v3"&gt;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&lt;tasks&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;sourcecontrol type="svn"&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;trunkUrl&gt;https://company.com/repos/coolproductv3/Trunk/Import&lt;/trunkUrl&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;workingDirectory&gt;/CoolProductBuilds/Import&lt;/workingDirectory&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/sourcecontrol&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;sourcecontrol type="svn"&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;trunkUrl&gt;https://company.com/repos/coolproductv3/Trunk/&lt;/trunkUrl&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;workingDirectory&gt;/CoolProductBuilds/SysInfra&lt;/workingDirectory&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/sourcecontrol&gt;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;make&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;workingDirectory&gt;/CoolProductBuildsv3/core&lt;/workingDirectory&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;args&gt;clean release&lt;/args&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/make&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&lt;/tasks&gt;<br/>
+  <br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&lt;emailNotification&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;from&gt;buildserver@company.com&lt;/from&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;to&gt;buildmaster@company.com&lt;/to&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;format&gt;plain&lt;/format&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;server&gt;smtp.mail.com&lt;/server&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;port&gt;2525&lt;/port&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;username&gt;tom&lt;/username&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;password&gt;secret&lt;/password&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&lt;/emailNotification&gt;<br/>
+  &nbsp;&nbsp;&lt;/project&gt;<br/>
+    <br/>
+    &lt;/ccpy&gt;<br/>
+  </code>
+
+
+  <br>
+  <h3>Elements description</h3>
+    Projects config file contains the ordered list of projectsts, each project contains the ordered list of tasks.
+    The following task types are supported: "svn", "make" and "execute".
+    <p>
+
+<table class="wikitable">
+  <tr><th>Node</th><th>Parent element</th><th>Description</th><th>Type</th><th>Default</th><th>Required</th><th>Notes</th></tr>
+  <tr><td>project</td><td>ccpy</td><td>Project settings element</td><td>Element with project name attribute and subelements</td><td>N/A</td><td>no</td><td></td></tr>
+  <tr><td>name</td><td>attribute of project</td><td>Project name</td><td>string</td><td>N/A</td><td>yes</td><td></td></tr>
+  <tr><td>skipIfNoModifications</td><td>project</td><td>This flag controls whether CcPy should skip building/execution of the source code which has not been changed since the last checkout.
+    When set to true, each sourcecontrol task performs a check for modifications on the server. If no modifications exist,
+    all subsequent non-sourcecontrol task will be skipped until either the end of project is reached or sourcecontrol task is met which reports
+    that modifications exist.</td><td>boolean (on/yes/true or off/no/false)</td><td>no</td><td>no</td><td>Be careful when enabling this flag because if two or more projects use the same working directory, then no repository modifications
+    corresponding to this working directory will be detected for the second and subsequent projects. Also enabling this flag makes projects insensitive
+    to the changes affecting the integration server environment performed outside the version control e.g. setting up some test fixtures in the config files
+    not included in the version control. For this reasons this flag is disabled by default</td></tr>
+   <tr><td>failOnError</td><td>project</td><td>This flag controls whether CcPy should immidiately stop executing the rest project tasks and render the entire project status to FAILED once one of the project tasks fails</td><td>boolean (on/yes/true or off/no/false)</td><td>yes</td><td>no</td><td></td></tr>
+   <tr><td>sourcecontrol</td><td>tasks</td><td>Source control settings element</td><td>Element with sourcecontrol type attribute and subelements</td><td>N/A</td><td>no</td><td></td></tr>
+   <tr><td>type</td><td>attribute of sourcecontrol</td><td>Source control type</td><td>string. Only "svn" is supported for this moment</td><td>N/A</td><td>yes</td><td></td></tr>
+   <tr><td>trunkUrl</td><td>sourcecontrol</td><td>The URL of the repository</td><td>string</td><td>N/A</td><td>yes</td><td></td></tr>
+   <tr><td>workingDirectory</td><td>sourcecontrol</td><td>The working directory for svn</td><td>string</td><td>current directory</td><td>no</td><td></td></tr>
+   <tr><td>preCleanWorkingDirectory</td><td>sourcecontrol</td><td>Clean working directory before checking out</td><td>boolean (on/yes/true or off/no/false)</td><td>no</td><td>no</td><td></td></tr>
+   <tr><td>make</td><td>tasks</td><td>make settings element used to execute makefiles</td><td>Element with subelements</td><td>N/A</td><td>no</td><td></td></tr>
+   <tr><td>workingDirectory</td><td>make</td><td>The working directory for make</td><td>string</td><td>current directory</td><td>no</td><td></td></tr>
+   <tr><td>args</td><td>make</td><td>make arguments</td><td>string</td><td>empty</td><td>no</td><td></td></tr>
+   <tr><td>timeout</td><td>make</td><td>Number of seconds to wait before assuming that the make has hung and should be killed</td><td>Non-negative integer</td><td>600 (10 minutes)</td><td>no</td><td></td></tr>
+   <tr><td>exec</td><td>tasks</td><td>Element used to launch executables</td><td>Element with subelements</td><td>N/A</td><td>no</td><td></td></tr>
+   <tr><td>executable</td><td>exec</td><td>Executable to launch.</td><td>string</td><td>no</td><td>yes</td><td></td></tr>
+   <tr><td>args</td><td>exec</td><td>Executable arguments</td><td>string</td><td>empty</td><td>no</td><td></td></tr>
+   <tr><td>workingDirectory</td><td>exec</td><td>The working directory for the executable</td><td>string</td><td>current directory</td><td>no</td><td></td></tr>
+   <tr><td>timeout</td><td>exec</td><td>Number of seconds to wait before assuming that the executable has hung and should be killed</td><td>Non-negative integer</td><td>600 (10 minutes)</td><td>no</td><td></td></tr>
+   <tr><td>emailNotification</td><td>project</td><td>Contains settings for sending email notifications with integration results</td><td>Element with subelements</td><td>N/A</td><td>no</td><td></td></tr>
+   <tr><td>from</td><td>emailNotification</td><td>Sender's email address</td><td>string</td><td>empty</td><td>no</td><td></td></tr>
+   <tr><td>to</td><td>emailNotification</td><td>Contains correspondents to receive email notifications with integration results</td><td>Comma-separated list of strings</td><td>empty</td><td>no</td><td></td></tr>
+   <tr><td>format</td><td>emailNotification</td><td>Email format</td><td>String: 'html' or 'plain'</td><td>'html'</td><td>no</td><td></td></tr>
+   <tr><td>server</td><td>emailNotification</td><td>SMTP server host</td><td>string</td><td>'localhost'</td><td>no</td><td></td></tr>
+   <tr><td>port</td><td>emailNotification</td><td>SMTP server port</td><td>integer</td><td>25</td><td>no</td><td></td></tr>
+   <tr><td>username</td><td>emailNotification</td><td>SMTP server username</td><td>string</td><td>Not supplied</td><td>no</td><td></td></tr>
+   <tr><td>password</td><td>emailNotification</td><td>SMTP server password</td><td>string</td><td>Not supplied</td><td>no</td><td></td></tr>
+</table>
+</p>
+
+            </div>
+        </div>
+    </div>
+    <div class="clear">
+        <hr/>
+    </div>
+    <div id="footer">
+      Licensed under the <a href="LICENSE">BSD License</a><br/>
+      © 2008-2013, Andrei Korostelev <br/>
+       <img src="img/andrei_email.gif" height="15px" width="135px" alt=""/>
+    </div>
+
+    <!-- Goole Analytics -->
+    <script type="text/javascript">
+    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+    try {
+       var pageTracker = _gat._getTracker("UA-7598087-1"); 
+       pageTracker._trackPageview();
+    } catch(err) {}
+    </script>
+
+</body>
+</html>

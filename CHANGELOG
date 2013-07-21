@@ -1,0 +1,63 @@
+CHANGE HISTORY of the CcPy
+---------------------------------------------------
+
+0.6 (rev 216) - 25 June 2013
+-----------------------------
+   - FIXED non-ASCII encoded tasks output is not properly handled
+   - FIXED errors like email send errors resulted failstops when executing in 'schedule' mode
+   - FIXED build infinitely stucks on make/exec task when the parent process finishes but one or more children remain active
+   - FIXED Logger did not work correctly when the log file was rotated by the external programs such as newsyslog and logrotate
+   - CHANGED added --force-continue and --force--once command-line options and accordingly adjusted schedule settings in /etc/ccpyd.conf
+   - ADDED SMTP Server location and login credentials
+   
+
+0.5 (rev. 168) - 18 May 2010
+-----------------------------
+  - ADDED: percentage of allocated task time to the report
+  - FIXED: too much output produced by a build task (make/execute/svn) caused this task to block forever
+           on subprocess.wait() or to crop the output
+  - FIXED: incorrect elapsed build time reported when the build has been forcibly rerminated because of timeout
+  - FIXED: baseDirectory => workingDirectory in "exec" element
+  - FIXED: added current directory to the search path when launching executable
+  - CHANGED: removed 'preferUpdateToCheckout' option (the new behavior is as this flag is set)
+  - ADDED: 'preCleanWorkingDirectory' setting for svn
+  - FIXED: projects were processed not in the order as they appear in ccpy.conf
+  - FIXED: build stalled consuming large portions of stderr
+  - FIXED: improved timer precision
+
+
+0.4 (rev. 116) - 06 March 2009 
+-----------------------------
+  - FIXED: moved setup.py to the root directory, so it can find the proper files
+  - Email report can be send either in HTML or in plain text
+  - Unit test files for different modules can be now executed centrally
+  - Improved enum class to support deepcopying
+ 
+
+0.3 - 3 Dec 2008
+-----------------------------
+  - Added ccpy state to preserve the project state between builds
+  - Added project page on Web
+  - Moved repo to svn://korostelev.net/CcPy
+  - Improved email notification report
+  - Overall code refactoring
+
+
+0.2 - 13 Nov 2008
+-----------------------------
+  - Reworked util.SysSingleton, improved performance and added recursive bahaviour
+    (default)
+  - Moved away from compatibility with cc.net configs format
+  - Improved statistics in email notifications
+  - Email notification list now exists per project (was global)
+  - Added copyright banner
+  - Added configuration flag controlling whether the ccpy should skip building/execution 
+    of the source code which has not been changed since the last checkout
+  - Added configuration flag controlling whether the ccpy should stop execution of the rest of project
+    tasks of the project and set project status to FAILED once one of the tasks fails
+  - Kill any child processes spawned by make or exec tasks on forced exit because of timeout
+
+
+0.1 - 17 Oct 2008
+-----------------------------
+  - Initial version

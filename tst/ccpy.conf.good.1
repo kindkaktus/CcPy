@@ -1,0 +1,102 @@
+<ccpy>
+  <project name="ProductV2">
+
+    <failOnError>yes</failOnError>
+    <skipIfNoModifications>yes</skipIfNoModifications>
+
+    <tasks>
+      <sourcecontrol type="svn">
+        <trunkUrl>https://company.com/repos/productv2/mk</trunkUrl>
+        <workingDirectory>/ProductBuilds/mk</workingDirectory>
+        <preCleanWorkingDirectory>yes</preCleanWorkingDirectory>
+      </sourcecontrol>
+
+      <make>
+        <workingDirectory>/ProductBuilds/SysInfra/Projects/common</workingDirectory>
+        <args>clean release</args>
+        <timeout>120</timeout>
+      </make>
+      <make>
+        <workingDirectory>/ProductBuilds/SysInfra/Projects/logging</workingDirectory>
+      </make>
+
+      <exec>
+        <executable>commontests</executable>
+        <args>--xmlout</args>
+        <workingDirectory>/ProductBuilds/SysInfra/TestProjects/commontests</workingDirectory>
+        <timeout>30</timeout>
+      </exec>
+      <exec>
+        <executable>loggingTests</executable>
+      </exec>
+
+     <sourcecontrol type="svn">
+        <trunkUrl>https://company.com/repos/productv2/Common</trunkUrl>
+        <workingDirectory>/ProductBuilds/Common</workingDirectory>
+        <preCleanWorkingDirectory>off</preCleanWorkingDirectory>
+      </sourcecontrol>
+    </tasks>
+
+    <emailNotification>
+      <from>buildserver@company.com</from>
+      <to>developer@company.com, buildmaster@company.com</to>
+    </emailNotification>
+  </project>
+
+  <project name="ProductV3">
+
+    <failOnError>no</failOnError>
+    <skipIfNoModifications>no</skipIfNoModifications>
+    <tasks>
+     <sourcecontrol type="svn">
+      <trunkUrl>https://company.com/repos/productv2/server</trunkUrl>
+      <workingDirectory>/ProductBuilds/server</workingDirectory>
+    </sourcecontrol>
+   </tasks>
+
+    <emailNotification>
+    </emailNotification>
+
+  </project>
+
+  <project name="ProductV4">
+   <tasks>
+      <make>
+        <workingDirectory>/ProductBuilds/SysInfra/Projects/common</workingDirectory>
+      </make>
+    </tasks>
+  </project>
+
+  <project name="ProductV5">
+   <tasks>
+      <make>
+        <workingDirectory>/ProductBuilds/SysInfra/Projects/common2</workingDirectory>
+      </make>
+    </tasks>
+
+    <emailNotification>
+      <from>buildserver@company.com</from>
+      <to>developer@company.com, buildmaster@company.com</to>
+      <format>plain</format>
+    </emailNotification>
+  </project>
+
+  <project name="ProductV6">
+   <tasks>
+      <make>
+        <workingDirectory>/ProductBuilds/SysInfra/Projects/common3</workingDirectory>
+      </make>
+    </tasks>
+
+    <emailNotification>
+      <from>buildserver@company.com</from>
+      <to>developer@company.com</to>
+      <format>html</format>
+      <server>smtp.mymail.com</server>
+      <port>2626</port>
+      <username>jos</username>
+      <password>topsecret</password>      
+    </emailNotification>
+  </project>
+
+</ccpy>
