@@ -11,13 +11,9 @@
   - Aotom generators: atomxml (http://pypi.python.org/pypi/atomixlib/0.6.1a), bridge (http://trac.defuze.org/wiki/bridge)
   - But in fact, for my simple case it is no big need for a third-party rss/atom generator. Feeds can be written myself e..g using some xml ganarator (ElementTree?)
   
-- For some reason, when started as daemon (e.g. on os boot) svn creates and uses /.subversion instead of ~/.subversion or at least /etc/subversion
-  This means that svn looks this folder (not ~/subversion) for trusted CAs and for cached passwords. 
-  Doing util.daemonize(pwd.getpwuid(os.getuid()).pw_dir) did not help.
 - strange behavior od ccpyconfigtest: according to log first test is called once, second  -twice , third - 3 times. According to the consoile output - all is ok (each test fires once ) ?!
 - adding new options to ccpy.conf is not scalable all __addXYZ functions are also need to be updated.  (default values etc are hardcoded)
  - make a pseudo-lanf like in libconfuse to describe config format
-- implement logging threshold
 - It is only possible to start the entire task set as a whole bunch, each task is being sequentially execute. 
     You cannot manage individual tasks otherwise as specifying them in ccpy.conf file.
     This limitation however resolves the problem of overlapped tasks occured by misconfiguring tasks start schedule.
@@ -28,7 +24,7 @@
 - make func in utils to parseBoolStr/validateBoolStr for 'yes', 'on', 'true', ...ignore case...
 
 1.From http://www.rittau.org/python/cruisecontrol/
-It writes the results of a test run to an XML file instead of printing it to the console …. .this allows easy integration into automatic build tools like CruiseControl. 
+It writes the results of a test run to an XML file instead of printing it to the console ï¿½. .this allows easy integration into automatic build tools like CruiseControl. 
  Look at http://www.rittau.org/python/cruisecontrol/build-myproject.py
 
 Integration with CC.NET monitor:  http://confluence.public.thoughtworks.org/display/CI/Multiple+Project+Summary+Reporting+Standard
