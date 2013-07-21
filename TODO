@@ -13,7 +13,6 @@
   
 - strange behavior od ccpyconfigtest: according to log first test is called once, second  -twice , third - 3 times. According to the consoile output - all is ok (each test fires once ) ?!
 - adding new options to ccpy.conf is not scalable all __addXYZ functions are also need to be updated.  (default values etc are hardcoded)
- - make a pseudo-lanf like in libconfuse to describe config format
 - It is only possible to start the entire task set as a whole bunch, each task is being sequentially execute. 
     You cannot manage individual tasks otherwise as specifying them in ccpy.conf file.
     This limitation however resolves the problem of overlapped tasks occured by misconfiguring tasks start schedule.
