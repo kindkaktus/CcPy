@@ -2,7 +2,7 @@
   CcPy
 </h2>
 <p>
-  CcPy is (yet another) Automatic Continuous Integration Server.
+  CcPy (<strong>C</strong>ruise<strong>C</strong>ontrol written in <strong>Py</strong>thon) is (yet another) automatic continuous integration server.
   The main goal of the project is to create a lightweight backend capable of running on various *nix flavours.
   The upcoming goal is to allow for using conventional CruiseControl.NET frontend tools such as <a href="http://ccnet.sourceforge.net/CCNET/CCTray.html">CCTray</a> to control build process from desktop machines.
 </p>
@@ -22,8 +22,8 @@
     however no drawbacks are expected to use it on another *nix-related systems.
   </p>
 <p>
-  CruiseControl.py is distributed under the <a href="LICENSE">BSD License</a> and is free for use.
-  The latest stable release is 0.6 can be downloaded <a href="https://github.com/kindkaktus/CcPy/blob/tree/0.6/ccpy-0.6.tgz?raw=true">here</a>. The project source is available at <a href="GitHub">https://github.com/kindkaktus/CcPy</a>.
+  CcPy is distributed under the <a href="LICENSE">BSD License</a> and is free for use.
+  The latest stable release can be downloaded <a href="https://github.com/kindkaktus/CcPy/blob/tree/0.6/ccpy-0.6.tgz?raw=true">here</a>. The project source is available at <a href="https://github.com/kindkaktus/CcPy">GitHub</a>
 </p>
 <p>
   Have fun!

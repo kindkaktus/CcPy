@@ -2,14 +2,15 @@
   Change Log
 </h2>
 <p>
-  <h3>0.6 - 25 June 2013</h3>
+  <h3>0.6 - 21 July 2013</h3>
   <ul>
     <li>FIXED non-ASCII encoded tasks output is not properly handled</li>
     <li>FIXED errors like email send errors resulted failstops when executing in 'schedule' mode</li>
     <li>FIXED build infinitely stucks on make/exec task when the parent process finishes but one or more children remain active</li>
     <li>FIXED Logger did not work correctly when the log file was rotated by the external programs such as newsyslog and logrotate
-    <li>CHANGED added --force-continue and --force--once command-line options and accordingly adjusted schedule settings in /etc/ccpyd.conf
     <li>ADDED SMTP Server location and login credentials
+    <li>CHANGED Host source code at GitHub
+    <li>CHANGED added --force-continue and --force--once command-line options and accordingly adjusted schedule settings in /etc/ccpyd.conf
   </ul>
   <h3>0.5 - 18 May 2010</h3>
   <ul>

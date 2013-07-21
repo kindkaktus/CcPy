@@ -1,13 +1,14 @@
 CHANGE HISTORY of the CcPy
 ---------------------------------------------------
 
-0.6 (rev 216) - 25 June 2013
+0.6 (latest) - 21 July 2013
 -----------------------------
    - FIXED non-ASCII encoded tasks output is not properly handled
    - FIXED errors like email send errors resulted failstops when executing in 'schedule' mode
    - FIXED build infinitely stucks on make/exec task when the parent process finishes but one or more children remain active
    - FIXED Logger did not work correctly when the log file was rotated by the external programs such as newsyslog and logrotate
    - CHANGED added --force-continue and --force--once command-line options and accordingly adjusted schedule settings in /etc/ccpyd.conf
+   - CHANGED Host source code at GitHub
    - ADDED SMTP Server location and login credentials
    
 
