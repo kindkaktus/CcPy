@@ -5,12 +5,11 @@
 Introduction
 ---------------------
 
-CruisecControl.py (CcPy) is (yet another) Automatic Continuous Integration Server. 
-The development is inspired by the CruiseControl Continuous Integration Server 
-(http://confluence.public.thoughtworks.org/display/CCNET/Welcome+to+CruiseControl.NET).
-The main idea is to create a backend capable of running on various *nix flavours while making it possible 
-to use conventional CruiseControl.NET frontend tools such as http://ccnet.sourceforge.net/CCNET/CCTray.html
-to control a build process.
+CruisecControl.py (CcPy) is (yet another) Automatic Continuous Integration Server.
+
+The main goal of the project is to create a lightweight backend capable of running on various *nix flavours.
+The upcoming goal is to allow for using conventional CruiseControl.NET frontend tools such as http://ccnet.sourceforge.net/CCNET/CCTray.html
+to control build process from desktop machines.
 
 CcPy is written in Python.
 
