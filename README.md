@@ -10,7 +10,6 @@ CruisecControl.py (CcPy) is (yet another) Automatic Continuous Integration Serve
 Features
 ---------------------
 * Runs on any unix-derived system
-* Supports svn repositories
 * Can run on schedule or on demand
 * Notifies on build results by email
 
