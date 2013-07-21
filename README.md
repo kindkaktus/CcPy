@@ -9,17 +9,18 @@ CruisecControl.py (CcPy) is (yet another) Automatic Continuous Integration Serve
 
 Features
 ---------------------
-- Runs on any unix-derived system
-- Supports svn repositories
-- Can run on schedule or on demand
-- Notifies on build results by email
+* Runs on any unix-derived system
+* Supports svn repositories
+* Can run on schedule or on demand
+* Notifies on build results by email
 
 
 Quick start
 ---------------------
 
-Prerequisites:
-    CcPy requires Python 2.5+ and python-expat module
+Prerequisites:<br>
+* Python 2.5+ (not tested on 3.x)
+* python-expat module
 
 To install:<br>
  <code># python setup.py install</code>
