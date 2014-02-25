@@ -11,7 +11,7 @@
   - Aotom generators: atomxml (http://pypi.python.org/pypi/atomixlib/0.6.1a), bridge (http://trac.defuze.org/wiki/bridge)
   - But in fact, for my simple case it is no big need for a third-party rss/atom generator. Feeds can be written myself e..g using some xml ganarator (ElementTree?)
   
-- strange behavior od ccpyconfigtest: according to log first test is called once, second  -twice , third - 3 times. According to the consoile output - all is ok (each test fires once ) ?!
+- strange behavior od ccpyconfigtest: according to log first test is called once, second  -twice , third - 3 times. According to the console output - all is ok (each test fires once ) ?!
 - adding new options to ccpy.conf is not scalable all __addXYZ functions are also need to be updated.  (default values etc are hardcoded)
 - It is only possible to start the entire task set as a whole bunch, each task is being sequentially execute. 
     You cannot manage individual tasks otherwise as specifying them in ccpy.conf file.
