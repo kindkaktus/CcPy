@@ -122,91 +122,6 @@ CcPy uses two config files (xml format):
   -------------------
     Example config file:
 
-    <ccpy>
-
-      <!--  *************************************  CoolProduct version 2  ****************************************************** -->
-      <project name="CoolProduct v2">
-        <failOnError>yes</failOnError>
-        <skipIfNoModifications>yes</skipIfNoModifications>
-
-        <tasks>
-          <sourcecontrol type="svn">
-            <trunkUrl>https://company.com/repos/coolproductv2/Trunk/Import</trunkUrl>
-            <workingDirectory>/CoolProductBuilds/Import</workingDirectory>
-            <preCleanWorkingDirectory>yes</preCleanWorkingDirectory>
-          </sourcecontrol>
-          <sourcecontrol type="svn">
-            <trunkUrl>https://company.com/repos/coolproductv2/Trunk/</trunkUrl>
-            <workingDirectory>/CoolProductBuilds/SysInfra</workingDirectory>
-          </sourcecontrol>
-
-          <make>
-            <workingDirectory>/CoolProductBuilds/core</workingDirectory>
-            <args>clean release</args>
-            <timeout>140</timeout>
-          </make>
-           <make>
-            <workingDirectory>/CoolProductBuilds/ui</workingDirectory>
-            <args>clean release</args>
-            <timeout>140</timeout>
-          </make>
-          <make>
-            <workingDirectory>/CoolProductBuilds/tests</workingDirectory>
-            <args>cleanthis</args>
-            <timeout>20</timeout>
-          </make>
-
-          <exec>
-            <executable>coretests</executable>
-            <workingDirectory>/CoolProductBuilds/tests/coretests</workingDirectory>
-            <timeout>30</timeout>
-          </exec>
-          <exec>
-            <executable>taLoggingTests</executable>
-            <args>--xmlout</args>
-            <workingDirectory>/CoolProductBuilds/tests/uitests</workingDirectory>
-            <timeout>30</timeout>
-          </exec>
-        </tasks>
-
-        <emailNotification>
-          <from>buildserver@company.com</from>
-          <to>developer@company.com, buildmaster@company.com</to>
-        </emailNotification>
-      </project>
-
-      <!--  *************************************  CoolProduct version 3  ****************************************************** -->
-      <project name="CoolProduct v3">
-
-        <tasks>
-          <sourcecontrol type="svn">
-            <trunkUrl>https://company.com/repos/coolproductv3/Trunk/Import</trunkUrl>
-            <workingDirectory>/CoolProductBuilds/Import</workingDirectory>
-          </sourcecontrol>
-          <sourcecontrol type="svn">
-            <trunkUrl>https://company.com/repos/coolproductv3/Trunk/</trunkUrl>
-            <workingDirectory>/CoolProductBuilds/SysInfra</workingDirectory>
-          </sourcecontrol>
-
-          <make>
-            <workingDirectory>/CoolProductBuildsv3/core</workingDirectory>
-            <args>clean release</args>
-          </make>
-        </tasks>
-
-        <emailNotification>
-            <from>buildserver@company.com</from>
-            <to>buildmaster@company.com</to>
-            <format>plain</format>
-            <server>smtp.mail.com</server>
-            <port>2525</port>
-            <username>tom</username>
-            <password>secret</password>
-        </emailNotification>
-      </project>
-
-    </ccpy>
-
     Projects config file contains the ordered list of projectsts, each project contains the ordered list of tasks.
     The following task types are supported: "svn", "make" and "execute". 
 
@@ -325,6 +240,13 @@ CcPy uses two config files (xml format):
          Type        : unsigned integer
          Default     : 600 (10 minutes)
          Required    : no
+         
+         Node        : warningExitCode (subelement of the "exec" element)
+         Description : by default executable exit code 0 render the build as successful and <>0 is considered as failed build 
+                       You can use this tag to specify extra exit code that still renders the build successful but set status to "WARNING" instead of "OK"
+         Type        : integer
+         Default     : N/A
+         Required    : no
 
       Node        : emailNotification (subelement of the "project" element)
       Description : contains settings for sending email notifications with integration results 
@@ -374,7 +296,7 @@ Author
 ---------------------
 
 Andrei Korostelev andrei at korostelev dot net
-2008-2013
+2008-2014
 
 
 Licensing

@@ -1,8 +1,5 @@
 #
-#  HeadURL : $HeadURL: svn://korostelev.net/CcPy/Trunk/ccpy/ccpyconfparser.py $
-#  Id      : $Id: ccpyconfparser.py 177 2010-11-08 21:29:48Z akorostelev $
-#
-#  Copyright (c) 2008-2009, Andrei Korostelev <andrei at korostelev dot net>
+#  Copyright (c) 2008-2014, Andrei Korostelev <andrei at korostelev dot net>
 #
 #  Before using this product in any way please read the license agreement.
 #  If you do not agree to the terms in this agreement you are not allowed
@@ -19,7 +16,7 @@ import logging
 from copy import deepcopy
 
 import common
-from util import EmailFormat
+from util import EmailFormat, formatTb
 import svntask
 import maketask
 import exectask
@@ -114,6 +111,7 @@ class CcPyConfigContentHandler(xml.sax.ContentHandler):
     _execArgsElem = "args"
     _execWorkingDirElem  = "workingDirectory"
     _execTimeoutElem = "timeout"
+    _execWarningExitCode = "warningExitCode"
     _emailNotElem = "emailNotification"
     _emailNotFromElem = "from"
     _emailNotToElem = "to"
@@ -266,6 +264,9 @@ class CcPyConfigContentHandler(xml.sax.ContentHandler):
                 return
             if self._curElem == CcPyConfigContentHandler._execTimeoutElem:
                 accum('timeout')
+                return
+            if self._curElem == CcPyConfigContentHandler._execWarningExitCode:
+                accum('warningExitCode')
                 return 
             return
 
@@ -282,13 +283,13 @@ class CcPyConfigContentHandler(xml.sax.ContentHandler):
                 self._curProjName = None
                 return
             if anElem == CcPyConfigContentHandler._skipIfNoModifElem:
-                self._addSkipIfNoModif(self._curProjName, self._curSkipIfNoModif)
+                self._add_skip_if_no_modif(self._curProjName, self._curSkipIfNoModif)
                 self._curSkipIfNoModif = ""
                 self._curElem = CcPyConfigContentHandler._projectElem
                 self._curState = CcPyParseState.project
                 return
             if anElem == CcPyConfigContentHandler._failOnErrorElem:
-                self._addFailOnError(self._curProjName, self._curFailOnError)
+                self._add_fail_on_error(self._curProjName, self._curFailOnError)
                 self._curFailOnError = ""
                 self._curElem = CcPyConfigContentHandler._projectElem
                 self._curState = CcPyParseState.project
@@ -302,7 +303,7 @@ class CcPyConfigContentHandler(xml.sax.ContentHandler):
             return
         if self._curState == CcPyParseState.emailnot:
             if anElem == CcPyConfigContentHandler._emailNotElem:
-                self._addEmail(self._curProjName, 
+                self._add_email(self._curProjName, 
                               self._curEmailFrom, 
                               [] if len(self._curEmailTo) == 0 else self._curEmailTo.split(', '), 
                               self._curEmailFormat,
@@ -323,9 +324,9 @@ class CcPyConfigContentHandler(xml.sax.ContentHandler):
             return
         if self._curState == CcPyParseState.svntask:
             if anElem == CcPyConfigContentHandler._sccElem:
-                mySvnTaskArgs = CcPyConfigContentHandler._makeSvnTaskArgs(self._curTaskArgs)
+                mySvnTaskArgs = CcPyConfigContentHandler._make_svn_task_ags(self._curTaskArgs)
                 myTask = eval(self._curTaskType)(mySvnTaskArgs)
-                self._addTask(self._curProjName, myTask)
+                self._add_task(self._curProjName, myTask)
                 self._curElem = CcPyConfigContentHandler._tasksElem
                 self._curState = CcPyParseState.tasks
                 self._curTaskType = None
@@ -334,9 +335,9 @@ class CcPyConfigContentHandler(xml.sax.ContentHandler):
             return
         if self._curState == CcPyParseState.maketask:
             if anElem == CcPyConfigContentHandler._makeElem:
-                myMakeTaskArgs = CcPyConfigContentHandler._makeMakeTaskArgs(self._curTaskArgs)
+                myMakeTaskArgs = CcPyConfigContentHandler._make_make_task_ags(self._curTaskArgs)
                 myTask = eval(self._curTaskType)(myMakeTaskArgs)
-                self._addTask(self._curProjName, myTask)
+                self._add_task(self._curProjName, myTask)
                 self._curElem = CcPyConfigContentHandler._tasksElem
                 self._curState = CcPyParseState.tasks
                 self._curTaskType = None
@@ -345,9 +346,9 @@ class CcPyConfigContentHandler(xml.sax.ContentHandler):
             return
         if self._curState == CcPyParseState.exectask:
             if anElem == CcPyConfigContentHandler._execElem:
-                myExecTaskArgs = CcPyConfigContentHandler._makeExecTaskArgs(self._curTaskArgs)
+                myExecTaskArgs = CcPyConfigContentHandler._make_exec_task_args(self._curTaskArgs)
                 myTask = eval(self._curTaskType)(myExecTaskArgs)
-                self._addTask(self._curProjName, myTask)
+                self._add_task(self._curProjName, myTask)
                 self._curElem = CcPyConfigContentHandler._tasksElem
                 self._curState = CcPyParseState.tasks
                 self._curTaskType = None
@@ -356,7 +357,7 @@ class CcPyConfigContentHandler(xml.sax.ContentHandler):
             return
 
     @staticmethod
-    def _makeSvnTaskArgs(aRawArgs):
+    def _make_svn_task_ags(aRawArgs):
         myArgs = deepcopy(aRawArgs)
         if "preCleanWorkingDir" in myArgs:
             if myArgs['preCleanWorkingDir'] in ('on', 'yes', 'true'):
@@ -372,7 +373,7 @@ class CcPyConfigContentHandler(xml.sax.ContentHandler):
         return myArgs
 
     @staticmethod
-    def _makeMakeTaskArgs(aRawArgs):
+    def _make_make_task_ags(aRawArgs):
         myArgs = deepcopy(aRawArgs)
         if "workingDir" not in myArgs:
            myArgs["workingDir"] = ''
@@ -385,26 +386,28 @@ class CcPyConfigContentHandler(xml.sax.ContentHandler):
         return myArgs 
 
     @staticmethod
-    def _makeExecTaskArgs(aRawArgs):
+    def _make_exec_task_args(aRawArgs):
         myArgs = deepcopy(aRawArgs)
         if "args" not in myArgs:
            myArgs["args"] = ''
         if "workingDirectory" not in myArgs:
            myArgs["workingDirectory"] = ''
         myArgs["timeout"] = int(myArgs["timeout"]) if "timeout" in myArgs else 600
+        if "warningExitCode" in myArgs:
+            myArgs["warningExitCode"] = int(myArgs["warningExitCode"])
         return myArgs 
 
     @property
     def projects(self):
         return deepcopy(self._projects)
 
-    def _addTask(self, aProjName, aTask):
+    def _add_task(self, aProjName, aTask):
         if not self._projects.exists(aProjName):
             self._projects.append(aProjName, tasks = [aTask])
         else:
             self._projects.addTask(aProjName, aTask)
 
-    def _addEmail(self, aProjName, aFrom, aTo, aFormat, aSvrHost, aSvrPort, aSvrUser, aSvrPass):
+    def _add_email(self, aProjName, aFrom, aTo, aFormat, aSvrHost, aSvrPort, aSvrUser, aSvrPass):
         myFormat = EmailFormat[aFormat] if aFormat else EmailFormat.html
         mySvrHost = aSvrHost if aSvrHost else 'localhost'
         mySvrPort = int(aSvrPort) if aSvrPort else 25
@@ -413,7 +416,7 @@ class CcPyConfigContentHandler(xml.sax.ContentHandler):
         else:
             self._projects.setProject(aProjName, emailFrom = aFrom, emailTo = aTo, emailFormat = myFormat, emailServerHost = mySvrHost, emailServerPort = mySvrPort, emailServerUsername  = aSvrUser, emailServerPassword = aSvrPass)
             
-    def _addSkipIfNoModif(self, aProjName, anSkipIfNoModif):
+    def _add_skip_if_no_modif(self, aProjName, anSkipIfNoModif):
         if anSkipIfNoModif in ['on', 'yes', 'true']:
             mySkipIfNoModif = True
         elif anSkipIfNoModif in ['off', 'no', 'false', '']:
@@ -425,7 +428,7 @@ class CcPyConfigContentHandler(xml.sax.ContentHandler):
         else:
             self._projects.setProject(aProjName, skipIfNoModifications = mySkipIfNoModif)            
     
-    def _addFailOnError(self, aProjName, aFailOnError):
+    def _add_fail_on_error(self, aProjName, aFailOnError):
         if aFailOnError in ['on', 'yes', 'true', '']:
             myFailOnError = True
         elif aFailOnError in ['off', 'no', 'false']:
@@ -456,7 +459,7 @@ def parse(aCcPyConfigFileName = DefCcPyConfigFileName):
         myParser.parse(aCcPyConfigFileName )
         return myCcPyConfigContentHandler.projects
     except Exception,e:
-        raise ParseError( "Failed to parse %s. %s" % (aCcPyConfigFileName , str(e)) )
+        raise ParseError( "Failed to parse %s. %s: %s. %s" % (aCcPyConfigFileName , type(e), str(e), formatTb()) )
 
 
    

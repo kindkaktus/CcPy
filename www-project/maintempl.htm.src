@@ -40,9 +40,9 @@
                 Partner Links
             </h5>
             <ul>
-                <li class="none"><a href="http://vertaalpraktijk.com/">VertaalPraktijk.com: translate documents Dutch<->Russian</a> </li>
+                <li class="none"><a href="http://www.vertaalpraktijk.com/">VertaalPraktijk.com: certified translations Dutch - Russian - German</a> </li>
                 <li class="none"><a href="http://ibooksmart.com/">IBookSmart.com: online car rental</a> </li>
-           </ul>			
+           </ul>
         </div>
     </div>
     <div id="bodyColumn">
@@ -57,7 +57,7 @@
     </div>
     <div id="footer">
       Licensed under the <a href="LICENSE">BSD License</a><br/>
-      © 2008-2013, Andrei Korostelev <br/>
+      © 2008-2014, Andrei Korostelev <br/>
        <img src="img/andrei_email.gif" height="15px" width="135px" alt=""/>
     </div>
 

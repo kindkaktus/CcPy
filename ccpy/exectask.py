@@ -1,8 +1,5 @@
 #
-#  HeadURL : $HeadURL: svn://korostelev.net/CcPy/Trunk/ccpy/exectask.py $
-#  Id      : $Id: exectask.py 190 2011-04-25 08:42:43Z akorostelev $
-#
-#  Copyright (c) 2008-2009, Andrei Korostelev <andrei at korostelev dot net>
+#  Copyright (c) 2008-2014, Andrei Korostelev <andrei at korostelev dot net>
 #
 #  Before using this product in any way please read the license agreement.
 #  If you do not agree to the terms in this agreement you are not allowed
@@ -34,27 +31,31 @@ class ExecTask(task.Task):
         self._args       = anArgs['args']
         self._workingDir = anArgs['workingDirectory']
         self._timeout    = anArgs['timeout']
+        self._warningExitCode = anArgs.get('warningExitCode', None)
 
     @property
     def workingDir(self):
-        return  self._workingDir
+        return self._workingDir
         
     @property
     def executable(self):
-        return  self._executable
+        return self._executable
 
     @property
     def args(self):
-        return  self._args
+        return self._args
 
     @property
     def timeout(self):
-        return  self._timeout
+        return self._timeout
+        
+    @property
+    def warningExitCode(self):
+        return self._warningExitCode
 
     def __str__(self):
-        return "Task: '%s', working directory: '%s', executable: '%s', args: '%s', timeout: %u sec" \
-               % (self.__class__.__name__, self._workingDir, self._executable, self._args, self._timeout )
-			   
+        return "Task: '%s', working directory: '%s', executable: '%s', args: '%s', timeout: %u sec, warning exit code: %s" \
+               % (self.__class__.__name__, self._workingDir, self._executable, self._args, self._timeout, self._warningExitCode if self._warningExitCode else "<not defined>")
 
     def execute(self):
         try:
@@ -79,6 +80,8 @@ class ExecTask(task.Task):
             while myProcess.poll() is None:
                 time.sleep(1)
                 myNow = datetime.datetime.now()
+                
+                # timeout
                 if util.getTotalSeconds(myNow - myStart) > self._timeout:
                     Logger.warning("The execution of %s (pid %d, pgid %d) is timed out after %d seconds, killing all processes of its group" % (myCmd, myPgid, myProcess.pid, self._timeout))
                     util.kill_chld_pg(myPgid)
@@ -95,13 +98,25 @@ class ExecTask(task.Task):
             util.kill_chld_pg(myPgid)
             myStdoutConsumer.join()
             myStderrConsumer.join()
-            if myProcess.returncode != 0:
-                return { "statusFlag" : False,
-                         "statusDescr" : "The execution of '%s %s' in %s finished with return code %d." % (self._executable, self._args, self._workingDir, myProcess.returncode),
+            
+            # success
+            if myProcess.returncode == 0:
+                return { "statusFlag" : True, 
+                         "statusDescr" : "The execution of '%s %s' in %s completed successfully." % (self._executable, self._args, self._workingDir),
                          "stdout" : myStdoutConsumer.out,
                          "stderr" : myStderrConsumer.out }
-            return { "statusFlag" : True, 
-                     "statusDescr" : "The execution of '%s %s' in %s completed successfully." % (self._executable, self._args, self._workingDir),
+                         
+            # warning exit code
+            if self._warningExitCode is not None and myProcess.returncode == self._warningExitCode:
+                return { "statusFlag" : True,
+                         "warning" : True,
+                         "statusDescr" : "The execution of '%s %s' in %s completed with warning and return code %d." % (self._executable, self._args, self._workingDir, myProcess.returncode),
+                         "stdout" : myStdoutConsumer.out,
+                         "stderr" : myStderrConsumer.out}
+            
+            # error
+            return { "statusFlag" : False,
+                     "statusDescr" : "The execution of '%s %s' in %s finished with return code %d." % (self._executable, self._args, self._workingDir, myProcess.returncode),
                      "stdout" : myStdoutConsumer.out,
                      "stderr" : myStderrConsumer.out }
         except OSError, e:

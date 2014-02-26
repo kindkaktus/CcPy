@@ -1,8 +1,5 @@
 #
-#  HeadURL : $HeadURL: svn://korostelev.net/CcPy/Trunk/ccpyd.py $
-#  Id      : $Id: ccpyd.py 210 2012-04-17 12:14:14Z akorostelev $
-#
-#  Copyright (c) 2008-2009, Andrei Korostelev <andrei at korostelev dot net>
+#  Copyright (c) 2008-2014, Andrei Korostelev <andrei at korostelev dot net>
 #
 #  Before using this product in any way please read the license agreement.
 #  If you do not agree to the terms in this agreement you are not allowed
@@ -38,7 +35,9 @@ def execTasks(aCcPyConf):
     # Iterate thru projects
     for prjName,prjVal in myProjects: 
         myPrjStart = datetime.datetime.today()
-        myNumSucceededTasks, myNumFailedTasks = 0,0
+        myNumSucceededTasks = 0
+        myNumSucceededTasksWithWarning = 0
+        myNumFailedTasks = 0
         myFailOnErrorSetting = prjVal['failOnError']
         mySkipIfNoModSetting = prjVal['skipIfNoModifications']
         mySkipTasks = None
@@ -58,12 +57,16 @@ def execTasks(aCcPyConf):
             else:
                 myTaskExecStatus = task.execute()
                 myTaskStatus['description'] = myTaskExecStatus['statusDescr']
-                myTaskStatus['elapsedTime'] = datetime.datetime.today()-myTaskStart
+                myTaskStatus['elapsedTime'] = datetime.datetime.today() - myTaskStart
                 if myTaskExecStatus['statusFlag']:
-                    myTaskStatus['status'] = 'OK'
+                    myNumSucceededTasks += 1
+                    if "warning" in myTaskExecStatus and myTaskExecStatus["warning"]:
+                        myTaskStatus['status'] = "WARNING"
+                        myNumSucceededTasksWithWarning += 1
+                    else:
+                        myTaskStatus['status'] = "OK"
                     if isinstance(task, maketask.MakeTask) or isinstance(task, exectask.ExecTask):
                         myTaskStatus['allocatedTime'] = task.timeout
-                    myNumSucceededTasks += 1
                 else:
                     myTaskStatus['status'] = 'FAILED'
                     myNumFailedTasks += 1
@@ -78,31 +81,53 @@ def execTasks(aCcPyConf):
             Logger.debug('  Task finished. Status: %s', myTaskStatus)
             if myFailedBecauseOfTaskError:
                 break
-  	# End: Iterate thru tasks
+        # End: Iterate thru tasks
 
         myPrjEnd = datetime.datetime.today()
 
         myCcPyState = CcPyState()
         myOldPrjState = myCcPyState.getPrjState(prjName)
-        if myNumFailedTasks:  myPrjState = PrjStates.FAILED
-        elif myNumSucceededTasks: myPrjState = PrjStates.OK
-        else: myPrjState = myOldPrjState
-        myCcPyState.setPrjState(prjName, myPrjState)    
-
-        myPrjStatus = "%s%s" % (myPrjState, ' (FIXED)' if myOldPrjState==PrjStates.FAILED and myPrjState==PrjStates.OK else '')
+        
+        if myNumFailedTasks > 0:
+            # fail
+            myCcPyState.setPrjState(prjName, PrjStates.FAILED)
+            myPrjStatusStr = str(PrjStates.FAILED)
+        elif myNumSucceededTasks > 0:
+            # success
+            myCcPyState.setPrjState(prjName, PrjStates.OK)
+            if myNumSucceededTasksWithWarning > 0:
+                myPrjStatusStr = "WARNING %s" % (' (FIXED)' if myOldPrjState==PrjStates.FAILED else '', )
+            else:
+                myPrjStatusStr = "%s%s" % (PrjStates.OK, ' (FIXED)' if myOldPrjState==PrjStates.FAILED else '')
+        else:
+            # nothing is ran, use yesterday weather
+            myCcPyState.setPrjState(prjName, myOldPrjState)
+            myPrjStatusStr = str(myOldPrjState)
+        
         myNumSkippedTasks  = len(prjVal['tasks']) - myNumFailedTasks - myNumSucceededTasks
-        Logger.debug("Finished with project %s. Status: %s. %u task(s) SUCCEEDED, %u task(s) FAILED, %u task(s) SKIPPED.  Elapsed time: %s" 
-                     % (prjName, myPrjStatus, myNumSucceededTasks, myNumFailedTasks, myNumSkippedTasks, util.formatTimeDelta(myPrjEnd-myPrjStart)) )   
+        Logger.debug("Finished with project %s. Status: %s. %u task(s) SUCCEEDED of which %d have WARNINGs, %u task(s) FAILED, %u task(s) SKIPPED.  Elapsed time: %s" 
+                     % (prjName, myPrjStatusStr, myNumSucceededTasks, myNumSucceededTasksWithWarning, myNumFailedTasks, myNumSkippedTasks, util.formatTimeDelta(myPrjEnd-myPrjStart)) )   
         if len(prjVal['emailTo']):
           Logger.debug("Sending email notification to %s" % (", ".join(prjVal['emailTo'])) )   
-          mySubj = "Integration status for %s: %s" % (prjName, myPrjStatus)
+          mySubj = "Integration status for %s: %s" % (prjName, myPrjStatusStr)
           myBody = report.makeEmailBody(prjVal['emailFormat'], 
-                                {'prjName':prjName, 'prjStatus':myPrjStatus, 
-                                 'numSucceededTasks':myNumSucceededTasks, 'numFailedTasks':myNumFailedTasks, 'numSkippedTasks':myNumSkippedTasks,
+                                {'prjName' : prjName, 'prjStatus':myPrjStatusStr, 
+                                 'numSucceededTasks': myNumSucceededTasks, 
+                                 'numFailedTasks': myNumFailedTasks, 
+                                 'numSucceededTasksWithWarning' : myNumSucceededTasksWithWarning, 
+                                 'numSkippedTasks' : myNumSkippedTasks,
                                  'elapsedTime': myPrjEnd-myPrjStart },
                                 myTasksStatus,
                                 myFailedBecauseOfTaskError)
-          util.sendEmailNotification(prjVal['emailFrom'], prjVal['emailTo'], mySubj, myBody, prjVal['emailFormat'], prjVal['emailServerHost'], prjVal['emailServerPort'], prjVal['emailServerUsername'], prjVal['emailServerPassword'])
+          util.sendEmailNotification(prjVal['emailFrom'], 
+                                     prjVal['emailTo'], 
+                                     mySubj, 
+                                     myBody, 
+                                     prjVal['emailFormat'], 
+                                     prjVal['emailServerHost'], 
+                                     prjVal['emailServerPort'], 
+                                     prjVal['emailServerUsername'], 
+                                     prjVal['emailServerPassword'])
     # Iterate thru projects
 
 

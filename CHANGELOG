@@ -1,7 +1,10 @@
 CHANGE HISTORY of the CcPy
 ---------------------------------------------------
+0.7 - 26 February 2013
+-----------------------------
+   - ADDED a possibility to specify executable exit codes treated as warning
 
-0.6 (latest) - 21 July 2013
+0.6 - 21 July 2013
 -----------------------------
    - FIXED non-ASCII encoded tasks output is not properly handled
    - FIXED errors like email send errors resulted failstops when executing in 'schedule' mode

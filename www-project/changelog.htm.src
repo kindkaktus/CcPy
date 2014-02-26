@@ -2,6 +2,10 @@
   Change Log
 </h2>
 <p>
+  <h3>0.7 - 26 February 2014</h3>
+  <ul>
+    <li>ADDED a possibility to specify executable exit codes treated as warning
+  </ul>
   <h3>0.6 - 21 July 2013</h3>
   <ul>
     <li>FIXED non-ASCII encoded tasks output is not properly handled</li>
