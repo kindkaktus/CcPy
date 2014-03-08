@@ -23,25 +23,22 @@
                 <li class="none"><a href="./quickstart.htm">Quick Start</a> </li>
                 <li class="none"><a href="./ccpyd.htm">ccpyd.conf</a></li>
                 <li class="none"><a href="./ccpy.htm">ccpy.conf</a> </li>
-               <li class="none"><a href="./changelog.htm">Change Log</a></li>
+                <li class="none"><a href="./changelog.htm">Change Log</a></li>
                 <li class="none"><a href="./download.htm">Download</a></li>              
             </ul>
             <h5>
-                CI Links
+                Continuous Integration Links
             </h5>
             <ul>
-                <li class="none"><a href="http://en.wikipedia.org/wiki/Continuous_Integration">Continuous Integration</a> </li>
-                <li class="none"><a href="http://confluence.public.thoughtworks.org/display/CCNET/Welcome+to+CruiseControl.NET">CruiseControl.NET</a> </li>
-                <li class="none"><a href="http://confluence.public.thoughtworks.org/display/CC/CI+Feature+Matrix">Continuous Integration Servers Feature Matrix</a> </li>
-                <li class="none"><a href="http://www.google.com/alpha/Top/Computers/Software/Build_Management/Build_Manager_Tools/">Build Manager Tools</a> </li>
-                <li class="none"><a href="http://www.martinfowler.com/articles/continuousIntegration.html">Continuous Integration Intro by Martin Fowler</a> </li>
+                <li class="none"><a href="http://en.wikipedia.org/wiki/Continuous_Integration" rel="nofollow">Continuous Integration</a> </li>
+                <li class="none"><a href="http://confluence.public.thoughtworks.org/display/CC/CI+Feature+Matrix" rel="nofollow">CI Servers Feature Matrix</a> </li>
+                <li class="none"><a href="http://www.martinfowler.com/articles/continuousIntegration.html" rel="nofollow">CI Intro by Martin Fowler</a> </li>
             </ul>
 			<h5>
-                Partner Links
+                Partners
             </h5>
             <ul>
-                <li class="none"><a href="http://www.vertaalpraktijk.com/">VertaalPraktijk.com: certified translations Dutch - Russian - German</a> </li>
-                <li class="none"><a href="http://ibooksmart.com/">IBookSmart.com: online car rental</a> </li>
+                <li class="none"><a href="http://www.vertaalpraktijk.com/index_en.html"><strong>VertaalPraktijk</strong></a> provides sworn translations Dutch - Russian - German, localization of websites and other translation services</li>
            </ul>
         </div>
     </div>
