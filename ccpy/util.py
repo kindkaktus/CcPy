@@ -65,7 +65,7 @@ def daemonize(aDaemonCurDir = '/'):
     """
     try:
         myPid = os.fork()
-    except OSError, e:
+    except OSError as e:
         raise Exception, "%s. Errno: %d" % (e.strerror, e.errno)
     if (myPid == 0):
         # child
@@ -73,7 +73,7 @@ def daemonize(aDaemonCurDir = '/'):
         try:
             # second fork is to guarantee that the child is no longer a session leader, preventing the daemon from ever acquiring a controlling terminal.
             myPid = os.fork()
-        except OSError, e:
+        except OSError as e:
             raise Exception, "%s. Errno: %d" % (e.strerror, e.errno)
         if (myPid == 0):
             # child
@@ -195,7 +195,7 @@ def isPidExist(aPid):
         try:
             os.kill(aPid, 0)
             return True
-        except OSError, err:
+        except OSError as err:
             import errno
             return err.errno == errno.EPERM
 
@@ -231,7 +231,7 @@ class ProcOutputConsumerThread(threading.Thread):
     def run(self):
         try:
             self._out = self._proc.stdout.readlines() if self._readStdout else self._proc.stderr.readlines()
-        except BaseException, e:
+        except BaseException as e:
             if self._logger:
                 self._logger.error("%s: %s. %s" % (type(e), str(e), formatTb()))
         
@@ -242,7 +242,7 @@ class ProcOutputConsumerThread(threading.Thread):
         if not isinstance(myOut, unicode):
             try:
                 myOut = myOut.decode('utf-8')
-            except UnicodeDecodeError, e: 
+            except UnicodeDecodeError as e: 
                 if self._logger:
                     self._logger.error("Failed to utf8 decode process output, 'bad' characters will be replaced with U+FFFD. %s. %s" % (str(e), formatTb()))
                 myOut = myOut.decode('utf-8', 'replace')
@@ -254,7 +254,7 @@ def kill_chld_pg(pgid):
         os.killpg(pgid, signal.SIGTERM)
         time.sleep(1)
         os.killpg(pgid, signal.SIGKILL) 
-    except OSError, e:
+    except OSError as e:
         # tolerate 'No such process' error
         import errno
         if e.errno != errno.ESRCH:

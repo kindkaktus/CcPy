@@ -97,7 +97,7 @@ class MakeTask(task.Task):
                      "statusDescr" : "'%s' in '%s' completed successfully." % (myCmd, self._workingDir), 
                      "stdout" : myStdoutConsumer.out,
                      "stderr" : myStderrConsumer.out }
-        except OSError, e:
+        except OSError as e:
            return {"statusFlag" : False, 
                    "statusDescr" : "Failed to execute '%s' in %s. Error: %s" % (myCmd, self._workingDir, str(e))}
 

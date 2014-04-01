@@ -57,7 +57,7 @@ def install():
         shutil.copy("conf/ccpyd.conf", "/etc/")
         shutil.copy("conf/ccpy.conf", "/etc/")
         return 0 
-    except BaseException, e:
+    except BaseException as e:
         sys.stderr.write("*** Error. %s" % str(e))
         return -1
 
@@ -71,7 +71,7 @@ def uninstall():
             myPid = int(myPidFile.readline())
             myPidFile.close()
             os.kill(myPid, signal.SIGKILL)
-    except BaseException, e:
+    except BaseException as e:
         sys.stderr.write("*** Failed to stop ccpyd. %s" % str(e))
         return -1
     print("  Removing config files...")
@@ -86,7 +86,7 @@ def _removeFileNoThrow(aFileName):
         if os.path.exists(aFileName):
             os.remove(aFileName)
         return 0    
-    except OSError, e:
+    except OSError as e:
         sys.stderr.write("Warning. Cannot remove '%s'. Error: %s" % (aFileName, str(e)))
         return 1
 

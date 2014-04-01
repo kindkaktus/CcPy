@@ -30,7 +30,7 @@ class UtilTestCase(unittest.TestCase):
             self.assert_( util.isPidExist(os.getpid()) )
             self.assert_( util.isPidExist(1) )
             self.assert_( not util.isPidExist(-123) )
-        except BaseException, e:
+        except BaseException as e:
             print("Error. %s. %s. %s" % (type(e), str(e), util.formatTb()))
             self.assert_(False)
 
@@ -44,7 +44,7 @@ class UtilTestCase(unittest.TestCase):
             self.assertRaises( util.SysSingletonCreateError, util.SysSingleton, 'testapp2', False )
             mySingleton2 = util.SysSingleton('testapp2')
             mySingleton2 = util.SysSingleton('testapp2', True)
-        except BaseException, e:
+        except BaseException as e:
             print("Error. %s. %s. %s" % (type(e), str(e), util.formatTb()))
             self.assert_(False)
 

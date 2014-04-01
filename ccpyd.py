@@ -160,7 +160,7 @@ def main(argv=None):
         if not myCcPydConf['logging']:
             myCcPydConf['logFile'] = '/dev/null'
         Logger = util.initLogger( common.LoggerName, myCcPydConf['logFile'], common.ProductName+' v.'+common.ProductVersion, myCcPydConf['logLevel'] )
-    except Exception, e:
+    except Exception as e:
         sys.stderr.write("%s. %s. %s" % (type(e), str(e), util.formatTb()))
         return -1
 
@@ -172,7 +172,7 @@ def main(argv=None):
             execTasks(myCcPyConf)
             util.closeLogger(Logger)
             return 0
-    except BaseException, e:
+    except BaseException as e:
         Logger.error("%s: %s. %s" % (type(e), str(e), util.formatTb()))
         util.closeLogger(Logger)
         return -1
@@ -186,7 +186,7 @@ def main(argv=None):
         Logger.debug("Executing tasks and continue")
         try:
             execTasks(myCcPyConf)
-        except BaseException, e:
+        except BaseException as e:
             Logger.error("%s: %s. %s.\nTolerating the error." % (type(e), str(e), util.formatTb()))
         except: 
             Logger.error("Unexpected error. \nTolerating the error.")
@@ -197,7 +197,7 @@ def main(argv=None):
         Logger.debug("Executing tasks (scheduled)")
         try:
             execTasks(myCcPyConf)
-        except BaseException, e:
+        except BaseException as e:
             Logger.error("%s: %s. %s.\nTolerating the error." % (type(e), str(e), util.formatTb()))
         except: 
             Logger.error("Unexpected error. \nTolerating the error.")

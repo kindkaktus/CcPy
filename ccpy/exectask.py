@@ -119,7 +119,7 @@ class ExecTask(task.Task):
                      "statusDescr" : "The execution of '%s %s' in %s finished with return code %d." % (self._executable, self._args, self._workingDir, myProcess.returncode),
                      "stdout" : myStdoutConsumer.out,
                      "stderr" : myStderrConsumer.out }
-        except OSError, e:
+        except OSError as e:
             return {"statusFlag" : False, 
                     "statusDescr" : "Failed to execute '%s %s' in %s. Error: %s" % (self._executable, self._args, self._workingDir, str(e))}
 

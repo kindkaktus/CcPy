@@ -53,12 +53,12 @@ class UtilTestCase(unittest.TestCase):
             myCcPyState.setPrjState('Product V2', PrjStates.OK)
             self.assertEqual(myCcPyState.getPrjState('Product V2'), PrjStates.OK)
             self.assertEqual(myCcPyState.getPrjState('Product V3'), PrjStates.UNKNOWN)
-        except BaseException, e:
-            print "Error. %s. %s. %s" % (type(e), str(e), util.formatTb())
+        except BaseException as e:
+            print("Error. %s. %s. %s" % (type(e), str(e), util.formatTb()))
             self.assert_(False)
 
 if __name__ == '__main__':
     if ( sys.version_info[0] < 2 or ( sys.version_info[0] == 2 and sys.version_info[1] < 5 ) ):
-        print "Python 2.5 or higher is required for the program to run."
+        print("Python 2.5 or higher is required for the program to run.")
 	exit(-1)
     unittest.main()

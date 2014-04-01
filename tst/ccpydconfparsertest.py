@@ -39,7 +39,7 @@ class CcPydConfParserTestCase(unittest.TestCase):
             self.assertEqual( myDataDict['logging'], True )
             self.assertEqual( myDataDict['logFile'], '/var/log/ccpyd.log' )
             self.assertEqual( myDataDict['logLevel'], 'DEBUG' )
-        except BaseException, e:
+        except BaseException as e:
             print("Error. %s. %s. %s" % (type(e), str(e), util.formatTb()))
             self.assert_(False)
 
@@ -50,7 +50,7 @@ class CcPydConfParserTestCase(unittest.TestCase):
             self.assertEqual( myDataDict['ccpyConfig'], '/etc/ccpy.conf' )
             self.assertFalse( myDataDict['schedule'])
             self.assertEqual( myDataDict['logging'], False )
-        except BaseException, e:
+        except BaseException as e:
             print("Error. %s. %s. %s" % (type(e), str(e), util.formatTb()))
             self.assert_(False)
 

@@ -142,7 +142,7 @@ def parse(aCcPydConfigFileName = DefCcPydConfigFileName):
         myParser.setContentHandler(myCcPydConfigContentHandler)
         myParser.parse(aCcPydConfigFileName )
         return myCcPydConfigContentHandler.dataDict
-    except BaseException,e:
+    except BaseException as e:
         raise ParseError( "Failed to parse %s. %s" % (aCcPydConfigFileName , str(e)) )
 
 

@@ -458,7 +458,7 @@ def parse(aCcPyConfigFileName = DefCcPyConfigFileName):
         myParser.setContentHandler(myCcPyConfigContentHandler)
         myParser.parse(aCcPyConfigFileName )
         return myCcPyConfigContentHandler.projects
-    except Exception,e:
+    except Exception as e:
         raise ParseError( "Failed to parse %s. %s: %s. %s" % (aCcPyConfigFileName , type(e), str(e), formatTb()) )
 
 

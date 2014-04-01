@@ -139,7 +139,7 @@ class Enum(object):
             values[i] = value
             try:
                 super(Enum, self).__setattr__(key, value)
-            except TypeError, e:
+            except TypeError as e:
                 raise EnumBadKeyError(key)
         super(Enum, self).__setattr__('_values', values)
 

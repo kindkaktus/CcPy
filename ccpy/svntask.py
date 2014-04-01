@@ -102,7 +102,7 @@ class SvnTask(task.Task):
                      "statusDescr" : "'svn checkout' for '%s' to %s completed successfully." % (self._trunkUrl, self._workingDir),
                      "stdout" : myStdout.rstrip(),
                      "stderr" : myStderr.rstrip() }
-        except OSError, e:
+        except OSError as e:
            return {"statusFlag" : False, 
                    "statusDescr" : "Failed to execute '%s'. Error: %s" % (myCmd, str(e))}
 
