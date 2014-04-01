@@ -31,7 +31,7 @@ class UtilTestCase(unittest.TestCase):
             self.assert_( util.isPidExist(1) )
             self.assert_( not util.isPidExist(-123) )
         except BaseException, e:
-            print "Error. %s. %s. %s" % (type(e), str(e), util.formatTb())
+            print("Error. %s. %s. %s" % (type(e), str(e), util.formatTb()))
             self.assert_(False)
 
     def testSysSingleton(self):
@@ -45,11 +45,11 @@ class UtilTestCase(unittest.TestCase):
             mySingleton2 = util.SysSingleton('testapp2')
             mySingleton2 = util.SysSingleton('testapp2', True)
         except BaseException, e:
-            print "Error. %s. %s. %s" % (type(e), str(e), util.formatTb())
+            print("Error. %s. %s. %s" % (type(e), str(e), util.formatTb()))
             self.assert_(False)
 
 if __name__ == '__main__':
     if ( sys.version_info[0] < 2 or ( sys.version_info[0] == 2 and sys.version_info[1] < 5 ) ):
-        print "Python 2.5 or higher is required for the program to run."
-	exit(-1)
+        print("Python 2.5 or higher is required for the program to run.")
+    exit(-1)
     unittest.main()

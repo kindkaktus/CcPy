@@ -146,7 +146,7 @@ def calcExecWaitTime(aParsedExecTime):
 
 def main(argv=None):
     if  sys.version_info[0] < 2 or ( sys.version_info[0] == 2 and sys.version_info[1] < 5 ):
-        print >>sys.stderr,"Python 2.5 or higher is required for the program to run."
+        sys.stderr.write("Python 2.5 or higher is required for the program to run.")
         return -1
         
     if argv is None:
@@ -161,7 +161,7 @@ def main(argv=None):
             myCcPydConf['logFile'] = '/dev/null'
         Logger = util.initLogger( common.LoggerName, myCcPydConf['logFile'], common.ProductName+' v.'+common.ProductVersion, myCcPydConf['logLevel'] )
     except Exception, e:
-        print >>sys.stderr,"%s. %s. %s" % (type(e), str(e), util.formatTb())
+        sys.stderr.write("%s. %s. %s" % (type(e), str(e), util.formatTb()))
         return -1
 
     try:

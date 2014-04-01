@@ -1,8 +1,9 @@
 CHANGE HISTORY of the CcPy
 ---------------------------------------------------
-0.7 - 26 February 2013
+0.7 - 01 April 2014
 -----------------------------
    - ADDED a possibility to specify executable exit codes treated as warning
+   - ADDED support for Python 3
 
 0.6 - 21 July 2013
 -----------------------------
