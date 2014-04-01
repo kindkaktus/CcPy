@@ -1,9 +1,9 @@
 To install CcPy, type
 
-  python setup.py [install]
+  ./setup.py [install]
 
 To uninstall CcPy, type
  
-   python setup.py uninstall
+   ./setup.py uninstall
 
 Please see README for more info

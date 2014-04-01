@@ -9,7 +9,7 @@ CcPy requires Python 2.5 and python-expat module
 <p>
 <h3>Installation</h3>
 To install CcPy, type:
-<code class="codeblock">python setup.py [install]</code>
+<code class="codeblock">./setup.py [install]</code>
 CcPy uses two config files (xml format): 
 <ul>
   <li>ccpyd.conf  - configure CcPy daemon settings</li>
@@ -34,5 +34,5 @@ A shortcut to stop and start the daemon thus making it re-read /etc/ccpyd.conf:
 <p>
 <h3>Uninstallation</h3>
 To uninstall CcPy, type:
-<code class="codeblock">python setup.py uninstall</code>
+<code class="codeblock">./setup.py uninstall</code>
 The uninstallation script removes config files created during installation and cleans up temporary files created by CcPy daemon.
