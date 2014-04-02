@@ -18,7 +18,9 @@ import os
 import time
 import sys
 import signal
-from enum import Enum
+from .enum import Enum
+
+IS_PYTHON2 = sys.version_info < (3,0)
 
 import logging
 import traceback
@@ -46,7 +48,7 @@ def initLogger(aLoggerName, aLogFileName, anAppName, aLogLevelStr):
         try:
             from logging import WatchedFileHandler
         except ImportError:
-            from logger_compatibility import WatchedFileHandler
+            from .logger_compatibility import WatchedFileHandler
         myHandler = WatchedFileHandler(aLogFileName)   
     myHandler.setFormatter(logging.Formatter('%(asctime)s <'+str(os.getpid())+'> [%(levelname)s] %(module)s.%(funcName)s: %(message)s'))
     myLogger.addHandler(myHandler)
@@ -66,7 +68,7 @@ def daemonize(aDaemonCurDir = '/'):
     try:
         myPid = os.fork()
     except OSError as e:
-        raise Exception, "%s. Errno: %d" % (e.strerror, e.errno)
+        raise Exception("%s. Errno: %d" % (e.strerror, e.errno))
     if (myPid == 0):
         # child
         os.setsid()
@@ -74,7 +76,7 @@ def daemonize(aDaemonCurDir = '/'):
             # second fork is to guarantee that the child is no longer a session leader, preventing the daemon from ever acquiring a controlling terminal.
             myPid = os.fork()
         except OSError as e:
-            raise Exception, "%s. Errno: %d" % (e.strerror, e.errno)
+            raise Exception("%s. Errno: %d" % (e.strerror, e.errno))
         if (myPid == 0):
             # child
             os.chdir(aDaemonCurDir)
@@ -106,6 +108,33 @@ def _close_all_fds():
 
 EmailFormat = Enum('plain', 'html')
 
+def to_utf8(s):
+    if IS_PYTHON2:
+        if isinstance(s, unicode):
+            return s.encode('utf-8')
+        else:
+            return s # just suppose it is already utf8. @todo proper implementation should have detected the encoding and convert to utf8 then...
+    else:
+        return s.encode('utf-8')
+        
+def to_unicode(s, logger = None):
+    needs_decode = False
+    if IS_PYTHON2 and not isinstance(s, unicode):
+        needs_decode = True
+    if not IS_PYTHON2 and not isinstance(s, str):
+        needs_decode = True
+        
+    if needs_decode:
+        try:
+            s = s.decode('utf-8')
+        except UnicodeDecodeError as e: 
+            if logger:
+                logger.error("Failed to utf8 decode process output, 'bad' characters will be replaced with U+FFFD. %s. %s" % (str(e), formatTb()))
+            s = s.decode('utf-8', 'replace')
+    return s
+            
+
+
 def sendEmailNotification(aFrom, aTo, aSubj, aBody, aFmt, anSmtpSvrHost, anSmtpSvrPort, aSmtpSvrUser, aSmtpSvrPassword):
     """ 
     Sends email notification
@@ -120,11 +149,11 @@ def sendEmailNotification(aFrom, aTo, aSubj, aBody, aFmt, anSmtpSvrHost, anSmtpS
     """
     import smtplib
     from email.mime.text import MIMEText
-    from email.Utils import formatdate
+    from email.utils import formatdate
 
     if aFmt not in EmailFormat:
         raise Exception("%s is not a valid email format" % aFmt)
-    myBody = aBody.encode('utf-8') if isinstance(aBody, unicode) else aBody
+    myBody = to_utf8(aBody)
     myMsg = MIMEText(myBody, str(aFmt), 'utf-8')
     myMsg['Subject'] = aSubj
     myMsg['From'] = aFrom
@@ -185,19 +214,12 @@ class SysSingleton:
                 pass
 
 def isPidExist(aPid):
-    if False:
-        myStdout = os.popen("ps -axo pid=", "r")
-        myStrPids = myStdout.readlines()
-        myStrPids = filter( lambda s: len(s), [pid.strip() for pid in myStrPids] ) 
-        myPids = map(int, myStrPids)
-        return (aPid in myPids)
-    else:
-        try:
-            os.kill(aPid, 0)
-            return True
-        except OSError as err:
-            import errno
-            return err.errno == errno.EPERM
+    try:
+        os.kill(aPid, 0)
+        return True
+    except OSError as err:
+        import errno
+        return err.errno == errno.EPERM
 
 
 def formatTimeDelta(aTimeDelta):
@@ -239,15 +261,9 @@ class ProcOutputConsumerThread(threading.Thread):
     #@return output as unicode string
     def out(self):
         myOut = " ".join(self._out)
-        if not isinstance(myOut, unicode):
-            try:
-                myOut = myOut.decode('utf-8')
-            except UnicodeDecodeError as e: 
-                if self._logger:
-                    self._logger.error("Failed to utf8 decode process output, 'bad' characters will be replaced with U+FFFD. %s. %s" % (str(e), formatTb()))
-                myOut = myOut.decode('utf-8', 'replace')
+        myOut = to_unicode(myOut, self._logger)
         return myOut.rstrip()
-		
+
 ## Kill child process group
 def kill_chld_pg(pgid):
     try:
@@ -260,8 +276,7 @@ def kill_chld_pg(pgid):
         if e.errno != errno.ESRCH:
             raise
     #os.waitpid(-1, os.WNOHANG)
-	
-	
+
 # More precise than time.sleep
 def wait(interval):
     import threading

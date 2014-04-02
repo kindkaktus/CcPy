@@ -23,10 +23,10 @@ def testAll():
     myDir = os.path.abspath(os.path.dirname(sys.argv[0]))   
     myFiles = os.listdir(myDir)                               
     myUnitTestFileRegex = re.compile(r"test.py$", re.IGNORECASE)          
-    myUnitTestFiles = filter(myUnitTestFileRegex.search, myFiles)                     
-    myUnitTestModuleNames = map(lambda f: os.path.splitext(f)[0], myUnitTestFiles)         
-    myUnitTestModules = map(__import__, myUnitTestModuleNames)                 
-    return unittest.TestSuite(map(unittest.defaultTestLoader.loadTestsFromModule, myUnitTestModules))          
+    myUnitTestFiles = list(filter(myUnitTestFileRegex.search, myFiles))                     
+    myUnitTestModuleNames = [os.path.splitext(f)[0] for f in myUnitTestFiles]         
+    myUnitTestModules = list(map(__import__, myUnitTestModuleNames))                 
+    return unittest.TestSuite(list(map(unittest.defaultTestLoader.loadTestsFromModule, myUnitTestModules)))          
 
 if __name__ == "__main__":                   
     unittest.main(defaultTest="testAll")

@@ -19,8 +19,8 @@ import logging
 import cgi
 from string import Template
 
-import common
-from util import EmailFormat, formatTimeDelta, getTotalSeconds
+from . import common
+from .util import EmailFormat, formatTimeDelta, getTotalSeconds
 
 _Css = """
 table {
@@ -136,14 +136,14 @@ $sep2\r\n\
                sep2 = "------------------------------------------------------------------------------------")
     for myTaskStatus in aStatusPerTask:
       myBody += '    %(name)s => %(status)s. %(description)s' %  myTaskStatus
-      if myTaskStatus.has_key('elapsedTime'): 
+      if 'elapsedTime' in myTaskStatus: 
           myBody += ' Elapsed time: %s' %  formatTimeDelta(myTaskStatus['elapsedTime'])
-          if myTaskStatus.has_key('allocatedTime') and myTaskStatus['allocatedTime']>0:
+          if 'allocatedTime' in myTaskStatus and myTaskStatus['allocatedTime']>0:
               myUsedTimePercentage = getTotalSeconds(myTaskStatus['elapsedTime'])*100/myTaskStatus['allocatedTime']
               myBody += ' (%s%% of allocated time)' % myUsedTimePercentage
-      if myTaskStatus.has_key('stdout') and len(myTaskStatus['stdout']): 
+      if 'stdout' in myTaskStatus and len(myTaskStatus['stdout']): 
           myBody += ' Stdout: %(stdout)s' % myTaskStatus
-      if myTaskStatus.has_key('stderr') and len(myTaskStatus['stderr']): 
+      if 'stderr' in myTaskStatus and len(myTaskStatus['stderr']): 
           myBody += ' Stderr: %(stderr)s' % myTaskStatus
       myBody += "\r\n"
 
@@ -189,15 +189,16 @@ def _makeHtmlEmailBody(aSummary, aStatusPerTask, aBuildFailedBecauseOfTaskError)
 
     myTasks = ""
     for myTaskStatus in aStatusPerTask:
-        if myTaskStatus.has_key('allocatedTime') and myTaskStatus['allocatedTime']>0 and myTaskStatus.has_key('elapsedTime'):
+        if 'allocatedTime' in myTaskStatus and myTaskStatus['allocatedTime']>0 and 'elapsedTime' in myTaskStatus:
             myUsedTimePercentage = getTotalSeconds(myTaskStatus['elapsedTime'])*100/myTaskStatus['allocatedTime']
         else:
             myUsedTimePercentage = None
+        
         myTasks += myTaskTempl.safe_substitute(
                 taskName = myTaskStatus['name'], 
                 taskStatus = myTaskStatus['status'], 
                 taskDescription = myTaskStatus['description'],
-                elapsedTime = formatTimeDelta(myTaskStatus['elapsedTime']) if myTaskStatus.has_key('elapsedTime') else '', 
+                elapsedTime = formatTimeDelta(myTaskStatus['elapsedTime']) if 'elapsedTime' in myTaskStatus else '', 
                 usedTimePercentage = ' (%s%% of allocated time)' % myUsedTimePercentage if myUsedTimePercentage is not None else '',
                 stdout = "<pre>"+cgi.escape(myTaskStatus.get('stdout',' '))+"</pre>", 
                 stderr = "<pre>"+cgi.escape(myTaskStatus.get('stderr',' '))+"</pre>")

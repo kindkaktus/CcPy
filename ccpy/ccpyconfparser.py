@@ -15,13 +15,13 @@ import xml.sax
 import logging
 from copy import deepcopy
 
-import common
-from util import EmailFormat, formatTb
-import svntask
-import maketask
-import exectask
+from .common import LoggerName
+from .util import EmailFormat, formatTb
+from . import svntask
+from . import maketask
+from . import exectask
 
-Logger = logging.getLogger(common.LoggerName)
+Logger = logging.getLogger(LoggerName)
 DefCcPyConfigFileName = "/etc/ccpy.conf"
 
 class Projects:
@@ -54,15 +54,15 @@ class Projects:
     def setProject(self, name, **kwargs):
         if not self.exists(name):
             raise Exception("Failed to set project because project named '%s' does not exist" % name)        
-        for key in kwargs.keys():
+        for key in list(kwargs.keys()):
             if key not in ('emailFrom', 'emailTo', 'emailFormat', 'emailServerHost', 'emailServerPort', 'emailServerUsername', 'emailServerPassword', 'failOnError', 'skipIfNoModifications'):
                 raise Exception("Unexpected key '%s'" % key)
         for project in self._projects:
             if project['name'] == name:
-                for key, val in kwargs.items():
+                for key, val in list(kwargs.items()):
                     project[key] = val
         
-    def next(self):
+    def __next__(self):
         if self.cur >= len(self._projects):
             self.cur = 0
             raise StopIteration
@@ -89,7 +89,7 @@ class Projects:
         return len(self._projects)
 
 class CcPyParseState:
-    project, tasks, svntask, maketask, exectask, emailnot, other = range(7)
+    project, tasks, svntask, maketask, exectask, emailnot, other = list(range(7))
 
 class CcPyConfigContentHandler(xml.sax.ContentHandler):
     """ SAX content handler for the CruiseControl.py configuration file """

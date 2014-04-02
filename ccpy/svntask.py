@@ -18,10 +18,11 @@ import os
 import subprocess
 import logging
 
-import task
-import common
+from . import task
+from .common import LoggerName
+from .util import to_utf8, to_unicode
 
-Logger = logging.getLogger(common.LoggerName)
+Logger = logging.getLogger(LoggerName)
 
 class SvrModifications:
     exist, notExist, notWorkingCopy = range(3)
@@ -66,10 +67,8 @@ class SvnTask(task.Task):
                 myCmd = "svn up --non-interactive"
                 myProcess = subprocess.Popen(myCmd, shell=True, cwd=self._workingDir, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 myStdout, myStderr  = myProcess.communicate()
-                if not isinstance(myStdout, unicode):
-                    myStdout = myStdout.decode('utf-8')
-                if not isinstance(myStderr, unicode):
-                    myStderr = myStderr.decode('utf-8')
+                myStdout = to_unicode(myStdout, Logger)
+                myStderr = to_unicode(myStderr, Logger)
 
                 if myProcess.returncode != 0:
                     return { "statusFlag" : False, 
@@ -89,10 +88,9 @@ class SvnTask(task.Task):
             myCmd = "svn co --non-interactive %s %s" % ( self._trunkUrl, self._workingDir) 
             myProcess = subprocess.Popen(myCmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             myStdout, myStderr  = myProcess.communicate()
-            if not isinstance(myStdout, unicode):
-                myStdout = myStdout.decode('utf-8')
-            if not isinstance(myStderr, unicode):
-                myStderr = myStderr.decode('utf-8')
+            myStdout = to_unicode(myStdout, Logger)
+            myStderr = to_unicode(myStderr, Logger)
+            
             if myProcess.returncode != 0:
                 return { "statusFlag" : False,  
                          "statusDescr" : "'svn checkout' for '%s' to %s finished with return code %d." % (self._trunkUrl, self._workingDir, myProcess.returncode),

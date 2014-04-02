@@ -19,13 +19,13 @@ class UtilTestCase(unittest.TestCase):
         try:
             clrs = Enum('red', 'green','blue')
 
-            self.assert_(clrs.red in clrs)
-            self.assert_("red" in clrs)
-            self.assert_(clrs.green in clrs)
-            self.assert_("green" in clrs)
-            self.assert_(clrs.blue in clrs)
-            self.assert_("blue" in clrs)
-            self.assert_("yellow" not in clrs)
+            self.assertTrue(clrs.red in clrs)
+            self.assertTrue("red" in clrs)
+            self.assertTrue(clrs.green in clrs)
+            self.assertTrue("green" in clrs)
+            self.assertTrue(clrs.blue in clrs)
+            self.assertTrue("blue" in clrs)
+            self.assertTrue("yellow" not in clrs)
 
             self.assertEqual(clrs.red.index  , 0)
             self.assertEqual(clrs.green.index, 1)
@@ -48,12 +48,12 @@ class UtilTestCase(unittest.TestCase):
             self.assertEqual(str(clrs[2]),       "blue")
             self.assertEqual(str(clrs['blue']),  "blue")
 
-            self.assert_(clrs.green > clrs.red)
-            self.assert_(clrs.blue > clrs.green)
+            self.assertTrue(clrs.green > clrs.red)
+            self.assertTrue(clrs.blue > clrs.green)
 
             green_cpy = deepcopy(clrs.green)
-            self.assert_(clrs.green in clrs)
-            self.assert_("green" in clrs)
+            self.assertTrue(clrs.green in clrs)
+            self.assertTrue("green" in clrs)
             self.assertEqual(clrs.green.index, 1)
             self.assertEqual(str(clrs.green), "green")
             self.assertEqual(green_cpy, clrs.green)
@@ -63,8 +63,8 @@ class UtilTestCase(unittest.TestCase):
             self.assertEqual(same_clrs.red, clrs.red)
             self.assertEqual(same_clrs.green, clrs.green)
             self.assertEqual(same_clrs.blue, clrs.blue)
-            self.assert_(same_clrs.green > clrs.red)
-            self.assert_(same_clrs.blue > clrs.green)
+            self.assertTrue(same_clrs.green > clrs.red)
+            self.assertTrue(same_clrs.blue > clrs.green)
 
             another_clrs = Enum('red', 'blue', 'green')
             self.assertNotEqual(another_clrs, clrs)
@@ -73,11 +73,11 @@ class UtilTestCase(unittest.TestCase):
             self.assertNotEqual(another_clrs.blue, clrs.blue)
  
         except BaseException as e:
-            print("Error. %s. %s. %s" % (type(e), str(e), util.formatTb()))
-            self.assert_(False)
+            print(("Error. %s. %s. %s" % (type(e), str(e), util.formatTb())))
+            self.assertTrue(False)
 
 if __name__ == '__main__':
     if ( sys.version_info[0] < 2 or ( sys.version_info[0] == 2 and sys.version_info[1] < 5 ) ):
         print("Python 2.5 or higher is required for the program to run.")
-	exit(-1)
+    exit(-1)
     unittest.main()

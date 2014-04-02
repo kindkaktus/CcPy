@@ -37,7 +37,7 @@ MainTemplFile ="maintempl.htm" + SrcSuffix
 GenHtmlPages=('index.htm', 'quickstart.htm', 'ccpyd.htm', 'ccpy.htm', 'changelog.htm', 'download.htm')
     
 for genHtmlPage in GenHtmlPages:
-    print("Generating %s" %  genHtmlPage)
+    print(("Generating %s" %  genHtmlPage))
     myTempl = Template(_readFile(MainTemplFile))
     mySrcContentFile = genHtmlPage+SrcSuffix
     myContent = _readFile(mySrcContentFile)

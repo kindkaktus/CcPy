@@ -18,11 +18,11 @@ import time
 import subprocess
 import logging
 
-import task
-import common
-import util
+from . import task
+from . import util
+from .common import LoggerName
 
-Logger = logging.getLogger(common.LoggerName)
+Logger = logging.getLogger(LoggerName)
 
 class ExecTask(task.Task):
     def __init__(self, anArgs):

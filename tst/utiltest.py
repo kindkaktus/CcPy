@@ -27,12 +27,12 @@ class UtilTestCase(unittest.TestCase):
     def testPidExist(self):
         try:
             import os
-            self.assert_( util.isPidExist(os.getpid()) )
-            self.assert_( util.isPidExist(1) )
-            self.assert_( not util.isPidExist(-123) )
+            self.assertTrue( util.isPidExist(os.getpid()) )
+            self.assertTrue( util.isPidExist(1) )
+            self.assertTrue( not util.isPidExist(-123) )
         except BaseException as e:
-            print("Error. %s. %s. %s" % (type(e), str(e), util.formatTb()))
-            self.assert_(False)
+            print(("Error. %s. %s. %s" % (type(e), str(e), util.formatTb())))
+            self.assertTrue(False)
 
     def testSysSingleton(self):
         try:
@@ -45,8 +45,8 @@ class UtilTestCase(unittest.TestCase):
             mySingleton2 = util.SysSingleton('testapp2')
             mySingleton2 = util.SysSingleton('testapp2', True)
         except BaseException as e:
-            print("Error. %s. %s. %s" % (type(e), str(e), util.formatTb()))
-            self.assert_(False)
+            print(("Error. %s. %s. %s" % (type(e), str(e), util.formatTb())))
+            self.assertTrue(False)
 
 if __name__ == '__main__':
     if ( sys.version_info[0] < 2 or ( sys.version_info[0] == 2 and sys.version_info[1] < 5 ) ):

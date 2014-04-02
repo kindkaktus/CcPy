@@ -17,13 +17,13 @@ CcPy daemon configiration file parser
 import xml.sax
 import logging
 
-import common
+from .common import LoggerName
 
 DefCcPydConfigFileName = "/etc/ccpyd.conf"
-Logger = logging.getLogger(common.LoggerName)
+Logger = logging.getLogger(LoggerName)
 
 class CcPydParseState:
-    root, log, other = range(3)
+    root, log, other = list(range(3))
 
 class CcPydConfigContentHandler(xml.sax.ContentHandler):
     """ SAX content handler for the CruiseControl.py daemon configuration file """

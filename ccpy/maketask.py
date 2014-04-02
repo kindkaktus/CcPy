@@ -22,11 +22,11 @@ import subprocess
 import logging
 import threading
 
-import task
-import common
-import util
+from . import task
+from .common import LoggerName
+from . import util
 
-Logger = logging.getLogger(common.LoggerName)
+Logger = logging.getLogger(LoggerName)
 
 class MakeTask(task.Task):
     def __init__(self, anArgs):

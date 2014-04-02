@@ -32,17 +32,17 @@ class CcPyConfParserTestCase(unittest.TestCase):
         myProjects  = ccpyconfparser.parse("ccpy.conf.good.1")
         self.assertEqual( len(myProjects), 5 )
         
-        prjName, prjVal = myProjects.next()
-        self.assertEquals(prjName, 'ProductV2')
-        prjName, prjVal = myProjects.next()
-        self.assertEquals(prjName, 'ProductV3')
-        prjName, prjVal = myProjects.next()
-        self.assertEquals(prjName, 'ProductV4')
-        prjName, prjVal = myProjects.next()
-        self.assertEquals(prjName, 'ProductV5')
-        prjName, prjVal = myProjects.next()
-        self.assertEquals(prjName, 'ProductV6')  
-        self.assertRaises(StopIteration, myProjects.next)
+        prjName, prjVal = next(myProjects)
+        self.assertEqual(prjName, 'ProductV2')
+        prjName, prjVal = next(myProjects)
+        self.assertEqual(prjName, 'ProductV3')
+        prjName, prjVal = next(myProjects)
+        self.assertEqual(prjName, 'ProductV4')
+        prjName, prjVal = next(myProjects)
+        self.assertEqual(prjName, 'ProductV5')
+        prjName, prjVal = next(myProjects)
+        self.assertEqual(prjName, 'ProductV6')  
+        self.assertRaises(StopIteration, myProjects.__next__)
         
         
     def testGoodConfig1Contents(self):
@@ -54,9 +54,9 @@ class CcPyConfParserTestCase(unittest.TestCase):
             myProjName = 'ProductV2'
             myTasks = myProjects[myProjName]['tasks']
             self.assertEqual( len(myTasks), 6 )
-            self.assertEqual( len(filter(lambda task: isinstance(task, svntask.SvnTask),  myTasks)), 2 )
-            self.assertEqual( len(filter(lambda task: isinstance(task, maketask.MakeTask), myTasks)), 2 )
-            self.assertEqual( len(filter(lambda task: isinstance(task, exectask.ExecTask), myTasks)), 2 )
+            self.assertEqual( len([task for task in myTasks if isinstance(task, svntask.SvnTask)]), 2 )
+            self.assertEqual( len([task for task in myTasks if isinstance(task, maketask.MakeTask)]), 2 )
+            self.assertEqual( len([task for task in myTasks if isinstance(task, exectask.ExecTask)]), 2 )
             self.assertEqual( myProjects[myProjName]['emailFrom'], 'buildserver@company.com')
             self.assertEqual( myProjects[myProjName]['emailTo'], ['developer@company.com', 'buildmaster@company.com'] )
             self.assertEqual( myProjects[myProjName]['emailFormat'], util.EmailFormat.html )
@@ -110,7 +110,7 @@ class CcPyConfParserTestCase(unittest.TestCase):
             myProjName = "ProductV3"
             myTasks = myProjects[myProjName]['tasks']
             self.assertEqual( len(myTasks), 1 )
-            self.assertEqual( len(filter(lambda task: isinstance(task, svntask.SvnTask), myTasks)), 1 )
+            self.assertEqual( len([task for task in myTasks if isinstance(task, svntask.SvnTask)]), 1 )
             self.assertEqual( myProjects[myProjName]['emailFrom'], '')
             self.assertEqual( myProjects[myProjName]['emailTo'], [] )
             self.assertEqual( myProjects[myProjName]['failOnError'], False )
@@ -126,7 +126,7 @@ class CcPyConfParserTestCase(unittest.TestCase):
             myProjName = "ProductV4"
             myTasks = myProjects[myProjName]['tasks']
             self.assertEqual( len(myTasks), 1 )
-            self.assertEqual( len(filter(lambda task: isinstance(task, maketask.MakeTask), myTasks)), 1 )
+            self.assertEqual( len([task for task in myTasks if isinstance(task, maketask.MakeTask)]), 1 )
             self.assertEqual( myProjects[myProjName]['failOnError'], True )
             self.assertEqual( myProjects[myProjName]['emailFrom'], '')
             self.assertEqual( myProjects[myProjName]['emailTo'], [] )
@@ -159,8 +159,8 @@ class CcPyConfParserTestCase(unittest.TestCase):
             self.assertEqual( myProjects[myProjName]['emailServerPassword'], 'topsecret' )
 
         except BaseException as e:
-            print("Error. %s. %s. %s" % (type(e), str(e), util.formatTb()))
-            self.assert_(False)
+            print(("Error. %s. %s. %s" % (type(e), str(e), util.formatTb())))
+            self.assertTrue(False)
 
     def testBadConfig1(self):
         self.assertRaises(ccpyconfparser.ParseError, ccpyconfparser.parse, "ccpy.conf.bad.1")
@@ -168,5 +168,5 @@ class CcPyConfParserTestCase(unittest.TestCase):
 if __name__ == '__main__':
     if ( sys.version_info[0] < 2 or ( sys.version_info[0] == 2 and sys.version_info[1] < 5 ) ):
         print("Python 2.5 or higher is required for the program to run.")
-	exit(-1)
+    exit(-1)
     unittest.main()

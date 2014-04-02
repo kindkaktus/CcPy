@@ -75,9 +75,9 @@ def execTasks(aCcPyConf):
                     myNumFailedTasks += 1
                     if myFailOnErrorSetting:
                         myFailedBecauseOfTaskError = True
-                if myTaskExecStatus.has_key('stdout'):
+                if 'stdout' in myTaskExecStatus:
                     myTaskStatus['stdout'] = myTaskExecStatus['stdout']
-                if myTaskExecStatus.has_key('stderr'):
+                if 'stderr' in myTaskExecStatus:
                     myTaskStatus['stderr'] = myTaskExecStatus['stderr']
 
             myTasksStatus.append(myTaskStatus)
@@ -111,7 +111,7 @@ def execTasks(aCcPyConf):
         Logger.debug("Finished with project %s. Status: %s. %u task(s) SUCCEEDED of which %d have WARNINGs, %u task(s) FAILED, %u task(s) SKIPPED.  Elapsed time: %s" 
                      % (prjName, myPrjStatusStr, myNumSucceededTasks, myNumSucceededTasksWithWarning, myNumFailedTasks, myNumSkippedTasks, util.formatTimeDelta(myPrjEnd-myPrjStart)) )   
         if len(prjVal['emailTo']):
-          Logger.debug("Sending email notification to %s" % (", ".join(prjVal['emailTo'])) )   
+          Logger.debug("Sending email notification to %s using %s:%d" % (", ".join(prjVal['emailTo']), prjVal['emailServerHost'], prjVal['emailServerPort']) )
           mySubj = "Integration status for %s: %s" % (prjName, myPrjStatusStr)
           myBody = report.makeEmailBody(prjVal['emailFormat'], 
                                 {'prjName' : prjName, 'prjStatus':myPrjStatusStr, 

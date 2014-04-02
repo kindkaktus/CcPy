@@ -40,8 +40,8 @@ class CcPydConfParserTestCase(unittest.TestCase):
             self.assertEqual( myDataDict['logFile'], '/var/log/ccpyd.log' )
             self.assertEqual( myDataDict['logLevel'], 'DEBUG' )
         except BaseException as e:
-            print("Error. %s. %s. %s" % (type(e), str(e), util.formatTb()))
-            self.assert_(False)
+            print(("Error. %s. %s. %s" % (type(e), str(e), util.formatTb())))
+            self.assertTrue(False)
 
     def testGoodConfig2(self):
         try:
@@ -51,8 +51,8 @@ class CcPydConfParserTestCase(unittest.TestCase):
             self.assertFalse( myDataDict['schedule'])
             self.assertEqual( myDataDict['logging'], False )
         except BaseException as e:
-            print("Error. %s. %s. %s" % (type(e), str(e), util.formatTb()))
-            self.assert_(False)
+            print(("Error. %s. %s. %s" % (type(e), str(e), util.formatTb())))
+            self.assertTrue(False)
 
 if __name__ == '__main__':
     if ( sys.version_info[0] < 2 or ( sys.version_info[0] == 2 and sys.version_info[1] < 5 ) ):

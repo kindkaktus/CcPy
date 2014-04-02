@@ -2,7 +2,7 @@
 #  HeadURL : $HeadURL: svn://korostelev.net/CcPy/Trunk/ccpy/ccpystate.py $
 #  Id      : $Id: ccpystate.py 113 2009-03-06 12:21:27Z akorostelev $
 #
-#  Copyright (c) 2008-2009, Andrei Korostelev <andrei at korostelev dot net>
+#  Copyright (c) 2008-2014, Andrei Korostelev <andrei at korostelev dot net>
 #
 #  Before using this product in any way please read the license agreement.
 #  If you do not agree to the terms in this agreement you are not allowed
@@ -19,13 +19,12 @@ import logging
 import sys
 import xml.dom.minidom
 
-from enum import Enum
-
-import common
+from .enum import Enum
+from .common import LoggerName
 
 DefCcPyStateConfigFileName   = '/etc/ccpy.state'
 PrjStates = Enum('OK', 'FAILED', 'UNKNOWN')
-Logger = logging.getLogger(common.LoggerName)
+Logger = logging.getLogger(LoggerName)
 
 def str2PrjState(anStr):
     for s in PrjStates:
@@ -52,7 +51,7 @@ class CcPyState:
         if myDom.documentElement.tagName != CcPyState._rootElem:
             raise RuntimeError("'%s' is ill-formed ccpystate config (incorrect root element)" % self._fileName)
         myProjects = myDom.getElementsByTagName(CcPyState._prjElem)
-        myRequestedProjects = filter(lambda prj: prj.getAttribute(CcPyState._prjNameAttrName) == aName, myProjects)
+        myRequestedProjects = [prj for prj in myProjects if prj.getAttribute(CcPyState._prjNameAttrName) == aName]
         if (len(myRequestedProjects) > 1):
             raise RuntimeError("'%s' is ill-formed ccpystate config (more than one '%s' projects found)" % aName)
         if (len(myRequestedProjects) == 0):
@@ -74,7 +73,7 @@ class CcPyState:
             if myDom.documentElement.tagName != CcPyState._rootElem:
                 raise RuntimeError("'%s' is ill-formed ccpystate config (incorrect root element)" % self._fileName)
             myProjects = myDom.getElementsByTagName(CcPyState._prjElem)
-            myProjects2Change = filter(lambda prj: prj.getAttribute(CcPyState._prjNameAttrName) == aName, myProjects)
+            myProjects2Change = [prj for prj in myProjects if prj.getAttribute(CcPyState._prjNameAttrName) == aName]
             if (len(myProjects2Change) > 1):
                 raise RuntimeError("'%s' is ill-formed ccpystate config (more than one '%s' projects found)" % aName)
             if (len(myProjects2Change) == 0):
@@ -95,7 +94,8 @@ class CcPyState:
                                                  CcPyState._prjStateAttrName, aVal,
                                                  CcPyState._rootElem))
         myFp = open(self._fileName, 'w+')
-        myDom.writexml(myFp)                        
+        myDom.writexml(myFp)
+        myFp.close()
 
     prjState = property (getPrjState, setPrjState)
 
