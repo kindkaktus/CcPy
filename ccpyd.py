@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+
 #
 #  Copyright (c) 2008-2014, Andrei Korostelev <andrei at korostelev dot net>
 #
