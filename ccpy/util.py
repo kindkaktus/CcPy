@@ -116,8 +116,15 @@ def to_utf8(s):
             return s # just suppose it is already utf8. @todo proper implementation should have detected the encoding and convert to utf8 then...
     else:
         return s.encode('utf-8')
-        
+     
+# if s is a sequence type it it joined to a string/bytearray separated with one space
 def to_unicode(s, logger = None):
+    if isinstance(s, list) or isinstance(s, tuple):
+        if IS_PYTHON2:
+            s = " ".join(s)
+        else:
+            s = b" ".join(s)
+        
     needs_decode = False
     if IS_PYTHON2 and not isinstance(s, unicode):
         needs_decode = True
@@ -260,8 +267,7 @@ class ProcOutputConsumerThread(threading.Thread):
     @property
     #@return output as unicode string
     def out(self):
-        myOut = " ".join(self._out)
-        myOut = to_unicode(myOut, self._logger)
+        myOut = to_unicode(self._out, self._logger)
         return myOut.rstrip()
 
 ## Kill child process group
