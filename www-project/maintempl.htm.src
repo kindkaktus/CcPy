@@ -34,6 +34,13 @@
                 <li class="none"><a href="http://confluence.public.thoughtworks.org/display/CC/CI+Feature+Matrix" rel="nofollow">CI Servers Feature Matrix</a> </li>
                 <li class="none"><a href="http://www.martinfowler.com/articles/continuousIntegration.html" rel="nofollow">CI Intro by Martin Fowler</a> </li>
             </ul>
+            <h5>
+                Python Links
+            </h5>
+            <ul>
+                <li class="none"><a href="http://www.diveintopython3.net/porting-code-to-python-3-with-2to3.html" rel="nofollow">Porting Code to Python 3 with 2to3</a></li>
+            </ul>
+            
 			<h5>
                 Partners
             </h5>
