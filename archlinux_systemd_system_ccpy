@@ -1,0 +1,16 @@
+# Stratup script for ArchLinux
+# ln -sf /CcPy/archlinux_systemd_system_ccpy /etc/systemd/system/ccpy
+# systemctl start ccpy
+
+[Unit]
+Description=CcPy Inegration Server
+After=network.target
+
+[Service]
+PIDFile=/var/run/ccpyd.pid
+ExecStart=cd /ccpy && ./ccpyd.py
+KillMode=process
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
