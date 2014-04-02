@@ -62,7 +62,7 @@ class Projects:
                 for key, val in list(kwargs.items()):
                     project[key] = val
         
-    def __next__(self):
+    def next(self):
         if self.cur >= len(self._projects):
             self.cur = 0
             raise StopIteration
@@ -73,6 +73,10 @@ class Projects:
             val =  deepcopy(self._projects[cur])
             val.pop('name')
             return key, val
+        
+    def __next__(self):
+        # for compatibility between Python 2 that uses next() and Python 3 that uses __next__()
+        return self.next()
         
     def __iter__(self):
         return self
