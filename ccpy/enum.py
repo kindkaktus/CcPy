@@ -1,9 +1,5 @@
-#################################################################################################
-#
-#  HeadURL : $HeadURL: svn://korostelev.net/CcPy/Trunk/ccpy/enum.py $
-#  Id      : $Id: enum.py 167 2010-05-08 21:57:01Z akorostelev $
-#
-#################################################################################################
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 
 """Enumerated type support in Python
 
