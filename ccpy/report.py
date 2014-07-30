@@ -140,7 +140,7 @@ $sep2\r\n\
           myBody += ' Elapsed time: %s' %  formatTimeDelta(myTaskStatus['elapsedTime'])
           if 'allocatedTime' in myTaskStatus and myTaskStatus['allocatedTime']>0:
               myUsedTimePercentage = getTotalSeconds(myTaskStatus['elapsedTime'])*100/myTaskStatus['allocatedTime']
-              myBody += ' (%s%% of allocated time)' % myUsedTimePercentage
+              myBody += ' (%0.2f%% of allocated time)' % myUsedTimePercentage
       if 'stdout' in myTaskStatus and len(myTaskStatus['stdout']): 
           myBody += ' Stdout: %(stdout)s' % myTaskStatus
       if 'stderr' in myTaskStatus and len(myTaskStatus['stderr']): 
