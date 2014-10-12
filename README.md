@@ -18,7 +18,7 @@ Quick start
 ---------------------
 
 Prerequisites:
-* Python 2.5+ (not tested on 3.x)
+* Python 2.5+ and 3.x
 * python-expat module
 
 To install:<br>
