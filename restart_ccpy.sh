@@ -1,16 +1,27 @@
 #!/bin/bash
 
+# usage _killtree <pid>
+function _killtree() 
+{
+    local _pid=$1
+    
+    kill -stop ${_pid} # to prevent the process from producing more children while killing its current children
+    for _child in $(ps -o pid --no-headers --ppid ${_pid}); do
+        _killtree ${_child}
+    done
+    
+    kill ${_pid}
+    sleep 0.1
+    if kill -0 ${_pid} > /dev/null 2>&1; then
+        kill -9 ${_pid}
+    fi
+}
+
 function stop_ccpy()
 {
     if [ -f /var/run/ccpyd.pid ] ; then
-        local pid=$(cat /var/run/ccpyd.pid)
-        if kill -0 ${pid} ; then
-            kill ${pid}
-            sleep 0.5
-            if kill -0 ${pid} > /dev/null 2>&1; then
-                kill -9 ${pid}
-            fi
-        fi
+        local _pid=$(cat /var/run/ccpyd.pid)
+        _killtree ${_pid}
     fi
 }
 
