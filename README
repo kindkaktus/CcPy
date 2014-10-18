@@ -8,7 +8,6 @@ Introduction
 CcPy (*C*ruise*C*ontrol written in *Py*thon) is (yet another) automatic continuous integration server.
 
 The main goal of the project is to create a lightweight backend capable of running on various *nix flavours.
-The upcoming goal is to allow for using conventional CruiseControl.NET frontend tools such as http://ccnet.sourceforge.net/CCNET/CCTray.html
 to control build process from desktop machines.
 
 
