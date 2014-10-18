@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# Startup script for ccpy
+# Usage:
+# ./ccpy.sh - (re)start ccpy, stopping ccpy if it is already running and recursively killing all children spawned by ccpy
+# ./ccpy.sh stop - stop ccpy recursively killing all children spawned by ccpy
+
+function usage()
+{
+    echo "./$0 [stop]"
+}
+
 # usage _killtree <pid>
 function _killtree() 
 {
@@ -28,8 +38,19 @@ function stop_ccpy()
 function start_ccpy()
 {
     cd $( dirname "${BASH_SOURCE[0]}" )
-    ./ccpyd.py $1
+    ./ccpyd.py
 }
 
-stop_ccpy
-start_ccpy $1
+if [ $# -eq 0 ]; then
+    stop_ccpy
+    start_ccpy
+elif [ $# -eq 1 ]; then
+    if [ x"$1" != x"stop" ]; then
+        usage
+        exit 1
+    fi
+    stop_ccpy
+else
+    usage
+    exit 1
+fi

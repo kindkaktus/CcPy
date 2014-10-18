@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+
 #
 #  Copyright (c) 2008-2014, Andrei Korostelev <andrei at korostelev dot net>
 #
@@ -12,6 +15,6 @@ CcPy global variables
 """
 
 ProductName     = 'CcPy'
-ProductVersion  = '0.7'
+ProductVersion  = '0.8'
 DaemonName      = 'ccpyd'
 LoggerName      = 'ccpyd'

@@ -152,12 +152,9 @@ def main(argv=None):
         sys.stderr.write("Python 2.5 or higher is required for the program to run.")
         return -1
         
-    if argv is None:
-        argv = sys.argv       
     try:
         #import os, pwd
         #util.daemonize(pwd.getpwuid(os.getuid()).pw_dir)
-        myScheduleArg = "" if len(argv) < 2 else argv[1]
         util.daemonize()
         myCcPydConf = ccpydconfparser.parse()
         if not myCcPydConf['logging']:
@@ -170,11 +167,9 @@ def main(argv=None):
     try:
         mySysSingleton = util.SysSingleton(common.DaemonName)
         myCcPyConf = myCcPydConf['ccpyConfig']
-        if (myScheduleArg == "--force-once") or (not myCcPydConf['schedule']):
-            Logger.debug("Executing tasks once")
-            execTasks(myCcPyConf)
-            util.closeLogger(Logger)
-            return 0
+        execTasks(myCcPyConf)
+        util.closeLogger(Logger)
+        return 0
     except BaseException as e:
         Logger.error("%s: %s. %s" % (type(e), str(e), util.formatTb()))
         util.closeLogger(Logger)
@@ -184,27 +179,6 @@ def main(argv=None):
         util.closeLogger(Logger)
         return -2
 
-    # 'schedule' mode
-    if myScheduleArg == "--force-continue":
-        Logger.debug("Executing tasks and continue")
-        try:
-            execTasks(myCcPyConf)
-        except BaseException as e:
-            Logger.error("%s: %s. %s.\nTolerating the error." % (type(e), str(e), util.formatTb()))
-        except: 
-            Logger.error("Unexpected error. \nTolerating the error.")
-    myParsedExecTime = myCcPydConf['scheduleTime']
-    while True: 
-        myWaitTimeSec = calcExecWaitTime(myParsedExecTime)
-        util.wait(myWaitTimeSec)
-        Logger.debug("Executing tasks (scheduled)")
-        try:
-            execTasks(myCcPyConf)
-        except BaseException as e:
-            Logger.error("%s: %s. %s.\nTolerating the error." % (type(e), str(e), util.formatTb()))
-        except: 
-            Logger.error("Unexpected error. \nTolerating the error.")
-            
     Logger.error("We should never get here.")
     return -3
 

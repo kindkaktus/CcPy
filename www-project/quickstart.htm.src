@@ -12,7 +12,7 @@ To install CcPy, type:
 <code class="codeblock">./setup.py [install]</code>
 CcPy uses two config files (xml format): 
 <ul>
-  <li>ccpyd.conf  - configure CcPy daemon settings</li>
+  <li>ccpyd.conf  - configure CcPy global settings</li>
   <li>ccpy.conf  - configure projects to be built</li>
   </ul>
 The installation script merely copies CcPy config files ccpy.conf and ccpyd.conf to /etc dir. 
@@ -20,16 +20,16 @@ You have to edit these configs first before starting with CcPy. Please refer to 
 
 <p>
 <h3>Usage</h3>
-Once you configured CcPy, you can start CcPy daemon:
-<code class="codeblock_big">python ccpyd.py [--force-continue|--force-once]</code>
-Specifying --force-continue or --force-once option forces the CcPy daemon to start the build immidiately instead of following the schedule in /etc/ccpyd.conf (which is the default behavior).<br>The difference between these options is that --force-continue leaves the daemon running while --force-once stops the daemon when the build finishes.
+Once you configured CcPy, you can start it with:
+<code class="codeblock_big">./ccpy.sh</code>
+
+<br>The script will daemonize itself and start executing tasks from ccpy.conf
+<br>Normally you will place this call in cron or another scheduler.
 <br>The default location of the CcPy log file is /var/log/ccpyd.log, you can change it in /etc/ccpyd.conf
 <p>
 To stop CcPy daemon:
-<code class="codeblock">kill `cat /var/run/ccpyd.pid`</code>
+<code class="codeblock">./ccpy.sh stop</code>
 <p>
-A shortcut to stop and start the daemon thus making it re-read /etc/ccpyd.conf:
-<code class="codeblock_big">./restart_ccpy.sh [--force-continue|--force-once]</code>
 
 <p>
 <h3>Uninstallation</h3>

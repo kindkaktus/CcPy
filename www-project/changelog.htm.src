@@ -2,6 +2,11 @@
   Change Log
 </h2>
 <p>
+ <h3>0.8 - 19 October 2014</h3>
+ <ul>
+    <li>CHANGED Got rid of naive internal scheduler for the sake of an external one. This opens a possibility for more flexible scheduling and updating ccpy from the build script</li>
+    <li>FIXED recursively kill all children spawned by ccpy when starting it</li>
+  </ul>
   <h3>0.7 - 26 February 2014</h3>
   <ul>
     <li>ADDED a possibility to specify executable exit codes treated as warning</li>

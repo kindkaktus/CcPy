@@ -1,8 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+
 #
-#  HeadURL : $HeadURL: svn://korostelev.net/CcPy/Trunk/tst/ccpydconfparsertest.py $
-#  Id      : $Id: ccpydconfparsertest.py 179 2010-11-10 09:24:28Z akorostelev $
-#
-#  Copyright (c) 2008-2009, Andrei Korostelev <andrei at korostelev dot net>
+#  Copyright (c) 2008-2014, Andrei Korostelev <andrei at korostelev dot net>
 #
 #  Before using this product in any way please read the license agreement.
 #  If you do not agree to the terms in this agreement you are not allowed
@@ -34,8 +34,6 @@ class CcPydConfParserTestCase(unittest.TestCase):
             myDataDict = ccpydconfparser.parse("ccpyd.conf.good.1")
             self.assertEqual( len(myDataDict), 6 )
             self.assertEqual( myDataDict['ccpyConfig'], '/etc/ccpy.conf.1' )
-            self.assertTrue ( myDataDict['schedule'])
-            self.assertEqual( myDataDict['scheduleTime'], time(6,30))
             self.assertEqual( myDataDict['logging'], True )
             self.assertEqual( myDataDict['logFile'], '/var/log/ccpyd.log' )
             self.assertEqual( myDataDict['logLevel'], 'DEBUG' )
@@ -48,7 +46,6 @@ class CcPydConfParserTestCase(unittest.TestCase):
             myDataDict = ccpydconfparser.parse("ccpyd.conf.good.2")
             self.assertEqual( len(myDataDict), 3 )
             self.assertEqual( myDataDict['ccpyConfig'], '/etc/ccpy.conf' )
-            self.assertFalse( myDataDict['schedule'])
             self.assertEqual( myDataDict['logging'], False )
         except BaseException as e:
             print(("Error. %s. %s. %s" % (type(e), str(e), util.formatTb())))

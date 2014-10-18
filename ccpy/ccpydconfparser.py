@@ -29,8 +29,6 @@ class CcPydConfigContentHandler(xml.sax.ContentHandler):
     """ SAX content handler for the CruiseControl.py daemon configuration file """
     _rootElem = "ccpyd"
     _ccpyConfigElem = "ccpyConfig"
-    _scheduleElem = "schedule"
-    _scheduleTimeAttrName = "time"
     _logElem = "logging"
     _logEnabledAttrName = "enabled"
     _logFileElem = "file"
@@ -55,13 +53,6 @@ class CcPydConfigContentHandler(xml.sax.ContentHandler):
                 if anAttrs.get(CcPydConfigContentHandler._logEnabledAttrName) in ['off', 'no', 'false']:
                     self._dataDict["logging"] = False
                     return
-                return
-            if anElem == CcPydConfigContentHandler._scheduleElem:
-                self._dataDict["schedule"] = True
-                myTimeStr = anAttrs.get(CcPydConfigContentHandler._scheduleTimeAttrName)
-                (myHour, myMin) =  myTimeStr.split(':')
-                from datetime import time
-                self._dataDict['scheduleTime'] = time(int(myHour), int(myMin))
                 return
             return
         if self._curState is None:
@@ -103,7 +94,6 @@ class CcPydConfigContentHandler(xml.sax.ContentHandler):
                 self._curState = None
                 return
             if anElem in [ CcPydConfigContentHandler._ccpyConfigElem,
-                           CcPydConfigContentHandler._scheduleElem,
                            CcPydConfigContentHandler._logFileElem, 
                            CcPydConfigContentHandler._logLevelElem ]:
                 self._curElem = CcPydConfigContentHandler._rootElem
@@ -114,8 +104,6 @@ class CcPydConfigContentHandler(xml.sax.ContentHandler):
         """ Apply default settings for missing config settings which support defaults """
         if "ccpyConfig" not in self._dataDict:
             self._dataDict["ccpyConfig"] = "/etc/ccpy.conf"
-        if "schedule" not in self._dataDict:
-            self._dataDict["schedule"] = False
         if "logging" not in self._dataDict:
             self._dataDict["logging"] = False
         if self._dataDict["logging"] and "logFile" not in self._dataDict:

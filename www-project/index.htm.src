@@ -11,7 +11,7 @@
   Features
 </h3>
 <UL>
-<LI>Runs on any unix-derived system (written in Python)
+<LI>Runs on any unix-derived system (as long as Python runs there)
 <LI>Supports svn repositories
 <LI>Can run on schedule or on demand
 <LI>Notifies on build results by email

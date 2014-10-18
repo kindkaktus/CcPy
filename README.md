@@ -22,10 +22,10 @@ Prerequisites:
 * python-expat module
 
 To install:<br>
- <code># python setup.py install</code>
+ <code># ./setup.py</code>
 
 To start: <br>
-  <code># python ccpyd.py </code>
+  <code>#./ccpy.sh</code>
 
 
 <br>
