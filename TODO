@@ -3,21 +3,14 @@
   - supply another password sources
   
 - add kill -HUP support
-- instead of waiting, periodically check time to handle e.g. time change etc.
-- add rss feed for change log
-  - change log has well-defined format. (ADDED/CHANGED/FIXED). Not yet released version is marked somehow so it is not included in the output.
-  - from this 2 files are generated: html (changelog.htm.src and for document for rss/atom feed). 
-  - RSS generator: PyRSS2Gen (http://www.dalkescientific.com/Python/PyRSS2Gen.html). RSS spec: http://cyber.law.harvard.edu/rss/rss.html. RSS validator: http://feedvalidator.org/
-  - Aotom generators: atomxml (http://pypi.python.org/pypi/atomixlib/0.6.1a), bridge (http://trac.defuze.org/wiki/bridge)
-  - But in fact, for my simple case it is no big need for a third-party rss/atom generator. Feeds can be written myself e..g using some xml ganarator (ElementTree?)
   
 - strange behavior od ccpyconfigtest: according to log first test is called once, second  -twice , third - 3 times. According to the console output - all is ok (each test fires once ) ?!
 - adding new options to ccpy.conf is not scalable all __addXYZ functions are also need to be updated.  (default values etc are hardcoded)
 - It is only possible to start the entire task set as a whole bunch, each task is being sequentially execute. 
     You cannot manage individual tasks otherwise as specifying them in ccpy.conf file.
-    This limitation however resolves the problem of overlapped tasks occured by misconfiguring tasks start schedule.
+    This limitation however resolves the problem of overlapped tasks occurred by misconfiguring tasks start schedule.
 
-  - add the dependency relation between adjustent tasks i.e. task B following task A will start only if A succeeds. Useful e.g. for build app->build tests->run tests timeline
+  - add the dependency relation between adjacent tasks i.e. task B following task A will start only if A succeeds. Useful e.g. for build app->build tests->run tests timeline
   - make a possibility to start builds on requests (kill all running, look in /var/pid... ?)
 
 - make func in utils to parseBoolStr/validateBoolStr for 'yes', 'on', 'true', ...ignore case...
