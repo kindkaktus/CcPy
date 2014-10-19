@@ -4,6 +4,7 @@ CHANGE HISTORY of the CcPy
 0.8 - 19 October 2014
 ------------------------------
     - CHANGED Got rid of naive internal scheduler for the sake of an external one. This opens a possibility for more flexible scheduling and updating ccpy from the build script.
+    - ADDED restart script will (by default) update ccpy working copy if either .git or .svn directory is detected
     - FIXED recursively kill all children spawned by ccpy when starting it
 
 0.7 - 01 April 2014

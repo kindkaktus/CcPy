@@ -2,12 +2,17 @@
 
 # Startup script for ccpy
 # Usage:
-# ./ccpy.sh - (re)start ccpy, stopping ccpy if it is already running and recursively killing all children spawned by ccpy
+# ./ccpy.sh [--skip-update] - will subsequently perform the following actions:
+#                           1. stop ccpy if it is already running recursively killing all children spawned by ccpy
+#                           2. unless --skip-update option is given, will update ccpy working copy if either .git or .svn directory is detected
+#                           3. starts ccpy
 # ./ccpy.sh stop - stop ccpy recursively killing all children spawned by ccpy
 
 function usage()
 {
-    echo "./$0 [stop]"
+    echo "Usage: "
+    echo "./$0 [--skip-update]"
+    echo "./$0 stop"
 }
 
 # usage _killtree <pid>
@@ -35,21 +40,40 @@ function stop_ccpy()
     fi
 }
 
+function update_ccpy_wc()
+{
+    if [ -d ".svn" ]; then
+        pushd $( dirname "${BASH_SOURCE[0]}" ) > /dev/null 
+        svn up
+        popd > /dev/null
+    elif [ -d ".git" ]; then
+        pushd $( dirname "${BASH_SOURCE[0]}" ) > /dev/null 
+        git pull
+        popd > /dev/null
+    fi
+}
+
 function start_ccpy()
 {
-    cd $( dirname "${BASH_SOURCE[0]}" )
+    pushd $( dirname "${BASH_SOURCE[0]}" ) > /dev/null
     ./ccpyd.py
+    popd > /dev/null
 }
 
 if [ $# -eq 0 ]; then
     stop_ccpy
+    update_ccpy_wc
     start_ccpy
 elif [ $# -eq 1 ]; then
-    if [ x"$1" != x"stop" ]; then
+    if [ x"$1" == x"stop" ]; then
+        stop_ccpy
+    elif [ x"$1" == x"--skip-update" ]; then
+        stop_ccpy
+        start_ccpy
+    else
         usage
         exit 1
     fi
-    stop_ccpy
 else
     usage
     exit 1
