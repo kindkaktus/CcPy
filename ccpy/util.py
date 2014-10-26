@@ -1,14 +1,16 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+
 #
-#  HeadURL : $HeadURL: svn://korostelev.net/CcPy/Trunk/ccpy/util.py $
-#  Id      : $Id: util.py 207 2011-09-09 07:48:55Z akorostelev $
-#
-#  Copyright (c) 2008-2009, Andrei Korostelev <andrei at korostelev dot net>
+#  Copyright (c) 2008-2014, Andrei Korostelev <andrei at korostelev dot net>
 #
 #  Before using this product in any way please read the license agreement.
 #  If you do not agree to the terms in this agreement you are not allowed
 #  to use this product or parts of it. You can read this license in the
 #  file named LICENSE.
 #
+
+
 
 """
 Various helper utilities
@@ -106,7 +108,7 @@ def _close_all_fds():
        except OSError:
           pass
 
-EmailFormat = Enum('plain', 'html')
+EmailFormat = Enum('plain', 'html', 'attachment')
 
 def to_utf8(s):
     if IS_PYTHON2:
@@ -140,37 +142,53 @@ def to_unicode(s, logger = None):
             s = s.decode('utf-8', 'replace')
     return s
             
+def body_mime_type(aFmt):
+    if aFmt == EmailFormat.plain:
+        return "plain"
+    elif aFmt in (EmailFormat.plain, EmailFormat.attachment):
+        return "html"
+    raise Ecxeption("Unsupported email format " + str(aFmt))
 
-
-def sendEmailNotification(aFrom, aTo, aSubj, aBody, aFmt, anSmtpSvrHost, anSmtpSvrPort, aSmtpSvrUser, aSmtpSvrPassword):
+def sendEmailNotification(aFrom, aTo, aSubj, aBody, anAttachmentText, aFmt, anSmtpSvrHost, anSmtpSvrPort, aSmtpSvrUser, aSmtpSvrPassword):
     """ 
     Sends email notification
     
     aFrom - sender address 
     aTo - list or tuple of correspondent addresses 
-    aSubj - sibject string 
+    aSubj - subject string 
     aBody - message body string
+    anAttachmentText - message attachment text if format is attachment, otherwise None
     aFmt - format, one of EmailFormat
     anSmtpSvrHost, anSmtpSvrPort - SMTP Server location
     aSmtpSvrUser, aSmtpSvrPassword - SMTP Server credentials (skipped if None)
     """
     import smtplib
     from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
     from email.utils import formatdate
 
     if aFmt not in EmailFormat:
         raise Exception("%s is not a valid email format" % aFmt)
-    myBody = to_utf8(aBody)
-    myMsg = MIMEText(myBody, str(aFmt), 'utf-8')
-    myMsg['Subject'] = aSubj
-    myMsg['From'] = aFrom
-    myMsg['To'] = ', '.join(aTo)
-    myMsg['Date'] = formatdate()
+
+    if aFmt == EmailFormat.attachment and anAttachmentText is not None:
+        msg = MIMEMultipart()
+        attachment = MIMEText(to_utf8(anAttachmentText), 'plain', 'utf-8')
+        attachment.add_header('Content-Disposition', 'attachment', filename='build.log')           
+        msg.attach(attachment)
+        msg.attach(MIMEText(to_utf8(aBody), 'html', 'utf-8'))
+    else:
+        msg = MIMEText(to_utf8(aBody), body_mime_type(aFmt), 'utf-8')
+        
+    msg['Subject'] = aSubj
+    msg['From'] = aFrom
+    msg['To'] = ', '.join(aTo)
+    msg['Date'] = formatdate()
+    
     mySmtpSvr = smtplib.SMTP(anSmtpSvrHost, anSmtpSvrPort)
     if aSmtpSvrUser and (aSmtpSvrPassword is not None):
         mySmtpSvr.login(aSmtpSvrUser, aSmtpSvrPassword)
-    #mySmtpSvr.set_debuglevel(1)
-    mySmtpSvr.sendmail(aFrom, aTo, myMsg.as_string())
+
+    mySmtpSvr.sendmail(aFrom, aTo, msg.as_string())
     mySmtpSvr.quit()
 
 

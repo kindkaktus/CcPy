@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+
 #
 #  Copyright (c) 2008-2014, Andrei Korostelev <andrei at korostelev dot net>
 #
@@ -6,6 +9,7 @@
 #  to use this product or parts of it. You can read this license in the
 #  file named LICENSE.
 #
+
 
 """
 Unit tests for CcPy config parser
@@ -33,15 +37,15 @@ class CcPyConfParserTestCase(unittest.TestCase):
         self.assertEqual( len(myProjects), 5 )
         
         prjName, prjVal = next(myProjects)
-        self.assertEqual(prjName, 'ProductV2')
+        self.assertEqual(prjName, 'Product2')
         prjName, prjVal = next(myProjects)
-        self.assertEqual(prjName, 'ProductV3')
+        self.assertEqual(prjName, 'Product3')
         prjName, prjVal = next(myProjects)
-        self.assertEqual(prjName, 'ProductV4')
+        self.assertEqual(prjName, 'Product4')
         prjName, prjVal = next(myProjects)
-        self.assertEqual(prjName, 'ProductV5')
+        self.assertEqual(prjName, 'Product5')
         prjName, prjVal = next(myProjects)
-        self.assertEqual(prjName, 'ProductV6')  
+        self.assertEqual(prjName, 'Product6')  
         self.assertRaises(StopIteration, myProjects.__next__)
         
         
@@ -50,16 +54,16 @@ class CcPyConfParserTestCase(unittest.TestCase):
             myProjects  = ccpyconfparser.parse("ccpy.conf.good.1")
             self.assertEqual( len(myProjects), 5 )
 
-            # Product V.2 project
-            myProjName = 'ProductV2'
+            # Product2 project
+            myProjName = 'Product2'
             myTasks = myProjects[myProjName]['tasks']
             self.assertEqual( len(myTasks), 6 )
             self.assertEqual( len([task for task in myTasks if isinstance(task, svntask.SvnTask)]), 2 )
             self.assertEqual( len([task for task in myTasks if isinstance(task, maketask.MakeTask)]), 2 )
             self.assertEqual( len([task for task in myTasks if isinstance(task, exectask.ExecTask)]), 2 )
-            self.assertEqual( myProjects[myProjName]['emailFrom'], 'buildserver@company.com')
-            self.assertEqual( myProjects[myProjName]['emailTo'], ['developer@company.com', 'buildmaster@company.com'] )
-            self.assertEqual( myProjects[myProjName]['emailFormat'], util.EmailFormat.html )
+            self.assertEqual( myProjects[myProjName]['emailFrom'], 'product2.builds@company.com')
+            self.assertEqual( myProjects[myProjName]['emailTo'], ['product2.developer@company.com', 'product2.buildmaster@company.com'] )
+            self.assertEqual( myProjects[myProjName]['emailFormat'], util.EmailFormat.attachment )
             self.assertEqual( myProjects[myProjName]['emailServerHost'], 'localhost' )
             self.assertEqual( myProjects[myProjName]['emailServerPort'], 25 )
             self.assertEqual( myProjects[myProjName]['emailServerUsername'], None )
@@ -69,7 +73,7 @@ class CcPyConfParserTestCase(unittest.TestCase):
 
             myTask = myTasks[0]
             self.assertTrue( isinstance(myTask, svntask.SvnTask) )
-            self.assertEqual( myTask.trunkUrl, "https://company.com/repos/productv2/mk")
+            self.assertEqual( myTask.trunkUrl, "https://company.com/repos/product2/mk")
             self.assertEqual( myTask.workingDir, "/ProductBuilds/mk")
             self.assertTrue( myTask.preCleanWorkingDir)
 
@@ -102,28 +106,29 @@ class CcPyConfParserTestCase(unittest.TestCase):
 
             myTask = myTasks[5]
             self.assertTrue( isinstance(myTask, svntask.SvnTask) )
-            self.assertEqual( myTask.trunkUrl, "https://company.com/repos/productv2/Common")
+            self.assertEqual( myTask.trunkUrl, "https://company.com/repos/product2/Common")
             self.assertEqual( myTask.workingDir, "/ProductBuilds/Common")
             self.assertFalse( myTask.preCleanWorkingDir)
 
-            # Product V.3 project
-            myProjName = "ProductV3"
+            # Product3 project
+            myProjName = "Product3"
             myTasks = myProjects[myProjName]['tasks']
             self.assertEqual( len(myTasks), 1 )
             self.assertEqual( len([task for task in myTasks if isinstance(task, svntask.SvnTask)]), 1 )
-            self.assertEqual( myProjects[myProjName]['emailFrom'], '')
-            self.assertEqual( myProjects[myProjName]['emailTo'], [] )
+            self.assertEqual( myProjects[myProjName]['emailFrom'], 'product3.builds@company.com')
+            self.assertEqual( myProjects[myProjName]['emailTo'], ['product3.developer@company.com'] )   
+            self.assertEqual( myProjects[myProjName]['emailFormat'], util.EmailFormat.attachment )
             self.assertEqual( myProjects[myProjName]['failOnError'], False )
             self.assertEqual( myProjects[myProjName]['skipIfNoModifications'], False )
 
             myTask = myTasks[0]
             self.assertTrue( isinstance(myTask, svntask.SvnTask) )
-            self.assertEqual( myTask.trunkUrl, "https://company.com/repos/productv2/server")
+            self.assertEqual( myTask.trunkUrl, "https://company.com/repos/product3/server")
             self.assertEqual( myTask.workingDir, "/ProductBuilds/server")
             self.assertFalse( myTask.preCleanWorkingDir)
 
-            # Product V.4 project 
-            myProjName = "ProductV4"
+            # Product4 project 
+            myProjName = "Product4"
             myTasks = myProjects[myProjName]['tasks']
             self.assertEqual( len(myTasks), 1 )
             self.assertEqual( len([task for task in myTasks if isinstance(task, maketask.MakeTask)]), 1 )
@@ -138,20 +143,20 @@ class CcPyConfParserTestCase(unittest.TestCase):
             self.assertEqual( myTask.args, "")
             self.assertEqual( myTask.timeout, 600);
 
-            # Product V.5 project 
-            myProjName = "ProductV5"
-            self.assertEqual( myProjects[myProjName]['emailFrom'], 'buildserver@company.com')
-            self.assertEqual( myProjects[myProjName]['emailTo'], ['developer@company.com', 'buildmaster@company.com'] )
+            # Product5 project 
+            myProjName = "Product5"
+            self.assertEqual( myProjects[myProjName]['emailFrom'], 'product5.buildserver@company.com')
+            self.assertEqual( myProjects[myProjName]['emailTo'], ['product5.developer@company.com', 'product5.buildmaster@company.com'] )
             self.assertEqual( myProjects[myProjName]['emailFormat'], util.EmailFormat.plain )
             self.assertEqual( myProjects[myProjName]['emailServerHost'], 'localhost' )
             self.assertEqual( myProjects[myProjName]['emailServerPort'], 25 )
             self.assertEqual( myProjects[myProjName]['emailServerUsername'], None )
             self.assertEqual( myProjects[myProjName]['emailServerPassword'], None )            
 
-            # Product V.6 project 
-            myProjName = "ProductV6"
-            self.assertEqual( myProjects[myProjName]['emailFrom'], 'buildserver@company.com')
-            self.assertEqual( myProjects[myProjName]['emailTo'], ['developer@company.com'] )
+            # Product6 project 
+            myProjName = "Product6"
+            self.assertEqual( myProjects[myProjName]['emailFrom'], 'product6.buildserver@company.com')
+            self.assertEqual( myProjects[myProjName]['emailTo'], ['product6.developer@company.com'] )
             self.assertEqual( myProjects[myProjName]['emailFormat'], util.EmailFormat.html )
             self.assertEqual( myProjects[myProjName]['emailServerHost'], 'smtp.mymail.com' )
             self.assertEqual( myProjects[myProjName]['emailServerPort'], 2626 )

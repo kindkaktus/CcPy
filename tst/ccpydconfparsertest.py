@@ -32,7 +32,7 @@ class CcPydConfParserTestCase(unittest.TestCase):
         from datetime import time
         try:
             myDataDict = ccpydconfparser.parse("ccpyd.conf.good.1")
-            self.assertEqual( len(myDataDict), 6 )
+            self.assertEqual( len(myDataDict), 4 )
             self.assertEqual( myDataDict['ccpyConfig'], '/etc/ccpy.conf.1' )
             self.assertEqual( myDataDict['logging'], True )
             self.assertEqual( myDataDict['logFile'], '/var/log/ccpyd.log' )
@@ -44,7 +44,7 @@ class CcPydConfParserTestCase(unittest.TestCase):
     def testGoodConfig2(self):
         try:
             myDataDict = ccpydconfparser.parse("ccpyd.conf.good.2")
-            self.assertEqual( len(myDataDict), 3 )
+            self.assertEqual( len(myDataDict), 2 )
             self.assertEqual( myDataDict['ccpyConfig'], '/etc/ccpy.conf' )
             self.assertEqual( myDataDict['logging'], False )
         except BaseException as e:

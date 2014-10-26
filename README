@@ -252,6 +252,12 @@ CcPy uses two config files (xml format):
         Default     : empty list
         Required    : no
         
+        Node        : format (subelement of the "emailNotification" element)
+        Description : Email format
+        Type        : 'attachment', 'html' or 'plain'
+        Default     : 'attachment'
+        Required    : no     
+        
         Node        : server (subelement of the "emailNotification" element)
         Description : SMTP server host 
         Type        : string
@@ -264,13 +270,13 @@ CcPy uses two config files (xml format):
         Default     : 25
         Required    : no
 
-        Node        : server (subelement of the "emailNotification" element)
+        Node        : username (subelement of the "emailNotification" element)
         Description : SMTP server username 
         Type        : string
         Default     : not supplied
         Required    : no
 
-        Node        : server (subelement of the "emailNotification" element)
+        Node        : password (subelement of the "emailNotification" element)
         Description : SMTP server password 
         Type        : string
         Default     : not supplied

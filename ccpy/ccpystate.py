@@ -1,6 +1,6 @@
-#
-#  HeadURL : $HeadURL: svn://korostelev.net/CcPy/Trunk/ccpy/ccpystate.py $
-#  Id      : $Id: ccpystate.py 113 2009-03-06 12:21:27Z akorostelev $
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+
 #
 #  Copyright (c) 2008-2014, Andrei Korostelev <andrei at korostelev dot net>
 #
@@ -9,6 +9,7 @@
 #  to use this product or parts of it. You can read this license in the
 #  file named LICENSE.
 #
+
 
 """
 Ccpy state

@@ -1,12 +1,12 @@
 <ccpy>
-  <project name="ProductV2">
+  <project name="Product2">
 
     <failOnError>yes</failOnError>
     <skipIfNoModifications>yes</skipIfNoModifications>
 
     <tasks>
       <sourcecontrol type="svn">
-        <trunkUrl>https://company.com/repos/productv2/mk</trunkUrl>
+        <trunkUrl>https://company.com/repos/product2/mk</trunkUrl>
         <workingDirectory>/ProductBuilds/mk</workingDirectory>
         <preCleanWorkingDirectory>yes</preCleanWorkingDirectory>
       </sourcecontrol>
@@ -32,35 +32,38 @@
       </exec>
 
      <sourcecontrol type="svn">
-        <trunkUrl>https://company.com/repos/productv2/Common</trunkUrl>
+        <trunkUrl>https://company.com/repos/product2/Common</trunkUrl>
         <workingDirectory>/ProductBuilds/Common</workingDirectory>
         <preCleanWorkingDirectory>off</preCleanWorkingDirectory>
       </sourcecontrol>
     </tasks>
 
     <emailNotification>
-      <from>buildserver@company.com</from>
-      <to>developer@company.com, buildmaster@company.com</to>
+      <from>product2.builds@company.com</from>
+      <to>product2.developer@company.com, product2.buildmaster@company.com</to>
     </emailNotification>
   </project>
 
-  <project name="ProductV3">
+  <project name="Product3">
 
     <failOnError>no</failOnError>
     <skipIfNoModifications>no</skipIfNoModifications>
     <tasks>
      <sourcecontrol type="svn">
-      <trunkUrl>https://company.com/repos/productv2/server</trunkUrl>
+      <trunkUrl>https://company.com/repos/product3/server</trunkUrl>
       <workingDirectory>/ProductBuilds/server</workingDirectory>
     </sourcecontrol>
    </tasks>
 
     <emailNotification>
+      <from>product3.builds@company.com</from>
+      <to>product3.developer@company.com</to>
+      <format>attachment</format>
     </emailNotification>
 
   </project>
 
-  <project name="ProductV4">
+  <project name="Product4">
    <tasks>
       <make>
         <workingDirectory>/ProductBuilds/SysInfra/Projects/common</workingDirectory>
@@ -68,7 +71,7 @@
     </tasks>
   </project>
 
-  <project name="ProductV5">
+  <project name="Product5">
    <tasks>
       <make>
         <workingDirectory>/ProductBuilds/SysInfra/Projects/common2</workingDirectory>
@@ -76,13 +79,13 @@
     </tasks>
 
     <emailNotification>
-      <from>buildserver@company.com</from>
-      <to>developer@company.com, buildmaster@company.com</to>
+      <from>product5.buildserver@company.com</from>
+      <to>product5.developer@company.com, product5.buildmaster@company.com</to>
       <format>plain</format>
     </emailNotification>
   </project>
 
-  <project name="ProductV6">
+  <project name="Product6">
    <tasks>
       <make>
         <workingDirectory>/ProductBuilds/SysInfra/Projects/common3</workingDirectory>
@@ -90,8 +93,8 @@
     </tasks>
 
     <emailNotification>
-      <from>buildserver@company.com</from>
-      <to>developer@company.com</to>
+      <from>product6.buildserver@company.com</from>
+      <to>product6.developer@company.com</to>
       <format>html</format>
       <server>smtp.mymail.com</server>
       <port>2626</port>

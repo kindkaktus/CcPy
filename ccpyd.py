@@ -111,7 +111,7 @@ def execTasks(aCcPyConf):
         Logger.debug("Finished with project %s. Status: %s. %u task(s) SUCCEEDED of which %d have WARNINGs, %u task(s) FAILED, %u task(s) SKIPPED.  Elapsed time: %s" 
                      % (prjName, myPrjStatusStr, myNumSucceededTasks, myNumSucceededTasksWithWarning, myNumFailedTasks, myNumSkippedTasks, util.formatTimeDelta(myPrjEnd-myPrjStart)) )   
         if len(prjVal['emailTo']):
-          Logger.debug("Sending email notification to %s using %s:%d" % (", ".join(prjVal['emailTo']), prjVal['emailServerHost'], prjVal['emailServerPort']) )
+          Logger.debug("Sending email notification as %s to %s using %s:%d" % (prjVal['emailFormat'], ", ".join(prjVal['emailTo']), prjVal['emailServerHost'], prjVal['emailServerPort']) )
           mySubj = "Integration status for %s: %s" % (prjName, myPrjStatusStr)
           myBody = report.makeEmailBody(prjVal['emailFormat'], 
                                 {'prjName' : prjName, 'prjStatus':myPrjStatusStr, 
@@ -122,30 +122,18 @@ def execTasks(aCcPyConf):
                                  'elapsedTime': myPrjEnd-myPrjStart },
                                 myTasksStatus,
                                 myFailedBecauseOfTaskError)
+          myAttachmentText = report.makeAttachmentText(prjVal['emailFormat'], myTasksStatus, myFailedBecauseOfTaskError)
           util.sendEmailNotification(prjVal['emailFrom'], 
                                      prjVal['emailTo'], 
                                      mySubj, 
-                                     myBody, 
+                                     myBody,
+                                     myAttachmentText,
                                      prjVal['emailFormat'], 
                                      prjVal['emailServerHost'], 
                                      prjVal['emailServerPort'], 
                                      prjVal['emailServerUsername'], 
                                      prjVal['emailServerPassword'])
     # Iterate thru projects
-
-
-def calcExecWaitTime(aParsedExecTime):
-    """ Return a number of seconds before tasks execution """
-    myNowDateTime  = datetime.datetime.today()
-    myExecDateTime = datetime.datetime(myNowDateTime.year, myNowDateTime.month, myNowDateTime.day, aParsedExecTime.hour, aParsedExecTime.minute)
-    if myExecDateTime < myNowDateTime:
-        myExecDateTime += datetime.timedelta(days=1)
-    myDelta = myExecDateTime - myNowDateTime
-    assert myDelta.days in [0,1], "Invalid time delta"
-    myWaitTimeSec = myDelta.days*24*60 + myDelta.seconds
-    Logger = logging.getLogger(common.LoggerName)
-    Logger.debug("Execution is scheduled for %s. Wait %u sec..." % (myExecDateTime, myWaitTimeSec) )
-    return myWaitTimeSec
 
 def main(argv=None):
     if  sys.version_info[0] < 2 or ( sys.version_info[0] == 2 and sys.version_info[1] < 5 ):

@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
+
 #
 #  Copyright (c) 2008-2014, Andrei Korostelev <andrei at korostelev dot net>
 #
@@ -35,7 +38,7 @@ class Projects:
                return True
        return False
        
-    def append(self, name, tasks = None, emailFrom = "", emailTo = None, emailFormat = EmailFormat.html, emailServerHost = 'localhost', emailServerPort = 25, emailServerUsername = None, emailServerPassword = None, failOnError = True, skipIfNoModifications = False):
+    def append(self, name, tasks = None, emailFrom = "", emailTo = None, emailFormat = EmailFormat.attachment, emailServerHost = 'localhost', emailServerPort = 25, emailServerUsername = None, emailServerPassword = None, failOnError = True, skipIfNoModifications = False):
         if self.exists(name):
             raise Exception("Failed to add project because the project named '%s' already exists" % name)
         if tasks is None:
@@ -412,7 +415,7 @@ class CcPyConfigContentHandler(xml.sax.ContentHandler):
             self._projects.addTask(aProjName, aTask)
 
     def _add_email(self, aProjName, aFrom, aTo, aFormat, aSvrHost, aSvrPort, aSvrUser, aSvrPass):
-        myFormat = EmailFormat[aFormat] if aFormat else EmailFormat.html
+        myFormat = EmailFormat[aFormat] if aFormat else EmailFormat.attachment
         mySvrHost = aSvrHost if aSvrHost else 'localhost'
         mySvrPort = int(aSvrPort) if aSvrPort else 25
         if not self._projects.exists(aProjName):
