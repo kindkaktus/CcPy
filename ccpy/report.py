@@ -138,7 +138,7 @@ def makeAttachmentText(aFormat, aStatusPerTask, aBuildFailedBecauseOfTaskError):
     if aBuildFailedBecauseOfTaskError:
         myBody += "\n**** FAILING the project because of the failed task\n"
 
-        return myBody
+    return myBody
 
 
 # ######################
