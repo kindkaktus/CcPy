@@ -122,8 +122,9 @@ def makeAttachmentText(aFormat, aStatusPerTask, aBuildFailedBecauseOfTaskError):
     if aFormat != EmailFormat.attachment:
         return None
         
+    myBody = ''
     for task in aStatusPerTask:
-        myBody = '    %(name)s => %(status)s. %(description)s' %  task
+        myBody += '    %(name)s => %(status)s. %(description)s' %  task
         if 'elapsedTime' in task: 
             myBody += ' Elapsed time: %s' %  formatTimeDelta(task['elapsedTime'])
             if 'allocatedTime' in task and task['allocatedTime']>0:
