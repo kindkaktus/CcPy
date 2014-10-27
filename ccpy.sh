@@ -42,15 +42,13 @@ function stop_ccpy()
 
 function update_ccpy_wc()
 {
+    pushd $( dirname "${BASH_SOURCE[0]}" ) > /dev/null 
     if [ -d ".svn" ]; then
-        pushd $( dirname "${BASH_SOURCE[0]}" ) > /dev/null 
         svn up
-        popd > /dev/null
     elif [ -d ".git" ]; then
-        pushd $( dirname "${BASH_SOURCE[0]}" ) > /dev/null 
         git pull
-        popd > /dev/null
     fi
+    popd > /dev/null
 }
 
 function start_ccpy()
