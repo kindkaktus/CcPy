@@ -124,17 +124,17 @@ def makeAttachmentText(aFormat, aStatusPerTask, aBuildFailedBecauseOfTaskError):
         
     myBody = ''
     for task in aStatusPerTask:
-        myBody += '    %(name)s => %(status)s. %(description)s' %  task
+        myBody += '%(name)s => %(status)s. %(description)s' %  task
         if 'elapsedTime' in task: 
-            myBody += ' Elapsed time: %s' %  formatTimeDelta(task['elapsedTime'])
+            myBody += '\nElapsed time: %s' %  formatTimeDelta(task['elapsedTime'])
             if 'allocatedTime' in task and task['allocatedTime']>0:
                 myUsedTimePercentage = getTotalSeconds(task['elapsedTime'])*100/task['allocatedTime']
                 myBody += ' (%0.2f%% of allocated time)' % myUsedTimePercentage
         if 'stdout' in task and len(task['stdout']): 
-            myBody += ' Stdout: %(stdout)s' % task
+            myBody += '\nStdout:\n%(stdout)s' % task
         if 'stderr' in task and len(task['stderr']): 
-            myBody += ' Stderr: %(stderr)s' % task
-        myBody += "\n"
+            myBody += '\nStderr:\n%(stderr)s' % task
+        myBody += "\n--------\n\n"
 
     if aBuildFailedBecauseOfTaskError:
         myBody += "\n**** FAILING the project because of the failed task\n"
@@ -210,20 +210,20 @@ $sep2\r\n\
                elapsedTime = formatTimeDelta(aSummary['elapsedTime']),
                sep2 = "------------------------------------------------------------------------------------")
     for task in aStatusPerTask:
-      myBody += '    %(name)s => %(status)s. %(description)s' %  task
-      if 'elapsedTime' in task: 
-          myBody += ' Elapsed time: %s' %  formatTimeDelta(task['elapsedTime'])
-          if 'allocatedTime' in task and task['allocatedTime']>0:
-              myUsedTimePercentage = getTotalSeconds(task['elapsedTime'])*100/task['allocatedTime']
-              myBody += ' (%0.2f%% of allocated time)' % myUsedTimePercentage
-      if 'stdout' in task and len(task['stdout']): 
-          myBody += ' Stdout: %(stdout)s' % task
-      if 'stderr' in task and len(task['stderr']): 
-          myBody += ' Stderr: %(stderr)s' % task
-      myBody += "\r\n"
+        myBody += '%(name)s => %(status)s. %(description)s' %  task
+        if 'elapsedTime' in task: 
+            myBody += '\nElapsed time: %s' %  formatTimeDelta(task['elapsedTime'])
+            if 'allocatedTime' in task and task['allocatedTime']>0:
+                myUsedTimePercentage = getTotalSeconds(task['elapsedTime'])*100/task['allocatedTime']
+                myBody += ' (%0.2f%% of allocated time)' % myUsedTimePercentage
+        if 'stdout' in task and len(task['stdout']): 
+            myBody += '\nStdout:\n%(stdout)s' % task
+        if 'stderr' in task and len(task['stderr']): 
+            myBody += '\nStderr:\n%(stderr)s' % task
+        myBody += "\n--------\n\n"
 
     if aBuildFailedBecauseOfTaskError:
-       myBody += "\r\n**** FAILING the project because of the failed task\r\n"
+        myBody += "\r\n**** FAILING the project because of the failed task\r\n"
     return myBody
 
 
