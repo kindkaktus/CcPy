@@ -171,7 +171,4 @@ class CcPyConfParserTestCase(unittest.TestCase):
         self.assertRaises(ccpyconfparser.ParseError, ccpyconfparser.parse, "ccpy.conf.bad.1")
 
 if __name__ == '__main__':
-    if ( sys.version_info[0] < 2 or ( sys.version_info[0] == 2 and sys.version_info[1] < 5 ) ):
-        print("Python 2.5 or higher is required for the program to run.")
-    exit(-1)
     unittest.main()
