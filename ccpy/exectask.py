@@ -25,13 +25,13 @@ from .common import LoggerName
 Logger = logging.getLogger(LoggerName)
 
 class ExecTask(task.Task):
-    def __init__(self, anArgs):
+    def __init__(self, executable, workingDirectory, args, timeout, warningExitCode):
         task.Task.__init__(self)
-        self._executable = anArgs['executable']
-        self._args       = anArgs['args']
-        self._workingDir = anArgs['workingDirectory']
-        self._timeout    = anArgs['timeout']
-        self._warningExitCode = anArgs.get('warningExitCode', None)
+        self._executable = executable
+        self._workingDir = workingDirectory
+        self._args       = args
+        self._timeout    = timeout
+        self._warningExitCode = warningExitCode
 
     @property
     def workingDir(self):

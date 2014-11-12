@@ -48,7 +48,7 @@ def parse(aCcPydConfigFileName = DefCcPydConfigFileName):
 
         ccpyConfig = _get_elem_value(root.find('./ccpyConfig'), "/etc/ccpy.conf")
         loggingElem = root.find('./logging')
-        if loggingElem is not None and loggingElem.attrib['enabled'] in ('on', 'yes', 'true'):
+        if loggingElem is not None and loggingElem.attrib['enabled'].lower() in ('on', 'yes', 'true'):
             logFile = _get_elem_value(loggingElem.find('./file'), "/var/log/ccpyd.log")
             logLevel = _get_elem_value(loggingElem.find('./level'), "DEBUG")
             return {'ccpyConfig' : ccpyConfig,

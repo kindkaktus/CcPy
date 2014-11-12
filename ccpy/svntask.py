@@ -29,11 +29,11 @@ class SvrModifications:
     exist, notExist, notWorkingCopy = range(3)
 
 class SvnTask(task.Task):
-    def __init__(self, anArgs):
+    def __init__(self, trunkUrl, workingDir, preCleanWorkingDir):
         task.Task.__init__(self)
-        self._trunkUrl = anArgs['trunkUrl']
-        self._workingDir = anArgs['workingDir']
-        self._preCleanWorkingDir = anArgs['preCleanWorkingDir']
+        self._trunkUrl = trunkUrl
+        self._workingDir = workingDir
+        self._preCleanWorkingDir = preCleanWorkingDir
 
     @property
     def trunkUrl(self):

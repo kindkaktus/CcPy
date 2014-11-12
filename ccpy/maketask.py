@@ -30,11 +30,11 @@ from . import util
 Logger = logging.getLogger(LoggerName)
 
 class MakeTask(task.Task):
-    def __init__(self, anArgs):
+    def __init__(self, workingDir, args, timeout):
         task.Task.__init__(self)
-        self._workingDir = anArgs['workingDir']
-        self._args  = anArgs['args']
-        self._timeout    = anArgs['timeout']
+        self._workingDir = workingDir
+        self._args  = args
+        self._timeout = timeout
     
     @property
     def workingDir(self):
