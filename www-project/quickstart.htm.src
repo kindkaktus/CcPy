@@ -4,7 +4,7 @@
 
 <p>
 <h3>Prerequisites</h3>
-CcPy requires Python 2.5 and python-expat module
+CcPy requires Python 2.5+ or 3.x
 
 <p>
 <h3>Installation</h3>

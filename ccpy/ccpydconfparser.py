@@ -12,7 +12,7 @@
 
 
 """
-CcPy daemon configiration file parser
+CcPy daemon configuration file parser
 """
 
 import xml.sax

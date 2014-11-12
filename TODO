@@ -2,10 +2,7 @@
   - at least add a possibility to override it as command line arg when starting the ccpyd
   - supply another password sources
   
-- add kill -HUP support
-  
-- strange behavior od ccpyconfigtest: according to log first test is called once, second  -twice , third - 3 times. According to the console output - all is ok (each test fires once ) ?!
-- adding new options to ccpy.conf is not scalable all __addXYZ functions are also need to be updated.  (default values etc are hardcoded)
+- strange behavior of ccpyconfigtest: according to log first test is called once, second  -twice , third - 3 times. According to the console output - all is ok (each test fires once ) ?!
 - It is only possible to start the entire task set as a whole bunch, each task is being sequentially execute. 
     You cannot manage individual tasks otherwise as specifying them in ccpy.conf file.
     This limitation however resolves the problem of overlapped tasks occurred by misconfiguring tasks start schedule.
@@ -14,10 +11,6 @@
   - make a possibility to start builds on requests (kill all running, look in /var/pid... ?)
 
 - make func in utils to parseBoolStr/validateBoolStr for 'yes', 'on', 'true', ...ignore case...
-
-1.From http://www.rittau.org/python/cruisecontrol/
-It writes the results of a test run to an XML file instead of printing it to the console �. .this allows easy integration into automatic build tools like CruiseControl. 
- Look at http://www.rittau.org/python/cruisecontrol/build-myproject.py
 
 Integration with CC.NET monitor:  http://confluence.public.thoughtworks.org/display/CI/Multiple+Project+Summary+Reporting+Standard
   http://docs.codehaus.org/display/DC/Remote+API

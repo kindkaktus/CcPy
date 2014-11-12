@@ -14,7 +14,7 @@ to control build process from desktop machines.
 Features
 ---------------------
 - Runs on any unix-derived system (as long as Python runs there)
-- Supports svn repositories
+- Supports svn and git repositories
 - Notifies on build results by email
 
 
@@ -22,7 +22,7 @@ Quick start
 ---------------------
 
 Prerequisites:
-    CcPy requires Python 2.5+ and python-expat module
+    CcPy requires Python 2.5+ or 3.x
 
 To install
 -------------

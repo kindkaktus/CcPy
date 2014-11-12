@@ -44,13 +44,6 @@ def install():
         sys.stderr.write("*** Error: Python 2.5 or higher is required.")
         return -1
 
-    print("  Checking required modules...")
-    try:
-        import xml.sax
-    except ImportError:
-        sys.stderr.write("*** Error: python-expat module is required.")
-        return -1
-
     print("  Copying config files...")
     try:
         import shutil
