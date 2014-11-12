@@ -29,24 +29,23 @@ class CcPydConfParserTestCase(unittest.TestCase):
         self.assertRaises(ccpydconfparser.ParseError, ccpydconfparser.parse, "ccpyd.conf.nonexistent")
 
     def testGoodConfig1(self):
-        from datetime import time
         try:
-            myDataDict = ccpydconfparser.parse("ccpyd.conf.good.1")
-            self.assertEqual( len(myDataDict), 4 )
-            self.assertEqual( myDataDict['ccpyConfig'], '/etc/ccpy.conf.1' )
-            self.assertEqual( myDataDict['logging'], True )
-            self.assertEqual( myDataDict['logFile'], '/var/log/ccpyd.log' )
-            self.assertEqual( myDataDict['logLevel'], 'DEBUG' )
+            conf = ccpydconfparser.parse("ccpyd.conf.good.1")
+            self.assertEqual( len(conf), 4 )
+            self.assertEqual( conf['ccpyConfig'], '/etc/ccpy.conf.1' )
+            self.assertEqual( conf['logging'], True )
+            self.assertEqual( conf['logFile'], '/var/log/ccpyd.log' )
+            self.assertEqual( conf['logLevel'], 'DEBUG' )
         except BaseException as e:
             print(("Error. %s. %s. %s" % (type(e), str(e), util.formatTb())))
             self.assertTrue(False)
 
     def testGoodConfig2(self):
         try:
-            myDataDict = ccpydconfparser.parse("ccpyd.conf.good.2")
-            self.assertEqual( len(myDataDict), 2 )
-            self.assertEqual( myDataDict['ccpyConfig'], '/etc/ccpy.conf' )
-            self.assertEqual( myDataDict['logging'], False )
+            conf = ccpydconfparser.parse("ccpyd.conf.good.2")
+            self.assertEqual( len(conf), 2 )
+            self.assertEqual( conf['ccpyConfig'], '/etc/ccpy.conf' )
+            self.assertEqual( conf['logging'], False )
         except BaseException as e:
             print(("Error. %s. %s. %s" % (type(e), str(e), util.formatTb())))
             self.assertTrue(False)
