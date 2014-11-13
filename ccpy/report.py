@@ -103,7 +103,7 @@ def makeEmailBody(aFormat, aSummary, aStatusPerTask, aBuildFailedBecauseOfTaskEr
 
     aFormat is one of util.EmailFormat.
     aSummary is a dictionary with a build summary. 
-      Contains keys: 'prjName', 'prjStatus', 'numSucceededTasks', 'numSucceededTasksWithWarning', 'numFailedTasks', 'numSkippedTasks', 'elapsedTime' as datetime.timedelta
+      Contains keys: 'prjName', 'prjStatus', 'numSucceededTasks', 'numSucceededTasksWithWarning', 'numFailedTasks', 'elapsedTime' as datetime.timedelta
     aStatusPerTask is a sequence of build statuses per task 
       Each task status is a dictionary with the following keys: 
       'name', 'status', 'description', 'elapsedTime' as datetime.timedelta and optionally 'allocatedTime' as int, 'stdout', 'stderr'
@@ -160,7 +160,7 @@ def _makeHtmlSummaryEmailBody(aSummary):
                       <DIV class='section'>
                           <H2>$product-$ver Integration Results for project $prjName</H2>
                           <H2>Status: $prjStatus</H2>
-                          $numSucceeded task$succSuffix SUCCEEDED of which $numSucceededWithWarning have WARNINGs, $numFailed task$failedSuffix FAILED, $numSkipped task$skippedSuffix SKIPPED<BR>
+                          $numSucceeded task$succSuffix SUCCEEDED of which $numSucceededWithWarning have WARNINGs, $numFailed task$failedSuffix FAILED<BR>
                           Elapsed time: $elapsedTime
                       </DIV>
                   </BODY>
@@ -178,8 +178,6 @@ def _makeHtmlSummaryEmailBody(aSummary):
                numSucceededWithWarning = int(aSummary['numSucceededTasksWithWarning']),
                numFailed = int(aSummary['numFailedTasks']),
                failedSuffix = '' if int(aSummary['numFailedTasks'])==1 else 's', 
-               numSkipped = int(aSummary['numSkippedTasks']),
-               skippedSuffix = '' if int(aSummary['numSkippedTasks'])==1 else 's', 
                elapsedTime = formatTimeDelta(aSummary['elapsedTime']))
 
     return myBody
@@ -190,7 +188,7 @@ $product-$ver Integration Results for project $prjName\r\n\
 $sep1\r\n\
 \r\n\
 Status: $prjStatus\r\n\
-$numSucceeded task$succSuffix SUCCEEDED of which $numSucceededWithWarning have WARNINGs, $numFailed task$failedSuffix FAILED, $numSkipped task$skippedSuffix SKIPPED\r\n\
+$numSucceeded task$succSuffix SUCCEEDED of which $numSucceededWithWarning have WARNINGs, $numFailed task$failedSuffix FAILED\r\n\
 Elapsed time: $elapsedTime\r\n\
 $sep2\r\n\
 \r\n") 
@@ -205,8 +203,6 @@ $sep2\r\n\
                numSucceededWithWarning = int(aSummary['numSucceededTasksWithWarning']),
                numFailed = int(aSummary['numFailedTasks']),
                failedSuffix = '' if int(aSummary['numFailedTasks'])==1 else 's', 
-               numSkipped = int(aSummary['numSkippedTasks']),
-               skippedSuffix = '' if int(aSummary['numSkippedTasks'])==1 else 's', 
                elapsedTime = formatTimeDelta(aSummary['elapsedTime']),
                sep2 = "------------------------------------------------------------------------------------")
     for task in aStatusPerTask:
@@ -247,7 +243,7 @@ def _makeHtmlEmailBody(aSummary, aStatusPerTask, aBuildFailedBecauseOfTaskError)
                       <DIV class='section'>
                           <H2>$product-$ver Integration Results for project $prjName</H2>
                           <H2>Status: $prjStatus</H2>
-                          $numSucceeded task$succSuffix SUCCEEDED of which $numSucceededWithWarning have WARNINGs, $numFailed task$failedSuffix FAILED, $numSkipped task$skippedSuffix SKIPPED<BR>
+                          $numSucceeded task$succSuffix SUCCEEDED of which $numSucceededWithWarning have WARNINGs, $numFailed task$failedSuffix FAILED<BR>
                           Elapsed time: $elapsedTime
                           <TABLE CLASS='wikitable'>
                               <TR>
@@ -292,8 +288,6 @@ def _makeHtmlEmailBody(aSummary, aStatusPerTask, aBuildFailedBecauseOfTaskError)
                numSucceededWithWarning = int(aSummary['numSucceededTasksWithWarning']),
                numFailed = int(aSummary['numFailedTasks']),
                failedSuffix = '' if int(aSummary['numFailedTasks'])==1 else 's', 
-               numSkipped = int(aSummary['numSkippedTasks']),
-               skippedSuffix = '' if int(aSummary['numSkippedTasks'])==1 else 's', 
                elapsedTime = formatTimeDelta(aSummary['elapsedTime']),
                tasks = myTasks,
                error = myError)

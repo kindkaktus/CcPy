@@ -123,21 +123,8 @@ CcPy uses two config files (xml format):
       Default     : N/A
       Required    : yes
 
-      Node        : skipIfNoModifications (subelement of the "project" element)
-      Description : This flag controls whether CcPy should skip building/execution of the source code which has not been changed since the last checkout.
-                    When set to true, each sourcecontrol task performs a check for modifications on the server. If no modifications exist,
-                    all subsequent non-sourcecontrol task will be skipped until either the end of project is reached or sourcecontrol task is met which reports 
-                    that modifications exist.
-                    Note: Be careful when enabling this flag because if two or more projects use the same working directory, then no repository modifications 
-                    corresponding to this working directory will be detected for the second and subsequent projects. Also enabling this flag makes projects insensitive
-                    to the changes affecting the integration server environment performed outside the version control e.g. setting up some test fixtures in the config files 
-                    not included in the version control. For this reasons this flag is disabled by default
-      Type        : boolean ("on/yes/true" or "off/no/false")
-      Default     : no
-      Required    : no
-
       Node        : failOnError (subelement of the "project" element)
-      Description : This flag controls whether CcPy should immidiately stop executing the rest project tasks  
+      Description : This flag controls whether CcPy should immediately stop executing the rest project tasks  
                     and render the entire project status to FAILED once one of the project tasks fails
       Type        : boolean ("on/yes/true" or "off/no/false")
       Default     : yes
@@ -151,18 +138,18 @@ CcPy uses two config files (xml format):
 
           Node        : type (attribute of the "sourcecontrol" element)
           Description : source control type.
-          Type        : string. Only "svn" is supported for this moment. 
+          Type        : string. Supported source control types are "svn" and "git". 
           Default     : N/A
           Required    : yes
 
-          Node        : trunkUrl (subelement of the "sourcecontrol" element)
-          Description : the URL of the repository
+          Node        : url (subelement of the "sourcecontrol" element)
+          Description : URL of the remote repository (checkout URL for subversion, clone URL for git)
           Type        : string
           Default     : N/A
           Required    : yes
 
           Node        : workingDirectory (subelement of the "sourcecontrol" element)
-          Description : working directory for svn
+          Description : directory holding local checkout
           Type        : string
           Default     : current directory
           Required    : no

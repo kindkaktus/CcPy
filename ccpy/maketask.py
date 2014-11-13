@@ -63,7 +63,7 @@ class MakeTask(task.Task):
             # Without specifying 'preexec_fn = os.setpgrp' the subprocess would use the parent's (i.e. python's)
             # group id and therefore os.killpg would kill our script ;(
             myProcess = subprocess.Popen(myCmd, shell=True, cwd=self._workingDir, stderr=subprocess.PIPE, stdout=subprocess.PIPE, preexec_fn = os.setpgrp)     
-            myPgid = os.getpgid(myProcess.pid) # grab pgid immidiately because we could not do it after the group leader dies
+            myPgid = os.getpgid(myProcess.pid) # grab pgid immediately because we could not do it after the group leader dies
                             
             myStdoutConsumer = util.ProcOutputConsumerThread(myProcess, True, Logger)
             myStderrConsumer = util.ProcOutputConsumerThread(myProcess, False, Logger)

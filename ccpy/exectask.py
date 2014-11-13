@@ -70,7 +70,7 @@ class ExecTask(task.Task):
             myEnv = os.environ.copy()
             myEnv['PATH'] += ":."  # allows launching executables from cwd
             myProcess = subprocess.Popen(myCmd, shell=False, cwd=self._workingDir, stderr=subprocess.PIPE, stdout=subprocess.PIPE, preexec_fn = os.setpgrp, env= myEnv)
-            myPgid = os.getpgid(myProcess.pid) # grab pgid immidiately because we could not do it after the group leader dies
+            myPgid = os.getpgid(myProcess.pid) # grab pgid immediately because we could not do it after the group leader dies
 
             myStdoutConsumer = util.ProcOutputConsumerThread(myProcess, True, Logger)
             myStderrConsumer = util.ProcOutputConsumerThread(myProcess, False, Logger)

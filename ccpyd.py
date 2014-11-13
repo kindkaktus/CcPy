@@ -42,43 +42,36 @@ def execTasks(aCcPyConf):
         myNumSucceededTasksWithWarning = 0
         myNumFailedTasks = 0
         myFailOnErrorSetting = prjVal['failOnError']
-        mySkipIfNoModSetting = prjVal['skipIfNoModifications']
-        mySkipTasks = None
         myFailedBecauseOfTaskError = False
         myTasksStatus = []
 
         # Iterate thru tasks
         for task in prjVal['tasks']:
             myTaskStart = datetime.datetime.today()
-            if mySkipIfNoModSetting and isinstance(task, svntask.SvnTask) and (mySkipTasks is None or mySkipTasks):
-                mySkipTasks = (task.modificationsStatus == svntask.SvrModifications.notExist)
 
-            myTaskStatus = {'name':task.__class__.__name__}
-            if mySkipTasks:
-                myTaskStatus['status'] = 'SKIPPED (no modifications detected)'
-                myTaskStatus['description'] = str(task)
-            else:
-                myTaskExecStatus = task.execute()
-                myTaskStatus['description'] = myTaskExecStatus['statusDescr']
-                myTaskStatus['elapsedTime'] = datetime.datetime.today() - myTaskStart
-                if myTaskExecStatus['statusFlag']:
-                    myNumSucceededTasks += 1
-                    if "warning" in myTaskExecStatus and myTaskExecStatus["warning"]:
-                        myTaskStatus['status'] = "WARNING"
-                        myNumSucceededTasksWithWarning += 1
-                    else:
-                        myTaskStatus['status'] = "OK"
-                    if isinstance(task, maketask.MakeTask) or isinstance(task, exectask.ExecTask):
-                        myTaskStatus['allocatedTime'] = task.timeout
+            # execute the task
+            myTaskExecStatus = task.execute()
+            myTaskStatus = {'name':task.__class__.__name__, 
+                            'description' : myTaskExecStatus['statusDescr'],
+                            'elapsedTime' : datetime.datetime.today() - myTaskStart }
+            if myTaskExecStatus['statusFlag']:
+                myNumSucceededTasks += 1
+                if "warning" in myTaskExecStatus and myTaskExecStatus["warning"]:
+                    myTaskStatus['status'] = "WARNING"
+                    myNumSucceededTasksWithWarning += 1
                 else:
-                    myTaskStatus['status'] = 'FAILED'
-                    myNumFailedTasks += 1
-                    if myFailOnErrorSetting:
-                        myFailedBecauseOfTaskError = True
-                if 'stdout' in myTaskExecStatus:
-                    myTaskStatus['stdout'] = myTaskExecStatus['stdout']
-                if 'stderr' in myTaskExecStatus:
-                    myTaskStatus['stderr'] = myTaskExecStatus['stderr']
+                    myTaskStatus['status'] = "OK"
+                if isinstance(task, maketask.MakeTask) or isinstance(task, exectask.ExecTask):
+                    myTaskStatus['allocatedTime'] = task.timeout
+            else:
+                myTaskStatus['status'] = 'FAILED'
+                myNumFailedTasks += 1
+                if myFailOnErrorSetting:
+                    myFailedBecauseOfTaskError = True
+            if 'stdout' in myTaskExecStatus:
+                myTaskStatus['stdout'] = myTaskExecStatus['stdout']
+            if 'stderr' in myTaskExecStatus:
+                myTaskStatus['stderr'] = myTaskExecStatus['stderr']
 
             myTasksStatus.append(myTaskStatus)
             Logger.debug('  Task finished. Status: %s', myTaskStatus)
@@ -107,9 +100,8 @@ def execTasks(aCcPyConf):
             myCcPyState.setPrjState(prjName, myOldPrjState)
             myPrjStatusStr = str(myOldPrjState)
         
-        myNumSkippedTasks  = len(prjVal['tasks']) - myNumFailedTasks - myNumSucceededTasks
-        Logger.debug("Finished with project %s. Status: %s. %u task(s) SUCCEEDED of which %d have WARNINGs, %u task(s) FAILED, %u task(s) SKIPPED.  Elapsed time: %s" 
-                     % (prjName, myPrjStatusStr, myNumSucceededTasks, myNumSucceededTasksWithWarning, myNumFailedTasks, myNumSkippedTasks, util.formatTimeDelta(myPrjEnd-myPrjStart)) )   
+        Logger.debug("Finished with project %s. Status: %s. %u task(s) SUCCEEDED of which %d have WARNINGs, %u task(s) FAILED.  Elapsed time: %s" 
+                     % (prjName, myPrjStatusStr, myNumSucceededTasks, myNumSucceededTasksWithWarning, myNumFailedTasks, util.formatTimeDelta(myPrjEnd-myPrjStart)) )   
         if len(prjVal['emailTo']):
           Logger.debug("Sending email notification as %s to %s using %s:%d" % (prjVal['emailFormat'], ", ".join(prjVal['emailTo']), prjVal['emailServerHost'], prjVal['emailServerPort']) )
           mySubj = "Integration status for %s: %s" % (prjName, myPrjStatusStr)
@@ -118,7 +110,6 @@ def execTasks(aCcPyConf):
                                  'numSucceededTasks': myNumSucceededTasks, 
                                  'numFailedTasks': myNumFailedTasks, 
                                  'numSucceededTasksWithWarning' : myNumSucceededTasksWithWarning, 
-                                 'numSkippedTasks' : myNumSkippedTasks,
                                  'elapsedTime': myPrjEnd-myPrjStart },
                                 myTasksStatus,
                                 myFailedBecauseOfTaskError)

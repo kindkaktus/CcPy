@@ -2,7 +2,14 @@
   Change Log
 </h2>
 <p>
- <h3>0.8 - 26 October 2014</h3>
+ <h3>0.9 - 13 November 2014</h3>
+ <ul>
+    <li>ADDED support for git repositories</li>
+    <li>CHANGED removed 'skipIfNoModifications' setting</li>
+    <li>REFACTORING: use DOM parser i.o. SAX to simplify the code</li>
+  </ul>
+
+   <h3>0.8 - 26 October 2014</h3>
  <ul>
     <li>CHANGED Got rid of naive internal scheduler for the sake of an external one. This opens a possibility for more flexible scheduling and updating ccpy from the build script</li>
     <li>ADDED restart script will (by default) update ccpy working copy if either .git or .svn directory is detected</li>
