@@ -11,7 +11,7 @@
   &nbsp;&nbsp;&nbsp;&nbsp;&lt;failOnError&gt;yes&lt;/failOnError&gt;<br/>
   <br/>
   &nbsp;&nbsp;&nbsp;&nbsp;&lt;tasks&gt;<br/>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;sourcecontrol type="svn"&gt;<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;sourcecontrol type="git"&gt;<br/>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;url&gt;https://company.com/repos/coolproductv2/Trunk/Import&lt;/url&gt;<br/>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;workingDirectory&gt;/CoolProductBuilds/Import&lt;/workingDirectory&gt;<br/>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;preCleanWorkingDirectory&gt;true&lt;/preCleanWorkingDirectory&gt;<br/>  
