@@ -10,7 +10,6 @@ CcPy ( **C**ruise **C**ontrol written in **Py**thon) is (yet another) automatic 
 Features
 ---------------------
 * Runs on any unix-derived system
-* Can run on schedule or on demand
 * Notifies on build results by email
 
 
