@@ -2,11 +2,10 @@
   <project name="Product2">
 
     <failOnError>yes</failOnError>
-    <skipIfNoModifications>yes</skipIfNoModifications>
 
     <tasks>
       <sourcecontrol type="svn">
-        <trunkUrl>https://company.com/repos/product2/mk</trunkUrl>
+        <url>https://company.com/repos/product2/mk</url>
         <workingDirectory>/ProductBuilds/mk</workingDirectory>
         <preCleanWorkingDirectory>yes</preCleanWorkingDirectory>
       </sourcecontrol>
@@ -31,8 +30,8 @@
         <executable>loggingTests</executable>
       </exec>
 
-     <sourcecontrol type="svn">
-        <trunkUrl>https://company.com/repos/product2/Common</trunkUrl>
+     <sourcecontrol type="git">
+        <url>https://company.com/repos/product2/Common</url>
         <workingDirectory>/ProductBuilds/Common</workingDirectory>
         <preCleanWorkingDirectory>off</preCleanWorkingDirectory>
       </sourcecontrol>
@@ -47,10 +46,9 @@
   <project name="Product3">
 
     <failOnError>no</failOnError>
-    <skipIfNoModifications>no</skipIfNoModifications>
     <tasks>
      <sourcecontrol type="svn">
-      <trunkUrl>https://company.com/repos/product3/server</trunkUrl>
+      <url>https://company.com/repos/product3/server</url>
       <workingDirectory>/ProductBuilds/server</workingDirectory>
     </sourcecontrol>
    </tasks>

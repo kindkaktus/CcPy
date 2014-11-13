@@ -21,6 +21,7 @@ from copy import deepcopy
 from .common import LoggerName
 from .util import EmailFormat, formatTb
 from . import svntask
+from . import gittask
 from . import maketask
 from . import exectask
 
@@ -70,11 +71,14 @@ def _get_elem_tasks_value(element, default_value):
     for task in element:
 
         if task.tag == 'sourcecontrol':
-            if task.attrib['type'] == 'svn':
-                trunkUrl = task.find('./trunkUrl').text
+            if task.attrib['type'] in ('svn', 'git'):
+                url = task.find('./url').text
                 workingDirectory = _get_elem_str_value(task.find('./workingDirectory'), '')
                 preCleanWorkingDirectory = _get_elem_bool_value(task.find('./preCleanWorkingDirectory'), False)
-                tasks.append(svntask.SvnTask(trunkUrl, workingDirectory, preCleanWorkingDirectory))
+                if task.attrib['type']  == 'svn':
+                    tasks.append(svntask.SvnTask(url, workingDirectory, preCleanWorkingDirectory))
+                else: # git
+                    tasks.append(gittask.GitTask(url, workingDirectory, preCleanWorkingDirectory))
             else:
                 Logger.warning('Unsupported sourcecontrol type ' + task.attrib['type'])
 
@@ -117,14 +121,14 @@ class Projects:
               emailFrom, emailTo, emailFormat, 
               emailServerHost, emailServerPort, 
               emailServerUsername, emailServerPassword, 
-              failOnError, skipIfNoModifications):
+              failOnError):
         if self.exists(name):
             raise Exception("Failed to add project because the project named '%s' already exists" % name)
         if tasks is None:
             tasks = []
         if emailTo is None:
             emailTo = []
-        self._projects.append({'name':name, 'tasks': tasks, 'emailFrom':emailFrom, 'emailTo':emailTo, 'emailFormat': emailFormat, 'emailServerHost' : emailServerHost, 'emailServerPort' : emailServerPort, 'emailServerUsername' : emailServerUsername, 'emailServerPassword' : emailServerPassword, 'failOnError': failOnError, 'skipIfNoModifications': skipIfNoModifications})
+        self._projects.append({'name':name, 'tasks': tasks, 'emailFrom':emailFrom, 'emailTo':emailTo, 'emailFormat': emailFormat, 'emailServerHost' : emailServerHost, 'emailServerPort' : emailServerPort, 'emailServerUsername' : emailServerUsername, 'emailServerPassword' : emailServerPassword, 'failOnError': failOnError})
         
     def addTask(self, name, task):
         if not self.exists(name):
@@ -190,7 +194,6 @@ def parse(aCcPyConfigFileName = DefCcPyConfigFileName):
             emailServerUsername = _get_elem_str_value(projectElem.find('./emailNotification/username'), None)
             emailServerPassword = _get_elem_str_value(projectElem.find('./emailNotification/password'), None)
             failOnError = _get_elem_bool_value(projectElem.find('./failOnError'), True)
-            skipIfNoModifications = _get_elem_bool_value(projectElem.find('./skipIfNoModifications'), False)
 
             projects.append(projectElem.attrib['name'],
                             tasks = tasks,
@@ -201,8 +204,7 @@ def parse(aCcPyConfigFileName = DefCcPyConfigFileName):
                             emailServerPort = emailServerPort,
                             emailServerUsername = emailServerUsername,
                             emailServerPassword = emailServerPassword,
-                            failOnError = failOnError,
-                            skipIfNoModifications = skipIfNoModifications)
+                            failOnError = failOnError)
 
         return projects
 

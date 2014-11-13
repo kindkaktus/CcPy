@@ -21,6 +21,7 @@ import sys
 sys.path.append("..") 
 import ccpy.ccpyconfparser as ccpyconfparser
 import ccpy.svntask as svntask
+import ccpy.gittask as gittask
 import ccpy.maketask as maketask
 import ccpy.exectask as exectask
 import ccpy.util as util
@@ -58,7 +59,8 @@ class CcPyConfParserTestCase(unittest.TestCase):
             myProjName = 'Product2'
             myTasks = myProjects[myProjName]['tasks']
             self.assertEqual( len(myTasks), 6 )
-            self.assertEqual( len([task for task in myTasks if isinstance(task, svntask.SvnTask)]), 2 )
+            self.assertEqual( len([task for task in myTasks if isinstance(task, svntask.SvnTask)]), 1 )
+            self.assertEqual( len([task for task in myTasks if isinstance(task, gittask.GitTask)]), 1 )
             self.assertEqual( len([task for task in myTasks if isinstance(task, maketask.MakeTask)]), 2 )
             self.assertEqual( len([task for task in myTasks if isinstance(task, exectask.ExecTask)]), 2 )
             self.assertEqual( myProjects[myProjName]['emailFrom'], 'product2.builds@company.com')
@@ -69,11 +71,10 @@ class CcPyConfParserTestCase(unittest.TestCase):
             self.assertEqual( myProjects[myProjName]['emailServerUsername'], None )
             self.assertEqual( myProjects[myProjName]['emailServerPassword'], None )
             self.assertEqual( myProjects[myProjName]['failOnError'], True )
-            self.assertEqual( myProjects[myProjName]['skipIfNoModifications'], True )
 
             myTask = myTasks[0]
             self.assertTrue( isinstance(myTask, svntask.SvnTask) )
-            self.assertEqual( myTask.trunkUrl, "https://company.com/repos/product2/mk")
+            self.assertEqual( myTask.url, "https://company.com/repos/product2/mk")
             self.assertEqual( myTask.workingDir, "/ProductBuilds/mk")
             self.assertTrue( myTask.preCleanWorkingDir)
 
@@ -105,8 +106,8 @@ class CcPyConfParserTestCase(unittest.TestCase):
             self.assertEqual( myTask.timeout, 600)
 
             myTask = myTasks[5]
-            self.assertTrue( isinstance(myTask, svntask.SvnTask) )
-            self.assertEqual( myTask.trunkUrl, "https://company.com/repos/product2/Common")
+            self.assertTrue( isinstance(myTask, gittask.GitTask) )
+            self.assertEqual( myTask.url, "https://company.com/repos/product2/Common")
             self.assertEqual( myTask.workingDir, "/ProductBuilds/Common")
             self.assertFalse( myTask.preCleanWorkingDir)
 
@@ -119,11 +120,10 @@ class CcPyConfParserTestCase(unittest.TestCase):
             self.assertEqual( myProjects[myProjName]['emailTo'], ['product3.developer@company.com'] )   
             self.assertEqual( myProjects[myProjName]['emailFormat'], util.EmailFormat.attachment )
             self.assertEqual( myProjects[myProjName]['failOnError'], False )
-            self.assertEqual( myProjects[myProjName]['skipIfNoModifications'], False )
 
             myTask = myTasks[0]
             self.assertTrue( isinstance(myTask, svntask.SvnTask) )
-            self.assertEqual( myTask.trunkUrl, "https://company.com/repos/product3/server")
+            self.assertEqual( myTask.url, "https://company.com/repos/product3/server")
             self.assertEqual( myTask.workingDir, "/ProductBuilds/server")
             self.assertFalse( myTask.preCleanWorkingDir)
 
@@ -135,7 +135,6 @@ class CcPyConfParserTestCase(unittest.TestCase):
             self.assertEqual( myProjects[myProjName]['failOnError'], True )
             self.assertEqual( myProjects[myProjName]['emailFrom'], '')
             self.assertEqual( myProjects[myProjName]['emailTo'], [] )
-            self.assertEqual( myProjects[myProjName]['skipIfNoModifications'], False )
 
             myTask = myTasks[0]
             self.assertTrue( isinstance(myTask, maketask.MakeTask) )

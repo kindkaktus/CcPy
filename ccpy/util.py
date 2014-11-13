@@ -20,6 +20,7 @@ import os
 import time
 import sys
 import signal
+import subprocess
 from .enum import Enum
 
 IS_PYTHON2 = sys.version_info < (3,0)
@@ -307,4 +308,21 @@ def wait(interval):
     finished = threading.Event()
     finished.wait(interval)
     finished.set()
-    del finished        
+    del finished
+
+
+# Recursively remove all directories and files including the hidden ones in the given directory
+def clean_directory(dir):
+    if os.path.exists(dir):
+        if os.path.isdir(dir):
+            myCmd = "rm -rf ./..?* ./.[!.]* ./*"
+            myProcess = subprocess.Popen(myCmd, shell=True, cwd=dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            myStdout, myStderr = myProcess.communicate()
+            if myProcess.returncode != 0:            
+                return { "statusFlag" : False, 
+                         "statusDescr" : "'%s' in %s finished with return code %d." % (myCmd, dir, myProcess.returncode ),
+                         "stdout" : myStdout.rstrip(),
+                         "stderr" : myStderr.rstrip() }
+        else:
+            os.remove(dir)
+    return { "statusFlag" : True}
