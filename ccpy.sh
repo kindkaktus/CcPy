@@ -3,9 +3,9 @@
 # Startup script for ccpy
 # Usage:
 # ./ccpy.sh [--skip-update] - will subsequently perform the following actions:
-#                           1. stop ccpy if it is already running recursively killing all children spawned by ccpy
-#                           2. unless --skip-update option is given, will update ccpy working copy if either .git or .svn directory is detected
-#                           3. starts ccpy
+#  1. stop ccpy if it is already running recursively killing all children spawned by ccpy
+#  2. unless --skip-update option is given, will update ccpy working copy if either .git or .svn directory is detected, discarding any local changes
+#  3. starts ccpy
 # ./ccpy.sh stop - stop ccpy recursively killing all children spawned by ccpy
 
 function usage()
@@ -44,9 +44,11 @@ function update_ccpy_wc()
 {
     pushd $( dirname "${BASH_SOURCE[0]}" ) > /dev/null 
     if [ -d ".svn" ]; then
-        svn up
+        svn revert --recursive --non-interactive ./
+        svn up --non-interactive
     elif [ -d ".git" ]; then
-        git pull
+        git fetch --all
+        git reset --hard origin/master
     fi
     popd > /dev/null
 }
