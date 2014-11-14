@@ -63,7 +63,7 @@ class SvnTask(task.Task):
                 (os.path.exists(self._workingDir+"/_svn") and os.path.isdir(self._workingDir+"/_svn")):
                 # svn working copy found, performing svn update
                 Logger.debug("Updating %s" % self._workingDir)
-                myCmd = "svn revert --recursive --non-interactive {1} && svn up --non-interactive {1}".format(self._workingDir)
+                myCmd = "svn revert --recursive --non-interactive {0} && svn up --non-interactive {0}".format(self._workingDir)
                 myProcess = subprocess.Popen(myCmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 myStdout, myStderr  = myProcess.communicate()
                 myStdout = to_unicode(myStdout, Logger)
