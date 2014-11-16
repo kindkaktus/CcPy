@@ -60,9 +60,9 @@ class GitTask(task.Task):
                     
             Logger.debug("Executing %s" % self)
             if  (os.path.exists(self._workingDir+"/.git") and os.path.isdir(self._workingDir+"/.git")):
-                # Found git repo, performing git pull
+                # Found git repo, getting the latest origin/master
                 Logger.debug("Updating %s" % self._workingDir)
-                myCmd = "git fetch --all && git reset --hard origin/master"
+                myCmd = "git fetch --all && git reset --hard origin/master && git submodule update --recursive"
                 myProcess = subprocess.Popen(myCmd, shell=True, cwd=self._workingDir, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 myStdout, myStderr  = myProcess.communicate()
                 myStdout = to_unicode(myStdout, Logger)
@@ -78,11 +78,11 @@ class GitTask(task.Task):
                          "stdout" : myStdout.rstrip(),
                          "stderr" : myStderr.rstrip() }
                          
-            # No git repository found, performing git clone
+            # No git repository found, cloning the repo
             Logger.debug("Cloning '%s' to %s" % (self._url, self._workingDir))
             if not os.path.exists(self._workingDir):
                 os.makedirs(self._workingDir)
-            myCmd = "git clone %s %s" % ( self._url, self._workingDir) 
+            myCmd = "git clone --recursive %s %s" % ( self._url, self._workingDir) 
             myProcess = subprocess.Popen(myCmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             myStdout, myStderr  = myProcess.communicate()
             myStdout = to_unicode(myStdout, Logger)
