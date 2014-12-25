@@ -33,3 +33,11 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+/project.sublime-workspace
+/www-project/ccpy.htm
+/www-project/ccpyd.htm
+/www-project/changelog.htm
+/www-project/download.htm
+/www-project/index.htm
+/www-project/quickstart.htm
+/project.sublime-project
