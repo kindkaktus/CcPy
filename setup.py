@@ -20,6 +20,7 @@ Setup script
 import sys
 import os
 
+
 def main(argv=None):
     if argv is None:
         argv = sys.argv
@@ -33,14 +34,16 @@ def main(argv=None):
     usage()
     return 2
 
+
 def usage():
     sys.stderr.write("usage: python setup.py [install]")
     sys.stderr.write("       python setup.py uninstall")
 
+
 def install():
     print("Installing CcPy...")
     print("  Checking Python version...")
-    if  sys.version_info[0] < 2 or ( sys.version_info[0] == 2 and sys.version_info[1] < 5 ):
+    if sys.version_info[0] < 2 or (sys.version_info[0] == 2 and sys.version_info[1] < 5):
         sys.stderr.write("*** Error: Python 2.5 or higher is required.")
         return -1
 
@@ -49,10 +52,11 @@ def install():
         import shutil
         shutil.copy("conf/ccpyd.conf", "/etc/")
         shutil.copy("conf/ccpy.conf", "/etc/")
-        return 0 
+        return 0
     except BaseException as e:
         sys.stderr.write("*** Error. %s" % str(e))
         return -1
+
 
 def uninstall():
     print("Uninstalling CcPy...")
@@ -69,16 +73,22 @@ def uninstall():
         return -1
     print("  Removing config files...")
     myRetVal = 0
-    for myFile in ['/etc/ccpy.conf', '/etc/ccpyd.conf', '/etc/ccpy.state', '/var/log/ccpyd.log', '/var/run/ccpyd.pid']:
+    for myFile in [
+            '/etc/ccpy.conf',
+            '/etc/ccpyd.conf',
+            '/etc/ccpy.state',
+            '/var/log/ccpyd.log',
+            '/var/run/ccpyd.pid']:
         myRetVal = _removeFileNoThrow(myFile)
     return myRetVal
+
 
 def _removeFileNoThrow(aFileName):
     import os
     try:
         if os.path.exists(aFileName):
             os.remove(aFileName)
-        return 0    
+        return 0
     except OSError as e:
         sys.stderr.write("Warning. Cannot remove '%s'. Error: %s" % (aFileName, str(e)))
         return 1

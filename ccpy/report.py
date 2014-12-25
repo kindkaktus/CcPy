@@ -80,7 +80,7 @@ p {
 .wikitable {
     margin: 5px;
     border-collapse: collapse;
-	
+
 }
 .wikitable td, .wikitable th {
     border: 1px solid #ccc;
@@ -97,15 +97,16 @@ p {
 # Public API
 # #########################
 
+
 def makeEmailBody(aFormat, aSummary, aStatusPerTask, aBuildFailedBecauseOfTaskError):
     """
     Produces the email body in the requested format
 
     aFormat is one of util.EmailFormat.
-    aSummary is a dictionary with a build summary. 
+    aSummary is a dictionary with a build summary.
       Contains keys: 'prjName', 'prjStatus', 'numSucceededTasks', 'numSucceededTasksWithWarning', 'numFailedTasks', 'elapsedTime' as datetime.timedelta
-    aStatusPerTask is a sequence of build statuses per task 
-      Each task status is a dictionary with the following keys: 
+    aStatusPerTask is a sequence of build statuses per task
+      Each task status is a dictionary with the following keys:
       'name', 'status', 'description', 'elapsedTime' as datetime.timedelta and optionally 'allocatedTime' as int, 'stdout', 'stderr'
     aBuildFailedBecauseOfTaskError - flag indicating whether the build failed because of the failed task
     """
@@ -116,23 +117,24 @@ def makeEmailBody(aFormat, aSummary, aStatusPerTask, aBuildFailedBecauseOfTaskEr
     elif aFormat == EmailFormat.html:
         return _makeHtmlEmailBody(aSummary, aStatusPerTask, aBuildFailedBecauseOfTaskError)
     raise Exception("Unsupported format %s" % aFormat)
- 
+
 
 def makeAttachmentText(aFormat, aStatusPerTask, aBuildFailedBecauseOfTaskError):
     if aFormat != EmailFormat.attachment:
         return None
-        
+
     myBody = ''
     for task in aStatusPerTask:
-        myBody += '%(name)s => %(status)s. %(description)s' %  task
-        if 'elapsedTime' in task: 
-            myBody += '\nElapsed time: %s' %  formatTimeDelta(task['elapsedTime'])
-            if 'allocatedTime' in task and task['allocatedTime']>0:
-                myUsedTimePercentage = getTotalSeconds(task['elapsedTime'])*100/task['allocatedTime']
+        myBody += '%(name)s => %(status)s. %(description)s' % task
+        if 'elapsedTime' in task:
+            myBody += '\nElapsed time: %s' % formatTimeDelta(task['elapsedTime'])
+            if 'allocatedTime' in task and task['allocatedTime'] > 0:
+                myUsedTimePercentage = getTotalSeconds(
+                    task['elapsedTime']) * 100 / task['allocatedTime']
                 myBody += ' (%0.2f%% of allocated time)' % myUsedTimePercentage
-        if 'stdout' in task and len(task['stdout']): 
+        if 'stdout' in task and len(task['stdout']):
             myBody += '\nStdout:\n%(stdout)s' % task
-        if 'stderr' in task and len(task['stderr']): 
+        if 'stderr' in task and len(task['stderr']):
             myBody += '\nStderr:\n%(stderr)s' % task
         myBody += "\n--------\n\n"
 
@@ -143,18 +145,18 @@ def makeAttachmentText(aFormat, aStatusPerTask, aBuildFailedBecauseOfTaskError):
 
 
 # ######################
-# Private API  
+# Private API
 # #######################
 
 def _makeHtmlSummaryEmailBody(aSummary):
-    myBodyTempl = Template(""" 
+    myBodyTempl = Template("""
                 <HTML>
                   <HEAD>
-                    <STYLE  type="TEXT/CSS"> 
-                    <!-- 
+                    <STYLE  type="TEXT/CSS">
+                    <!--
                     $css
                     -->
-                    </STYLE> 
+                    </STYLE>
                   </HEAD>
                   <BODY>
                       <DIV class='section'>
@@ -168,19 +170,20 @@ def _makeHtmlSummaryEmailBody(aSummary):
             """)
 
     myBody = myBodyTempl.safe_substitute(
-               css = _Css,
-               product = common.ProductName, 
-               ver = common.ProductVersion,
-               prjName = aSummary['prjName'],
-               prjStatus = aSummary['prjStatus'], 
-               numSucceeded = int(aSummary['numSucceededTasks']),
-               succSuffix = '' if int(aSummary['numSucceededTasks'])==1 else 's', 
-               numSucceededWithWarning = int(aSummary['numSucceededTasksWithWarning']),
-               numFailed = int(aSummary['numFailedTasks']),
-               failedSuffix = '' if int(aSummary['numFailedTasks'])==1 else 's', 
-               elapsedTime = formatTimeDelta(aSummary['elapsedTime']))
+        css=_Css,
+        product=common.ProductName,
+        ver=common.ProductVersion,
+        prjName=aSummary['prjName'],
+        prjStatus=aSummary['prjStatus'],
+        numSucceeded=int(aSummary['numSucceededTasks']),
+        succSuffix='' if int(aSummary['numSucceededTasks']) == 1 else 's',
+        numSucceededWithWarning=int(aSummary['numSucceededTasksWithWarning']),
+        numFailed=int(aSummary['numFailedTasks']),
+        failedSuffix='' if int(aSummary['numFailedTasks']) == 1 else 's',
+        elapsedTime=formatTimeDelta(aSummary['elapsedTime']))
 
     return myBody
+
 
 def _makePlainEmailBody(aSummary, aStatusPerTask, aBuildFailedBecauseOfTaskError):
     mySummaryTempl = Template("\
@@ -191,30 +194,31 @@ Status: $prjStatus\r\n\
 $numSucceeded task$succSuffix SUCCEEDED of which $numSucceededWithWarning have WARNINGs, $numFailed task$failedSuffix FAILED\r\n\
 Elapsed time: $elapsedTime\r\n\
 $sep2\r\n\
-\r\n") 
+\r\n")
     myBody = mySummaryTempl.safe_substitute(
-               product = common.ProductName, 
-               ver = common.ProductVersion,
-               prjName = aSummary['prjName'],
-               sep1 = "===================================================================================",
-               prjStatus = aSummary['prjStatus'], 
-               numSucceeded = int(aSummary['numSucceededTasks']),
-               succSuffix = '' if int(aSummary['numSucceededTasks'])==1 else 's', 
-               numSucceededWithWarning = int(aSummary['numSucceededTasksWithWarning']),
-               numFailed = int(aSummary['numFailedTasks']),
-               failedSuffix = '' if int(aSummary['numFailedTasks'])==1 else 's', 
-               elapsedTime = formatTimeDelta(aSummary['elapsedTime']),
-               sep2 = "------------------------------------------------------------------------------------")
+        product=common.ProductName,
+        ver=common.ProductVersion,
+        prjName=aSummary['prjName'],
+        sep1="===================================================================================",
+        prjStatus=aSummary['prjStatus'],
+        numSucceeded=int(aSummary['numSucceededTasks']),
+        succSuffix='' if int(aSummary['numSucceededTasks']) == 1 else 's',
+        numSucceededWithWarning=int(aSummary['numSucceededTasksWithWarning']),
+        numFailed=int(aSummary['numFailedTasks']),
+        failedSuffix='' if int(aSummary['numFailedTasks']) == 1 else 's',
+        elapsedTime=formatTimeDelta(aSummary['elapsedTime']),
+        sep2="------------------------------------------------------------------------------------")
     for task in aStatusPerTask:
-        myBody += '%(name)s => %(status)s. %(description)s' %  task
-        if 'elapsedTime' in task: 
-            myBody += '\nElapsed time: %s' %  formatTimeDelta(task['elapsedTime'])
-            if 'allocatedTime' in task and task['allocatedTime']>0:
-                myUsedTimePercentage = getTotalSeconds(task['elapsedTime'])*100/task['allocatedTime']
+        myBody += '%(name)s => %(status)s. %(description)s' % task
+        if 'elapsedTime' in task:
+            myBody += '\nElapsed time: %s' % formatTimeDelta(task['elapsedTime'])
+            if 'allocatedTime' in task and task['allocatedTime'] > 0:
+                myUsedTimePercentage = getTotalSeconds(
+                    task['elapsedTime']) * 100 / task['allocatedTime']
                 myBody += ' (%0.2f%% of allocated time)' % myUsedTimePercentage
-        if 'stdout' in task and len(task['stdout']): 
+        if 'stdout' in task and len(task['stdout']):
             myBody += '\nStdout:\n%(stdout)s' % task
-        if 'stderr' in task and len(task['stderr']): 
+        if 'stderr' in task and len(task['stderr']):
             myBody += '\nStderr:\n%(stderr)s' % task
         myBody += "\n--------\n\n"
 
@@ -229,15 +233,16 @@ def _makeHtmlEmailBody(aSummary, aStatusPerTask, aBuildFailedBecauseOfTaskError)
                    <TD>$taskName</TD><TD>$taskStatus</TD><TD>$taskDescription</TD><TD>$elapsedTime $usedTimePercentage</TD><TD>$stdout</TD><TD>$stderr</TD>
                  </TR>
                  """)
-    #TODO: make stderr and stdout columns bigger. WIDTH=25% does not help in email, but it is ok on saved html
-    myBodyTempl = Template(""" 
+    # TODO: make stderr and stdout columns bigger. WIDTH=25% does not help in
+    # email, but it is ok on saved html
+    myBodyTempl = Template("""
                 <HTML>
                   <HEAD>
-                    <STYLE  type="TEXT/CSS"> 
-                    <!-- 
+                    <STYLE  type="TEXT/CSS">
+                    <!--
                     $css
                     -->
-                    </STYLE> 
+                    </STYLE>
                   </HEAD>
                   <BODY>
                       <DIV class='section'>
@@ -261,37 +266,48 @@ def _makeHtmlEmailBody(aSummary, aStatusPerTask, aBuildFailedBecauseOfTaskError)
 
     myTasks = ""
     for task in aStatusPerTask:
-        if 'allocatedTime' in task and task['allocatedTime']>0 and 'elapsedTime' in task:
-            myUsedTimePercentage = getTotalSeconds(task['elapsedTime'])*100/task['allocatedTime']
+        if 'allocatedTime' in task and task['allocatedTime'] > 0 and 'elapsedTime' in task:
+            myUsedTimePercentage = getTotalSeconds(
+                task['elapsedTime']) * 100 / task['allocatedTime']
         else:
             myUsedTimePercentage = None
-        
+
         myTasks += myTaskTempl.safe_substitute(
-                taskName = task['name'], 
-                taskStatus = task['status'], 
-                taskDescription = task['description'],
-                elapsedTime = formatTimeDelta(task['elapsedTime']) if 'elapsedTime' in task else '', 
-                usedTimePercentage = ' (%s%% of allocated time)' % myUsedTimePercentage if myUsedTimePercentage is not None else '',
-                stdout = "<pre>"+cgi.escape(task.get('stdout',' '))+"</pre>", 
-                stderr = "<pre>"+cgi.escape(task.get('stderr',' '))+"</pre>")
+            taskName=task['name'],
+            taskStatus=task['status'],
+            taskDescription=task['description'],
+            elapsedTime=formatTimeDelta(
+                task['elapsedTime']) if 'elapsedTime' in task else '',
+            usedTimePercentage=' (%s%% of allocated time)' %
+            myUsedTimePercentage if myUsedTimePercentage is not None else '',
+            stdout="<pre>" +
+            cgi.escape(
+                task.get(
+                    'stdout',
+                    ' ')) +
+            "</pre>",
+            stderr="<pre>" +
+            cgi.escape(
+                task.get(
+                    'stderr',
+                    ' ')) +
+            "</pre>")
 
     myError = "FAILING the project because of the failed task" if aBuildFailedBecauseOfTaskError else ''
 
     myBody = myBodyTempl.safe_substitute(
-               css = _Css,
-               product = common.ProductName, 
-               ver = common.ProductVersion,
-               prjName = aSummary['prjName'],
-               prjStatus = aSummary['prjStatus'], 
-               numSucceeded = int(aSummary['numSucceededTasks']),
-               succSuffix = '' if int(aSummary['numSucceededTasks'])==1 else 's', 
-               numSucceededWithWarning = int(aSummary['numSucceededTasksWithWarning']),
-               numFailed = int(aSummary['numFailedTasks']),
-               failedSuffix = '' if int(aSummary['numFailedTasks'])==1 else 's', 
-               elapsedTime = formatTimeDelta(aSummary['elapsedTime']),
-               tasks = myTasks,
-               error = myError)
+        css=_Css,
+        product=common.ProductName,
+        ver=common.ProductVersion,
+        prjName=aSummary['prjName'],
+        prjStatus=aSummary['prjStatus'],
+        numSucceeded=int(aSummary['numSucceededTasks']),
+        succSuffix='' if int(aSummary['numSucceededTasks']) == 1 else 's',
+        numSucceededWithWarning=int(aSummary['numSucceededTasksWithWarning']),
+        numFailed=int(aSummary['numFailedTasks']),
+        failedSuffix='' if int(aSummary['numFailedTasks']) == 1 else 's',
+        elapsedTime=formatTimeDelta(aSummary['elapsedTime']),
+        tasks=myTasks,
+        error=myError)
 
     return myBody
-
- 

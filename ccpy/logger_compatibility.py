@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
-import logging 
+import logging
 import os
 from stat import ST_DEV, ST_INO
 
-## WatchedFileHandler is provided by Python standard library starting Python 3
-## The earlier Python versions can use the implementation below which is   
-## adapted from the Python 3
+# WatchedFileHandler is provided by Python standard library starting Python 3
+# The earlier Python versions can use the implementation below which is
+# adapted from the Python 3
+
 
 class WatchedFileHandler(logging.FileHandler):
+
     """
     A handler for logging to a file, which watches the file
     to see if it has changed while in use. This can happen because of
@@ -28,6 +30,7 @@ class WatchedFileHandler(logging.FileHandler):
     This handler is based on a suggestion and patch by Chad J.
     Schroeder.
     """
+
     def __init__(self, filename, mode='a', encoding=None):
         logging.FileHandler.__init__(self, filename, mode, encoding)
         if not os.path.exists(self.baseFilename):

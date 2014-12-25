@@ -28,6 +28,7 @@ import ccpy.common as common
 import ccpy.report as report
 import ccpy.util as util
 
+
 def execTasks(aCcPyConf):
     """ Execute tasks from the ccpy project configuration file and send email report for each project """
     Logger = logging.getLogger(common.LoggerName)
@@ -36,7 +37,7 @@ def execTasks(aCcPyConf):
     Logger.debug("%u project(s) queued for integration", len(myProjects))
 
     # Iterate thru projects
-    for prjName,prjVal in myProjects: 
+    for prjName, prjVal in myProjects:
         myPrjStart = datetime.datetime.today()
         myNumSucceededTasks = 0
         myNumSucceededTasksWithWarning = 0
@@ -51,9 +52,9 @@ def execTasks(aCcPyConf):
 
             # execute the task
             myTaskExecStatus = task.execute()
-            myTaskStatus = {'name':task.__class__.__name__, 
-                            'description' : myTaskExecStatus['statusDescr'],
-                            'elapsedTime' : datetime.datetime.today() - myTaskStart }
+            myTaskStatus = {'name': task.__class__.__name__,
+                            'description': myTaskExecStatus['statusDescr'],
+                            'elapsedTime': datetime.datetime.today() - myTaskStart}
             if myTaskExecStatus['statusFlag']:
                 myNumSucceededTasks += 1
                 if "warning" in myTaskExecStatus and myTaskExecStatus["warning"]:
@@ -83,7 +84,7 @@ def execTasks(aCcPyConf):
 
         myCcPyState = CcPyState()
         myOldPrjState = myCcPyState.getPrjState(prjName)
-        
+
         if myNumFailedTasks > 0:
             # fail
             myCcPyState.setPrjState(prjName, PrjStates.FAILED)
@@ -92,53 +93,80 @@ def execTasks(aCcPyConf):
             # success
             myCcPyState.setPrjState(prjName, PrjStates.OK)
             if myNumSucceededTasksWithWarning > 0:
-                myPrjStatusStr = "WARNING %s" % (' (FIXED)' if myOldPrjState==PrjStates.FAILED else '', )
+                myPrjStatusStr = "WARNING %s" % (
+                    ' (FIXED)' if myOldPrjState == PrjStates.FAILED else '', )
             else:
-                myPrjStatusStr = "%s%s" % (PrjStates.OK, ' (FIXED)' if myOldPrjState==PrjStates.FAILED else '')
+                myPrjStatusStr = "%s%s" % (
+                    PrjStates.OK, ' (FIXED)' if myOldPrjState == PrjStates.FAILED else '')
         else:
             # nothing is ran, use yesterday weather
             myCcPyState.setPrjState(prjName, myOldPrjState)
             myPrjStatusStr = str(myOldPrjState)
-        
-        Logger.debug("Finished with project %s. Status: %s. %u task(s) SUCCEEDED of which %d have WARNINGs, %u task(s) FAILED.  Elapsed time: %s" 
-                     % (prjName, myPrjStatusStr, myNumSucceededTasks, myNumSucceededTasksWithWarning, myNumFailedTasks, util.formatTimeDelta(myPrjEnd-myPrjStart)) )   
+
+        Logger.debug(
+            "Finished with project %s. Status: %s. %u task(s) SUCCEEDED of which %d have WARNINGs, %u task(s) FAILED.  Elapsed time: %s" %
+            (prjName,
+             myPrjStatusStr,
+             myNumSucceededTasks,
+             myNumSucceededTasksWithWarning,
+             myNumFailedTasks,
+             util.formatTimeDelta(
+                 myPrjEnd -
+                 myPrjStart)))
         if len(prjVal['emailTo']):
-          Logger.debug("Sending email notification as %s to %s using %s:%d" % (prjVal['emailFormat'], ", ".join(prjVal['emailTo']), prjVal['emailServerHost'], prjVal['emailServerPort']) )
-          mySubj = "Integration status for %s: %s" % (prjName, myPrjStatusStr)
-          myBody = report.makeEmailBody(prjVal['emailFormat'], 
-                                {'prjName' : prjName, 'prjStatus':myPrjStatusStr, 
-                                 'numSucceededTasks': myNumSucceededTasks, 
-                                 'numFailedTasks': myNumFailedTasks, 
-                                 'numSucceededTasksWithWarning' : myNumSucceededTasksWithWarning, 
-                                 'elapsedTime': myPrjEnd-myPrjStart },
-                                myTasksStatus,
-                                myFailedBecauseOfTaskError)
-          myAttachmentText = report.makeAttachmentText(prjVal['emailFormat'], myTasksStatus, myFailedBecauseOfTaskError)
-          util.sendEmailNotification(prjVal['emailFrom'], 
-                                     prjVal['emailTo'], 
-                                     mySubj, 
-                                     myBody,
-                                     myAttachmentText,
-                                     prjVal['emailFormat'], 
-                                     prjVal['emailServerHost'], 
-                                     prjVal['emailServerPort'], 
-                                     prjVal['emailServerUsername'], 
-                                     prjVal['emailServerPassword'])
+            Logger.debug(
+                "Sending email notification as %s to %s using %s:%d" %
+                (prjVal['emailFormat'],
+                 ", ".join(
+                    prjVal['emailTo']),
+                    prjVal['emailServerHost'],
+                    prjVal['emailServerPort']))
+            mySubj = "Integration status for %s: %s" % (prjName, myPrjStatusStr)
+            myBody = report.makeEmailBody(prjVal['emailFormat'],
+                                          {'prjName': prjName,
+                                           'prjStatus': myPrjStatusStr,
+                                           'numSucceededTasks': myNumSucceededTasks,
+                                           'numFailedTasks': myNumFailedTasks,
+                                           'numSucceededTasksWithWarning': myNumSucceededTasksWithWarning,
+                                           'elapsedTime': myPrjEnd - myPrjStart},
+                                          myTasksStatus,
+                                          myFailedBecauseOfTaskError)
+            myAttachmentText = report.makeAttachmentText(
+                prjVal['emailFormat'],
+                myTasksStatus,
+                myFailedBecauseOfTaskError)
+            util.sendEmailNotification(prjVal['emailFrom'],
+                                       prjVal['emailTo'],
+                                       mySubj,
+                                       myBody,
+                                       myAttachmentText,
+                                       prjVal['emailFormat'],
+                                       prjVal['emailServerHost'],
+                                       prjVal['emailServerPort'],
+                                       prjVal['emailServerUsername'],
+                                       prjVal['emailServerPassword'])
     # Iterate thru projects
 
+
 def main(argv=None):
-    if  sys.version_info[0] < 2 or ( sys.version_info[0] == 2 and sys.version_info[1] < 5 ):
+    if sys.version_info[0] < 2 or (sys.version_info[0] == 2 and sys.version_info[1] < 5):
         sys.stderr.write("Python 2.5 or higher is required for the program to run.")
         return -1
-        
+
     try:
         #import os, pwd
-        #util.daemonize(pwd.getpwuid(os.getuid()).pw_dir)
+        # util.daemonize(pwd.getpwuid(os.getuid()).pw_dir)
         util.daemonize()
         myCcPydConf = ccpydconfparser.parse()
         if not myCcPydConf['logging']:
             myCcPydConf['logFile'] = '/dev/null'
-        Logger = util.initLogger( common.LoggerName, myCcPydConf['logFile'], common.ProductName+' v.'+common.ProductVersion, myCcPydConf['logLevel'] )
+        Logger = util.initLogger(
+            common.LoggerName,
+            myCcPydConf['logFile'],
+            common.ProductName +
+            ' v.' +
+            common.ProductVersion,
+            myCcPydConf['logLevel'])
     except Exception as e:
         sys.stderr.write("%s. %s. %s" % (type(e), str(e), util.formatTb()))
         return -1
@@ -153,7 +181,7 @@ def main(argv=None):
         Logger.error("%s: %s. %s" % (type(e), str(e), util.formatTb()))
         util.closeLogger(Logger)
         return -1
-    except: 
+    except:
         Logger.error("Unexpected error")
         util.closeLogger(Logger)
         return -2

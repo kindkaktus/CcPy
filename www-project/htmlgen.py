@@ -18,28 +18,36 @@ Html generator for CcPy project Web page
 """
 from string import Template
 
+
 def _readFile(aFileName):
     myContent = ''
-    for line in file(aFileName , "r"):
+    for line in file(aFileName, "r"):
         myContent += line
     return myContent
-    
+
+
 def _writeFile(aFileName, aContent):
-    myFile = open( aFileName , "w+")
+    myFile = open(aFileName, "w+")
     myFile.write(aContent)
     myFile.close()
 
 #######
 # BL
 ######
-SrcSuffix=".src"
-MainTemplFile ="maintempl.htm" + SrcSuffix
-GenHtmlPages=('index.htm', 'quickstart.htm', 'ccpyd.htm', 'ccpy.htm', 'changelog.htm', 'download.htm')
-    
+SrcSuffix = ".src"
+MainTemplFile = "maintempl.htm" + SrcSuffix
+GenHtmlPages = (
+    'index.htm',
+    'quickstart.htm',
+    'ccpyd.htm',
+    'ccpy.htm',
+    'changelog.htm',
+    'download.htm')
+
 for genHtmlPage in GenHtmlPages:
-    print(("Generating %s" %  genHtmlPage))
+    print(("Generating %s" % genHtmlPage))
     myTempl = Template(_readFile(MainTemplFile))
-    mySrcContentFile = genHtmlPage+SrcSuffix
+    mySrcContentFile = genHtmlPage + SrcSuffix
     myContent = _readFile(mySrcContentFile)
     myGenContent = myTempl.substitute(content=myContent)
     _writeFile(genHtmlPage, myGenContent)

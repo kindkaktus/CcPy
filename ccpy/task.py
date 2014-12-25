@@ -11,22 +11,23 @@
 Task ABC
 """
 
+
 class Task:
+
     """ Task interface """
 
     def __init__(self):
         pass
-    
+
     def execute(self):
         """ Execute task
 
         execute() attribute is a part of Task interface to be implemented by derived classes
-        Return dictionary: 
+        Return dictionary:
             "statusFlag"  : task execution success flag
             "statusDescr" : brief user-oriented description of the task execution status
-            "stderr": optional, stderr output, if applicable 
+            "stderr": optional, stderr output, if applicable
             "stdout": optional, stdout output, if applicable
         Throw Exception
         """
-        raise NotImplementedError ("No method defined to execute the task")
-
+        raise NotImplementedError("No method defined to execute the task")

@@ -43,14 +43,14 @@ comparison with other values will invoke Python's fallback comparisons. :
     True
 
 
-This was a major (breaking) change wrt the original implementation: 
+This was a major (breaking) change wrt the original implementation:
 the same enum values from the enums created with the same args are equal.
 Deepcopying of the enum value produces the same enum value.
 
 Each value is accessible by index or by its string value
 
-    >>> red = clrs[0] 
-    >>> red = clrs['red'] 
+    >>> red = clrs[0]
+    >>> red = clrs['red']
 
 Each value from an enumeration exports its sequence index
 as an integer, and can be coerced to a simple string matching the
@@ -61,82 +61,121 @@ original arguments used to create the enumeration::
     >>> green.index
     1
 
-Remarks: this implementation simulates a certain enum type as 
-a class instance. This explains the decision to identify 
+Remarks: this implementation simulates a certain enum type as
+a class instance. This explains the decision to identify
 a certain enum (= type) solely by the sequence of its enum values
-(= class instance data attributes). 
+(= class instance data attributes).
 """
 
+
 class EnumException(Exception):
+
     """ Base class for all exceptions in this module """
+
     def __init__(self):
         if self.__class__ is EnumException:
             raise NotImplementedError("%s is an abstract class for subclassing" % self.__class__)
 
+
 class EnumEmptyError(AssertionError, EnumException):
+
     """ Raised when attempting to create an empty enumeration """
+
     def __str__(self):
         return "Enumerations cannot be empty"
 
+
 class EnumBadKeyError(TypeError, EnumException):
+
     """ Raised when creating an Enum with non-string keys """
+
     def __init__(self, key):
         self.key = key
+
     def __str__(self):
         return "Enumeration keys must be strings: %s" % (self.key,)
 
+
 class EnumImmutableError(TypeError, EnumException):
+
     """ Raised when attempting to modify an Enum """
+
     def __init__(self, *args):
         self.args = args
+
     def __str__(self):
         return "Enumeration does not allow modification"
-        
+
+
 class ComparableMixin(object):
-  def __eq__(self, other):
-    return not self<other and not other<self
-  def __ne__(self, other):
-    return self<other or other<self
-  def __gt__(self, other):
-    return other<self
-  def __ge__(self, other):
-    return not self<other
-  def __le__(self, other):
-    return not other<self
+
+    def __eq__(self, other):
+        return not self < other and not other < self
+
+    def __ne__(self, other):
+        return self < other or other < self
+
+    def __gt__(self, other):
+        return other < self
+
+    def __ge__(self, other):
+        return not self < other
+
+    def __le__(self, other):
+        return not other < self
+
 
 class _EnumValue(ComparableMixin):
+
     """ A specific value of an enumerated type """
+
     def __init__(self, enumHash, index, key):
         self.__enumHash = enumHash
         self.__index = index
         self.__key = key
+
     @property
-    def enumHash(self): 
+    def enumHash(self):
         return self.__enumHash
+
     @property
-    def key(self): 
+    def key(self):
         return self.__key
-    @property 
+
+    @property
     def index(self):
         return self.__index
+
     def __str__(self):
         return "%s" % (self.key)
+
     def __repr__(self):
-        return "EnumValue(%s, %s, %s)" % ( repr(self.__enumHash), repr(self.__index), repr(self.__key))
+        return "EnumValue(%s, %s, %s)" % (repr(
+            self.__enumHash),
+            repr(
+            self.__index),
+            repr(
+            self.__key))
+
     def __hash__(self):
         return hash(self.__index)
+
     def __lt__(self, other):
         if self.enumHash == other.enumHash:
             return self.index < other.index
         return NotImplementedError("Cannot compare objects with different hashes")
     # for Python 2.x
+
     def __cmp__(self, other):
         if self.enumHash == other.enumHash:
             return cmp(self.index, other.index)
         return NotImplementedError("Cannot compare objects with different hashes")
 
+
 class Enum(ComparableMixin):
+
     """ Enumerated type """
+
     def __init__(self, *keys):
         if not keys:
             raise EnumEmptyError()
@@ -153,12 +192,12 @@ class Enum(ComparableMixin):
             except TypeError as e:
                 raise EnumBadKeyError(key)
         super(Enum, self).__setattr__('_values', values)
-        
+
     @staticmethod
     def _is_string(obj):
         try:
             return isinstance(obj, basestring)
-        except NameError: # means we use python2 because there is no basestring in python3
+        except NameError:  # means we use python2 because there is no basestring in python3
             return isinstance(obj, str)
 
     def __setattr__(self, name, value):
@@ -189,7 +228,7 @@ class Enum(ComparableMixin):
 
     def __contains__(self, value):
         is_member = False
-        if  Enum._is_string(value):
+        if Enum._is_string(value):
             is_member = (value in self._keys)
         else:
             try:
@@ -203,8 +242,7 @@ class Enum(ComparableMixin):
 
     def __lt__(self, other):
         return hash(self) < hash(other)
-    
+
     # for Python 2.x
     def __cmp__(self, other):
         return cmp(hash(self), hash(other))
-

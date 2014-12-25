@@ -17,19 +17,26 @@ Unit tests for CcPy utilities
 import sys
 import unittest
 
-sys.path.append("..") 
+sys.path.append("..")
 import ccpy.util as util
 import ccpy.common as common
 
+
 class UtilTestCase(unittest.TestCase):
-    _logger = util.initLogger( common.LoggerName, 'UtilTest.log', common.ProductName+' v.'+common.ProductVersion, "DEBUG" )
+    _logger = util.initLogger(
+        common.LoggerName,
+        'UtilTest.log',
+        common.ProductName +
+        ' v.' +
+        common.ProductVersion,
+        "DEBUG")
 
     def testPidExist(self):
         try:
             import os
-            self.assertTrue( util.isPidExist(os.getpid()) )
-            self.assertTrue( util.isPidExist(1) )
-            self.assertTrue( not util.isPidExist(-123) )
+            self.assertTrue(util.isPidExist(os.getpid()))
+            self.assertTrue(util.isPidExist(1))
+            self.assertTrue(not util.isPidExist(-123))
         except BaseException as e:
             print(("Error. %s. %s. %s" % (type(e), str(e), util.formatTb())))
             self.assertTrue(False)
@@ -38,10 +45,10 @@ class UtilTestCase(unittest.TestCase):
         try:
             mySingleton1 = util.SysSingleton('testapp1')
             mySingleton2 = util.SysSingleton('testapp2')
-            self.assertRaises( util.SysSingletonCreateError, util.SysSingleton, 'testapp1', False)
+            self.assertRaises(util.SysSingletonCreateError, util.SysSingleton, 'testapp1', False)
             mySingleton1 = util.SysSingleton('testapp1')
             mySingleton1 = util.SysSingleton('testapp1', True)
-            self.assertRaises( util.SysSingletonCreateError, util.SysSingleton, 'testapp2', False )
+            self.assertRaises(util.SysSingletonCreateError, util.SysSingleton, 'testapp2', False)
             mySingleton2 = util.SysSingleton('testapp2')
             mySingleton2 = util.SysSingleton('testapp2', True)
         except BaseException as e:

@@ -20,14 +20,16 @@ import os
 import re
 import unittest
 
-def testAll():
-    myDir = os.path.abspath(os.path.dirname(sys.argv[0]))   
-    myFiles = os.listdir(myDir)                               
-    myUnitTestFileRegex = re.compile(r"test.py$", re.IGNORECASE)          
-    myUnitTestFiles = list(filter(myUnitTestFileRegex.search, myFiles))                     
-    myUnitTestModuleNames = [os.path.splitext(f)[0] for f in myUnitTestFiles]         
-    myUnitTestModules = list(map(__import__, myUnitTestModuleNames))                 
-    return unittest.TestSuite(list(map(unittest.defaultTestLoader.loadTestsFromModule, myUnitTestModules)))          
 
-if __name__ == "__main__":                   
+def testAll():
+    myDir = os.path.abspath(os.path.dirname(sys.argv[0]))
+    myFiles = os.listdir(myDir)
+    myUnitTestFileRegex = re.compile(r"test.py$", re.IGNORECASE)
+    myUnitTestFiles = list(filter(myUnitTestFileRegex.search, myFiles))
+    myUnitTestModuleNames = [os.path.splitext(f)[0] for f in myUnitTestFiles]
+    myUnitTestModules = list(map(__import__, myUnitTestModuleNames))
+    return unittest.TestSuite(
+        list(map(unittest.defaultTestLoader.loadTestsFromModule, myUnitTestModules)))
+
+if __name__ == "__main__":
     unittest.main(defaultTest="testAll")

@@ -13,19 +13,26 @@
 """
 Unit tests for CcPyState
 """
- 
+
 import sys
 import unittest
 import shutil
 import os
 
-sys.path.append("..") 
+sys.path.append("..")
 from ccpy.ccpystate import CcPyState, PrjStates
 import ccpy.util as util
 import ccpy.common as common
 
+
 class UtilTestCase(unittest.TestCase):
-    _logger = util.initLogger( common.LoggerName, 'UtilTest.log', common.ProductName+' v.'+common.ProductVersion, "DEBUG" )
+    _logger = util.initLogger(
+        common.LoggerName,
+        'UtilTest.log',
+        common.ProductName +
+        ' v.' +
+        common.ProductVersion,
+        "DEBUG")
 
     def setUp(self):
         shutil.copy('ccpy.state', 'ccpy.state.tmp')
