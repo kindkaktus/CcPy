@@ -1,4 +1,5 @@
-#
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #  HeadURL : $HeadURL: svn://korostelev.net/CcPy/Trunk/tst/ccpystatetest.py $
 #  Id      : $Id: ccpystatetest.py 125 2009-06-01 15:46:29Z akorostelev $
 #

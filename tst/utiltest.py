@@ -1,4 +1,5 @@
-#
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #  HeadURL : $HeadURL: svn://korostelev.net/CcPy/Trunk/tst/utiltest.py $
 #  Id      : $Id: utiltest.py 125 2009-06-01 15:46:29Z akorostelev $
 #

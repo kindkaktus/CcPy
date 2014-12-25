@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 
 #
 #  HeadURL : $HeadURL: svn://korostelev.net/CcPy/Trunk/setup.py $
