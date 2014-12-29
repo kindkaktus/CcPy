@@ -26,4 +26,6 @@ Handle the case when the working copy is locked by running svn cleanup:
 svn: Working copy '.' locked
 svn: run 'svn cleanup' to remove locks (type 'svn help cleanup' for details)
 
+add an option to choose whether update git submodules from the upstream (--remote option) or from the fixed commit
+
 

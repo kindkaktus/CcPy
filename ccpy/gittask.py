@@ -21,7 +21,7 @@ import logging
 
 from . import task
 from .common import LoggerName
-from .util import to_utf8, to_unicode, clean_directory
+from .util import to_unicode, clean_directory
 
 Logger = logging.getLogger(LoggerName)
 
@@ -65,7 +65,8 @@ class GitTask(task.Task):
                     and os.path.isdir(self._workingDir + "/.git")):
                 # Found git repo, getting the latest origin/master
                 Logger.debug("Updating %s" % self._workingDir)
-                myCmd = "git fetch --all && git reset --hard origin/master && git submodule update --recursive"
+                #@todo add an option to choose whether update submodules from the upstream (--remote option) or from the fixed commit
+                myCmd = "git fetch --all && git reset --hard origin/master && git submodule update --init --recursive --remote"
                 myProcess = subprocess.Popen(
                     myCmd,
                     shell=True,
