@@ -1,0 +1,3 @@
+pylint==1.3.0 # because pylint-1.4+ does not support python-2.6
+argparse
+autopep8
