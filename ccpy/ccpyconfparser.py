@@ -50,7 +50,7 @@ def _get_elem_bool_value(element, default_value):
         elif element.text.lower() in ('off', 'no', 'false'):
             return False
         else:
-            raise Excepion("Invalid boolean value: %s in %s" % (element.text, element.tag))
+            raise Exception("Invalid boolean value: %s in %s" % (element.text, element.tag))
     else:
         return default_value
 

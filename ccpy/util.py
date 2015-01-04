@@ -165,7 +165,7 @@ def body_mime_type(aFmt):
         return "plain"
     elif aFmt in (EmailFormat.plain, EmailFormat.attachment):
         return "html"
-    raise Ecxeption("Unsupported email format " + str(aFmt))
+    raise Exception("Unsupported email format " + str(aFmt))
 
 
 def sendEmailNotification(
