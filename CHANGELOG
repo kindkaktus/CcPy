@@ -1,5 +1,12 @@
 CHANGE HISTORY of the CcPy
 ---------------------------------------------------
+ 
+ 0.9 - 4 January 2015
+    - ADDED support for git repositories
+    - CHANGED removed 'skipIfNoModifications' setting
+    - REFACTORING: use DOM parser i.o. SAX to simplify the code
+    - FIXED: some syntax errors found by pylint
+    - FIXED: formatting to be PEP-8 compliant
 
 0.8 - 26 October 2014
 ------------------------------
