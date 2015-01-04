@@ -2,11 +2,13 @@
   Change Log
 </h2>
 <p>
- <h3>0.9 - 13 November 2014</h3>
+ <h3>0.9 - 4 January 2015</h3>
  <ul>
     <li>ADDED support for git repositories</li>
     <li>CHANGED removed 'skipIfNoModifications' setting</li>
     <li>REFACTORING: use DOM parser i.o. SAX to simplify the code</li>
+    <li>FIXED: some syntax errors found by pylint</li>
+    <li>FIXED: formatting to be PEP-8 compliant</li>
   </ul>
 
    <h3>0.8 - 26 October 2014</h3>
