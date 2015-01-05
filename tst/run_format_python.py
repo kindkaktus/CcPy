@@ -14,11 +14,15 @@
 # pip install --upgrade argparse autopep8
 
 import sys
-import format_python as fmt
+sys.path.append("../contrib")
+import PrettyPython as fmt
 
 # Configuration
 DIRS = ['../']
 
+success = fmt.install_deps()
+if not success:
+    sys.exit(1)
 
 # Check
 if len(sys.argv) == 1:
@@ -33,5 +37,6 @@ elif len(sys.argv) == 2 and sys.argv[1] == "--fix":
     sys.exit(0 if success else 1)
 
 else:
-    print("Usage: %s [--fix]")
+    prog = sys.argv[0]
+    print("Usage: %s [--fix]" % prog)
     sys.exit(1)
