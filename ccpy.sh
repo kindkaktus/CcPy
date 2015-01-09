@@ -49,7 +49,7 @@ function update_ccpy_wc()
     elif [ -d ".git" ]; then
         git fetch --all
         git reset --hard origin/master
-        git submodule update --init --recursive --remote
+        git submodule update --init --recursive
     fi
     popd > /dev/null
 }

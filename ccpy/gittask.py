@@ -65,8 +65,7 @@ class GitTask(task.Task):
                     and os.path.isdir(self._workingDir + "/.git")):
                 # Found git repo, getting the latest origin/master
                 Logger.debug("Updating %s" % self._workingDir)
-                #@todo add an option to choose whether update submodules from the upstream (--remote option) or from the fixed commit
-                myCmd = "git fetch --all && git reset --hard origin/master && git submodule update --init --recursive --remote"
+                myCmd = "git fetch --all && git reset --hard origin/master && git submodule update --init --recursive"
                 myProcess = subprocess.Popen(
                     myCmd,
                     shell=True,
