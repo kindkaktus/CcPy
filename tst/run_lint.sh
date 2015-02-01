@@ -20,7 +20,23 @@ function is_legacy_python_version()
 function install_deps()
 {
     if is_legacy_python_version ; then
-        pip install --upgrade pylint==1.3.0 > /dev/null
+        # old python versions need specific versions of packages
+        local astroid_version=$(pip show astroid | grep ^Version | cut -d ' ' -f 2)
+        if [ x"${astroid_version}" != x"1.2.1" ]; then
+            echo "installing astroid-1.2.1"
+            pip uninstall -y astroid > /dev/null
+            # clean pip cache otherwise a newer package version might be installed regardless what we specify
+            rm -rf /tmp/pip-build-root
+            pip install astroid==1.2.1 > /dev/null
+        fi
+        local pylint_version=$(pip show pylint | grep ^Version | cut -d ' ' -f 2)
+        if [ x"${pylint_version}" != x"1.3.0" ]; then
+            echo "installing pylint-1.3.0"
+            pip uninstall -y pylint > /dev/null
+            # clean pip cache otherwise a newer package version might be installed regardless what we specify
+            rm -rf /tmp/pip-build-root
+            pip install pylint==1.3.0 > /dev/null
+        fi
     else
         pip install --upgrade pylint > /dev/null
     fi
