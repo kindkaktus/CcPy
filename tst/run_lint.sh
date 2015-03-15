@@ -46,8 +46,7 @@ function install_deps()
 function check_python_scripts()
 {
     local filelist="$1"
-    local disabled_errors="E1601"  # false-positive on "print statement used". Submitted bug to https://bitbucket.org/logilab/pylint/issue/437/false-positive-e1601-print-statement-used
-    disabled_errors+=",E1101"  # pylint does not understand our infra.Enum
+    local disabled_errors="E1101"  # pylint does not understand our infra.Enum
     disabled_errors+=",E1103" # false-positive
     disabled_errors+=",E0611" # known false-positive
     pylint --errors-only --msg-template='{abspath}:{line:3d},{column}: {obj}: [{msg_id}] {msg}' --disable=${disabled_errors} ${filelist}
