@@ -21,12 +21,10 @@ import ccpy.ccpydconfparser as ccpydconfparser
 import ccpy.ccpyconfparser as ccpyconfparser
 from ccpy.ccpystate import CcPyState, PrjStates
 import ccpy.util as util
-import ccpy.svntask as svntask
 import ccpy.maketask as maketask
 import ccpy.exectask as exectask
 import ccpy.common as common
 import ccpy.report as report
-import ccpy.util as util
 
 
 def execTasks(aCcPyConf):

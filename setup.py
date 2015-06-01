@@ -2,9 +2,6 @@
 # -*- coding: utf-8 -*-
 
 #
-#  HeadURL : $HeadURL: svn://korostelev.net/CcPy/Trunk/setup.py $
-#  Id      : $Id: setup.py 123 2009-03-28 19:50:48Z akorostelev $
-#
 #  Copyright (c) 2008-2015, Andrei Korostelev <andrei at korostelev dot net>
 #
 #  Before using this product in any way please read the license agreement.

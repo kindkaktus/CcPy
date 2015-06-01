@@ -21,7 +21,7 @@ import logging
 
 from . import task
 from .common import LoggerName
-from .util import to_utf8, to_unicode, clean_directory
+from .util import to_unicode, clean_directory
 
 Logger = logging.getLogger(LoggerName)
 
