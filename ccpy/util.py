@@ -132,10 +132,12 @@ def to_utf8(s):
     else:
         return s.encode('utf-8')
 
-# if s is a sequence type it it joined to a string/bytearray separated with one space
-
 
 def to_unicode(s, logger=None):
+    """
+    When s is a sequence type it gets converted a string/bytearray
+    with elements separated by one space
+    """
     if isinstance(s, list) or isinstance(s, tuple):
         if IS_PYTHON2:
             s = " ".join(s)
