@@ -1,5 +1,6 @@
 CcPy
 ============================
+[![Build Status](https://travis-ci.org/kindkaktus/CcPy.svg?branch=master)](https://travis-ci.org/kindkaktus/CcPy)
 
 Introduction
 ---------------------
