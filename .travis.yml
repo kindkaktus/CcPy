@@ -1,13 +1,12 @@
 language: python
 python:
-- "2.6"
-- "2.7"
-- "3.2"
-- "3.3"
-- "3.4"
-- "nightly"
+    - "2.6"
+    - "2.7"
+    - "3.2"
+    - "3.3"
+    - "3.4"
+    - "nightly"
 # command to run tests
-script: tst/runalltests.py
-branches:
-  only:
-    - master
+script:
+    cd tst
+    ./runalltests.py
