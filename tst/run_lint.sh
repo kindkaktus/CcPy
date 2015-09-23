@@ -2,6 +2,8 @@
 
 # check python scripts
 
+failcount=0
+
 # return 0 if Python version is legacy (< 2.7) for pylint-1.4+
 function is_legacy_python_version()
 {
@@ -46,10 +48,10 @@ function install_deps()
 function check_python_scripts()
 {
     local filelist="$1"
-    local disabled_errors="E1101"  # pylint does not understand our infra.Enum
-    disabled_errors+=",E1103" # false-positive
-    disabled_errors+=",E0611" # known false-positive
-    pylint --errors-only --msg-template='{abspath}:{line:3d},{column}: {obj}: [{msg_id}] {msg}' --disable=${disabled_errors} ${filelist}
+    pylint --msg-template='{abspath}:{line:3d},{column}: {obj}: [{msg_id}] {msg}' ${filelist}
+    if [ $? -ne 0 ]; then
+        let "failcount=failcount+1"
+    fi
 }
 
 install_deps
@@ -59,4 +61,5 @@ install_deps
 check_python_scripts "./*.py"
 check_python_scripts "../*.py"
 check_python_scripts "../ccpy/*.py"
-check_python_scripts "../www-project/*.py"
+
+exit $failcount
