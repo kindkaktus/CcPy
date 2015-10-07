@@ -16,15 +16,15 @@ function usage()
 }
 
 # usage _killtree <pid>
-function _killtree() 
+function _killtree()
 {
     local _pid=$1
-    
+
     kill -stop ${_pid} # to prevent the process from producing more children while killing its current children
     for _child in $(pgrep -P ${_pid}); do
         _killtree ${_child}
     done
-    
+
     kill ${_pid}
     sleep 0.1
     if kill -0 ${_pid} > /dev/null 2>&1; then
@@ -42,13 +42,13 @@ function stop_ccpy()
 
 function update_ccpy_wc()
 {
-    pushd $( dirname "${BASH_SOURCE[0]}" ) > /dev/null 
+    pushd $( dirname "${BASH_SOURCE[0]}" ) > /dev/null
     if [ -d ".svn" ]; then
         svn revert --recursive --non-interactive ./
         svn up --non-interactive
     elif [ -d ".git" ]; then
         git fetch --all
-        git reset --hard origin/master
+        git reset --hard @{upstream}
         git submodule update --init --recursive
     fi
     popd > /dev/null

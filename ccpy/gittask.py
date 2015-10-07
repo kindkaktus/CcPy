@@ -63,9 +63,9 @@ class GitTask(task.Task):
             Logger.debug("Executing %s" % self)
             if (os.path.exists(self._workingDir + "/.git")
                     and os.path.isdir(self._workingDir + "/.git")):
-                # Found git repo, getting the latest origin/master
+                # Found git repo, getting the latest upstream
                 Logger.debug("Updating %s" % self._workingDir)
-                myCmd = "git fetch --all && git reset --hard origin/master && git submodule update --init --recursive"
+                myCmd = "git fetch --all && git reset --hard @{upstream} && git submodule update --init --recursive"
                 myProcess = subprocess.Popen(
                     myCmd,
                     shell=True,
