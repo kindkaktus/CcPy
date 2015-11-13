@@ -2,9 +2,6 @@
 # -*- coding: utf-8 -*-
 
 #
-#  HeadURL : $HeadURL: svn://korostelev.net/CcPy/Trunk/www-project/htmlgen.py $
-#  Id      : $Id: htmlgen.py 87 2009-02-04 20:46:23Z akorostelev $
-#
 #  Copyright (c) 2008-2015, Andrei Korostelev <andrei at korostelev dot net>
 #
 #  Before using this product in any way please read the license agreement.
@@ -20,23 +17,20 @@ from string import Template
 
 
 def _readFile(aFileName):
-    myContent = ''
-    for line in file(aFileName, "r"):
-        myContent += line
-    return myContent
+    with open(aFileName, "r") as f:
+        return f.read()
 
 
 def _writeFile(aFileName, aContent):
-    myFile = open(aFileName, "w+")
-    myFile.write(aContent)
-    myFile.close()
+    with open(aFileName, "w+") as f:
+        f.write(aContent)
 
 #######
 # BL
 ######
 SrcSuffix = ".src"
 MainTemplFile = "maintempl.htm" + SrcSuffix
-GenHtmlPages = (
+HtmlPages = (
     'index.htm',
     'quickstart.htm',
     'ccpyd.htm',
@@ -44,10 +38,10 @@ GenHtmlPages = (
     'changelog.htm',
     'download.htm')
 
-for genHtmlPage in GenHtmlPages:
-    print(("Generating %s" % genHtmlPage))
+for page in HtmlPages:
+    print(("Generating %s" % page))
     myTempl = Template(_readFile(MainTemplFile))
-    mySrcContentFile = genHtmlPage + SrcSuffix
+    mySrcContentFile = page + SrcSuffix
     myContent = _readFile(mySrcContentFile)
     myGenContent = myTempl.substitute(content=myContent)
-    _writeFile(genHtmlPage, myGenContent)
+    _writeFile(page, myGenContent)
