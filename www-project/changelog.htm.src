@@ -2,6 +2,12 @@
   Change Log
 </h2>
 <p>
+
+ <h3>1.0 - 8 December 2015</h3>
+ <ul>
+    <li>ADDED allow attaching arbitrary files to email report</li>
+  </ul>
+
  <h3>0.9 - 4 January 2015</h3>
  <ul>
     <li>ADDED support for git repositories</li>
@@ -75,5 +81,5 @@
   <h3>0.1 - 17 Oct 2008</h3>
   <ul>
     <li>Initial version</li>
-  </ul>  
+  </ul>
 </p>

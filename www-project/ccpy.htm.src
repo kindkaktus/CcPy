@@ -14,7 +14,7 @@
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;sourcecontrol type="git"&gt;<br/>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;url&gt;https://company.com/repos/coolproductv2/Trunk/Import&lt;/url&gt;<br/>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;workingDirectory&gt;/CoolProductBuilds/Import&lt;/workingDirectory&gt;<br/>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;preCleanWorkingDirectory&gt;true&lt;/preCleanWorkingDirectory&gt;<br/>  
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;preCleanWorkingDirectory&gt;true&lt;/preCleanWorkingDirectory&gt;<br/>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/sourcecontrol&gt;<br/>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;sourcecontrol type="svn"&gt;<br/>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;url&gt;https://company.com/repos/coolproductv2/Trunk/&lt;/url&gt;<br/>
@@ -119,7 +119,8 @@
    <tr><td>emailNotification</td><td>project</td><td>Contains settings for sending email notifications with integration results</td><td>Element with subelements</td><td>N/A</td><td>no</td><td></td></tr>
    <tr><td>from</td><td>emailNotification</td><td>Sender's email address</td><td>string</td><td>empty</td><td>no</td><td></td></tr>
    <tr><td>to</td><td>emailNotification</td><td>Contains correspondents to receive email notifications with integration results</td><td>Comma-separated list of strings</td><td>empty</td><td>no</td><td></td></tr>
-   <tr><td>format</td><td>emailNotification</td><td>Email format</td><td>String: 'attachment', 'html' or 'plain'</td><td>'attachment'</td><td>no</td><td></td></tr>
+   <tr><td>format</td><td>emailNotification</td><td>Email format for build results</td><td>String: 'attachment', 'html' or 'plain'</td><td>'attachment'</td><td>no</td><td></td></tr>
+   <tr><td>attachment</td><td>emailNotification</td><td>Path to the file to attach to the email report. Can be more than one. Notice that it is not related to the format the build results are emailed with.</td><td>no</td><td></td></tr>
    <tr><td>server</td><td>emailNotification</td><td>SMTP server host</td><td>string</td><td>'localhost'</td><td>no</td><td></td></tr>
    <tr><td>port</td><td>emailNotification</td><td>SMTP server port</td><td>integer</td><td>25</td><td>no</td><td></td></tr>
    <tr><td>username</td><td>emailNotification</td><td>SMTP server username</td><td>string</td><td>Not supplied</td><td>no</td><td></td></tr>

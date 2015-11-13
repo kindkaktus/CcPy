@@ -176,6 +176,7 @@ def sendEmailNotification(
         aSubj,
         aBody,
         anAttachmentText,
+        anExtraAttachments,
         aFmt,
         anSmtpSvrHost,
         anSmtpSvrPort,
@@ -189,6 +190,7 @@ def sendEmailNotification(
     aSubj - subject string
     aBody - message body string
     anAttachmentText - message attachment text if format is attachment, otherwise None
+    anExtraAttachments - extra files to attach
     aFmt - format, one of EmailFormat
     anSmtpSvrHost, anSmtpSvrPort - SMTP Server location
     aSmtpSvrUser, aSmtpSvrPassword - SMTP Server credentials (skipped if None)
@@ -201,13 +203,25 @@ def sendEmailNotification(
     if aFmt not in EmailFormat:
         raise Exception("%s is not a valid email format" % aFmt)
 
-    if aFmt == EmailFormat.attachment and anAttachmentText is not None:
+    if len(anExtraAttachments) > 0 or (aFmt == EmailFormat.attachment and anAttachmentText is not None):
+        # Email with attachments
         msg = MIMEMultipart()
-        attachment = MIMEText(to_utf8(anAttachmentText), 'plain', 'utf-8')
-        attachment.add_header('Content-Disposition', 'attachment', filename='build.log')
-        msg.attach(attachment)
+        for file_path in anExtraAttachments:
+            if os.path.isfile(file_path):
+                with open(file_path, 'r') as f:
+                    attachment = MIMEText(to_utf8(f.read()), 'plain', 'utf-8')
+                    attachment.add_header('Content-Disposition', 'attachment', filename=os.path.basename(file_path))
+                    msg.attach(attachment)
+            else:
+                msg.attach(MIMEText("<<Failed to attach " + file_path + " (file does not exist)>>", 'plain', 'utf-8'))
+        if aFmt == EmailFormat.attachment and anAttachmentText is not None:
+            attachment = MIMEText(to_utf8(anAttachmentText), 'plain', 'utf-8')
+            attachment.add_header('Content-Disposition', 'attachment', filename='build.log')
+            msg.attach(attachment)
         msg.attach(MIMEText(to_utf8(aBody), 'html', 'utf-8'))
+
     else:
+        # No attachments
         msg = MIMEText(to_utf8(aBody), body_mime_type(aFmt), 'utf-8')
 
     msg['Subject'] = aSubj

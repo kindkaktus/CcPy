@@ -1,6 +1,9 @@
 CHANGE HISTORY of the CcPy
 ---------------------------------------------------
- 
+
+ 1.0 - 8 December 2015
+    - ADDED allow attaching arbitrary files to email report
+
  0.9 - 4 January 2015
     - ADDED support for git repositories
     - CHANGED removed 'skipIfNoModifications' setting
@@ -29,7 +32,7 @@ CHANGE HISTORY of the CcPy
    - CHANGED added --force-continue and --force--once command-line options and accordingly adjusted schedule settings in /etc/ccpyd.conf
    - CHANGED Host source code at GitHub
    - ADDED SMTP Server location and login credentials
-   
+
 
 0.5 (rev. 168) - 18 May 2010
 -----------------------------
@@ -46,13 +49,13 @@ CHANGE HISTORY of the CcPy
   - FIXED: improved timer precision
 
 
-0.4 (rev. 116) - 06 March 2009 
+0.4 (rev. 116) - 06 March 2009
 -----------------------------
   - FIXED: moved setup.py to the root directory, so it can find the proper files
   - Email report can be send either in HTML or in plain text
   - Unit test files for different modules can be now executed centrally
   - Improved enum class to support deepcopying
- 
+
 
 0.3 - 3 Dec 2008
 -----------------------------
@@ -71,7 +74,7 @@ CHANGE HISTORY of the CcPy
   - Improved statistics in email notifications
   - Email notification list now exists per project (was global)
   - Added copyright banner
-  - Added configuration flag controlling whether the ccpy should skip building/execution 
+  - Added configuration flag controlling whether the ccpy should skip building/execution
     of the source code which has not been changed since the last checkout
   - Added configuration flag controlling whether the ccpy should stop execution of the rest of project
     tasks of the project and set project status to FAILED once one of the tasks fails

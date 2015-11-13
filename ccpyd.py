@@ -138,6 +138,7 @@ def execTasks(aCcPyConf):
                                        mySubj,
                                        myBody,
                                        myAttachmentText,
+                                       prjVal['emailAttachments'],
                                        prjVal['emailFormat'],
                                        prjVal['emailServerHost'],
                                        prjVal['emailServerPort'],

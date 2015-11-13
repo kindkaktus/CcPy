@@ -28,7 +28,7 @@ To install
 -------------
   ./setup.py [install]
 
-The installation script merely copies CcPy config files ccpy.conf and ccpyd.conf to /etc dir. 
+The installation script merely copies CcPy config files ccpy.conf and ccpyd.conf to /etc dir.
 You have to edit these configs first before starting with CcPy. Please refer to the 'Configuring CcPy' section in this README.
 
 To start
@@ -44,7 +44,7 @@ To stop the running script
 ---------------
     ./ccpy.sh stop
 
-    
+
 To uninstall
 -----------
    ./setup.py uninstall
@@ -55,7 +55,7 @@ The uninstallation script removes config files created during installation and c
 Configuring CcPy
 ---------------------
 
-CcPy uses two config files (xml format): 
+CcPy uses two config files (xml format):
   ccpyd.conf  - configure CcPy global settings such as logging and location of project config file
   ccpy.conf  - configure projects to be built
 
@@ -73,7 +73,7 @@ CcPy uses two config files (xml format):
 
 
     Node        : ccpyConfig
-    Description : location of the projects configuration file 
+    Description : location of the projects configuration file
     Type        : string
     Default     : /etc/ccpy.conf
     Required    : no
@@ -83,9 +83,9 @@ CcPy uses two config files (xml format):
     Type        : element with logging attributes and subelements
     Default     : logging is disabled
     Required    : no
-    
+
       Node        : enabled (attribute of the "logging" element)
-      Description : logging enabled flag 
+      Description : logging enabled flag
       Type        : boolean ("on/yes/true" or "off/no/false")
       Default     : "off"
       Required    : no
@@ -99,7 +99,7 @@ CcPy uses two config files (xml format):
       Node        : level (subelement of the "logging" element)
       Description : logging threshold
       Type        : "DEBUG" or "INFO" or "WARN" or "ERROR"
-      Default     : "DEBUG" 
+      Default     : "DEBUG"
       Required    : yes if logging is enabled
       Notes       : this element is currently ignored
 
@@ -109,7 +109,7 @@ CcPy uses two config files (xml format):
     Example config file:
 
     Projects config file contains the ordered list of projectsts, each project contains the ordered list of tasks.
-    The following task types are supported: "svn", "make" and "execute". 
+    The following task types are supported: "svn", "make" and "execute".
 
     Node        : project
     Description : project settings element
@@ -119,12 +119,12 @@ CcPy uses two config files (xml format):
 
       Node        : name (attribute of the "project" element)
       Description : project name
-      Type        : string 
+      Type        : string
       Default     : N/A
       Required    : yes
 
       Node        : failOnError (subelement of the "project" element)
-      Description : This flag controls whether CcPy should immediately stop executing the rest project tasks  
+      Description : This flag controls whether CcPy should immediately stop executing the rest project tasks
                     and render the entire project status to FAILED once one of the project tasks fails
       Type        : boolean ("on/yes/true" or "off/no/false")
       Default     : yes
@@ -132,13 +132,13 @@ CcPy uses two config files (xml format):
 
         Node        : sourcecontrol (subelement of the "project/tasks" element)
         Description : source control settings element
-        Type        : element with sourcecontrol type attribute and subelements 
+        Type        : element with sourcecontrol type attribute and subelements
         Default     : N/A
         Required    : no
 
           Node        : type (attribute of the "sourcecontrol" element)
           Description : source control type.
-          Type        : string. Supported source control types are "svn" and "git". 
+          Type        : string. Supported source control types are "svn" and "git".
           Default     : N/A
           Required    : yes
 
@@ -153,7 +153,7 @@ CcPy uses two config files (xml format):
           Type        : string
           Default     : current directory
           Required    : no
-          
+
           Node        : preCleanWorkingDirectory (subelement of the "sourcecontrol" element)
           Description : clean working directory before checking out
           Type        : boolean ("on/yes/true" or "off/no/false")
@@ -162,7 +162,7 @@ CcPy uses two config files (xml format):
 
         Node        : make (subelement of the "project/tasks" element)
         Description : make settings element used to execute makefiles
-        Type        : element with subelements 
+        Type        : element with subelements
         Default     : N/A
         Required    : no
 
@@ -185,8 +185,8 @@ CcPy uses two config files (xml format):
           Required    : no
 
        Node        : exec (subelement of the "project/tasks" element)
-       Description : element used to launch executables 
-       Type        : element with subelements 
+       Description : element used to launch executables
+       Type        : element with subelements
        Default     : N/A
        Required    : no
 
@@ -213,61 +213,67 @@ CcPy uses two config files (xml format):
          Type        : unsigned integer
          Default     : 600 (10 minutes)
          Required    : no
-         
+
          Node        : warningExitCode (subelement of the "exec" element)
-         Description : by default executable exit code 0 render the build as successful and <>0 is considered as failed build 
+         Description : by default executable exit code 0 render the build as successful and <>0 is considered as failed build
                        You can use this tag to specify extra exit code that still renders the build successful but set status to "WARNING" instead of "OK"
          Type        : integer
          Default     : N/A
          Required    : no
 
       Node        : emailNotification (subelement of the "project" element)
-      Description : contains settings for sending email notifications with integration results 
-      Type        : element with subelements 
+      Description : contains settings for sending email notifications with integration results
+      Type        : element with subelements
       Default     : N/A
       Required    : no
 
         Node        : from (subelement of the "emailNotification" element)
-        Description : sender's email address 
+        Description : sender's email address
         Type        : string
         Default     : empty
         Required    : no
 
         Node        : to (subelement of the "emailNotification" element)
-        Description : contains correspondents to receive email notifications with integration results 
+        Description : contains correspondents to receive email notifications with integration results
         Type        : comma-separated list of strings
         Default     : empty list
         Required    : no
-        
+
         Node        : format (subelement of the "emailNotification" element)
-        Description : Email format
+        Description : Email format for build results.
         Type        : 'attachment', 'html' or 'plain'
         Default     : 'attachment'
-        Required    : no     
-        
+        Required    : no
+
+        Node        : attachment (subelement of the "emailNotification" element)
+        Description : Path to the file to attach to the email report. Can be more than one. Notice that it is not related to the format the build results are emailed with.
+        Type        : string
+        Default     : not supplied
+        Required    : no
+
         Node        : server (subelement of the "emailNotification" element)
-        Description : SMTP server host 
+        Description : SMTP server host
         Type        : string
         Default     : 'localhost'
         Required    : no
-        
+
         Node        : port (subelement of the "emailNotification" element)
-        Description : SMTP server port 
+        Description : SMTP server port
         Type        : integer
         Default     : 25
         Required    : no
 
         Node        : username (subelement of the "emailNotification" element)
-        Description : SMTP server username 
+        Description : SMTP server username
         Type        : string
         Default     : not supplied
         Required    : no
 
         Node        : password (subelement of the "emailNotification" element)
-        Description : SMTP server password 
+        Description : SMTP server password
         Type        : string
         Default     : not supplied
-        Required    : no        
+        Required    : no
 
 
 

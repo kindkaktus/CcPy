@@ -137,6 +137,7 @@ class Projects:
                emailFrom, emailTo, emailFormat,
                emailServerHost, emailServerPort,
                emailServerUsername, emailServerPassword,
+               emailAttachments,
                failOnError):
         if self.exists(name):
             raise Exception(
@@ -155,6 +156,7 @@ class Projects:
                                'emailServerPort': emailServerPort,
                                'emailServerUsername': emailServerUsername,
                                'emailServerPassword': emailServerPassword,
+                               'emailAttachments': emailAttachments,
                                'failOnError': failOnError})
 
     def addTask(self, name, task):
@@ -230,6 +232,9 @@ def parse(aCcPyConfigFileName=DefCcPyConfigFileName):
             emailServerPassword = _get_elem_str_value(
                 projectElem.find('./emailNotification/password'),
                 None)
+            emailAttachments = []
+            for emailAttachment in projectElem.findall('./emailNotification/attachment'):
+                emailAttachments.append(emailAttachment.text)
             failOnError = _get_elem_bool_value(projectElem.find('./failOnError'), True)
 
             projects.append(projectElem.attrib['name'],
@@ -241,6 +246,7 @@ def parse(aCcPyConfigFileName=DefCcPyConfigFileName):
                             emailServerPort=emailServerPort,
                             emailServerUsername=emailServerUsername,
                             emailServerPassword=emailServerPassword,
+                            emailAttachments=emailAttachments,
                             failOnError=failOnError)
 
         return projects

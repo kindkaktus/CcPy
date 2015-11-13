@@ -132,6 +132,7 @@ class CcPyConfParserTestCase(unittest.TestCase):
             self.assertEqual(myProjects[myProjName]['emailFrom'], 'product3.builds@company.com')
             self.assertEqual(myProjects[myProjName]['emailTo'], ['product3.developer@company.com'])
             self.assertEqual(myProjects[myProjName]['emailFormat'], util.EmailFormat.attachment)
+            self.assertEqual(myProjects[myProjName]['emailAttachments'], [])
             self.assertEqual(myProjects[myProjName]['failOnError'], False)
 
             myTask = myTasks[0]
@@ -169,6 +170,7 @@ class CcPyConfParserTestCase(unittest.TestCase):
             self.assertEqual(myProjects[myProjName]['emailServerPort'], 25)
             self.assertEqual(myProjects[myProjName]['emailServerUsername'], None)
             self.assertEqual(myProjects[myProjName]['emailServerPassword'], None)
+            self.assertEqual(myProjects[myProjName]['emailAttachments'], [])
 
             # Product6 project
             myProjName = "Product6"
@@ -181,6 +183,7 @@ class CcPyConfParserTestCase(unittest.TestCase):
             self.assertEqual(myProjects[myProjName]['emailServerPort'], 2626)
             self.assertEqual(myProjects[myProjName]['emailServerUsername'], 'jos')
             self.assertEqual(myProjects[myProjName]['emailServerPassword'], 'topsecret')
+            self.assertEqual(myProjects[myProjName]['emailAttachments'], ['/var/log/messages', '/var/log/messages.1'])
 
         except BaseException as e:
             print(("Error. %s. %s. %s" % (type(e), str(e), util.formatTb())))
