@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #
-#  Copyright (c) 2008-2015, Andrei Korostelev <andrei at korostelev dot net>
+#  Copyright (c) 2008-2016, Andrei Korostelev <andrei at korostelev dot net>
 #
 #  Before using this product in any way please read the license agreement.
 #  If you do not agree to the terms in this agreement you are not allowed
@@ -52,7 +52,9 @@ def execTasks(aCcPyConf):
             myTaskExecStatus = task.execute()
             myTaskStatus = {'name': task.__class__.__name__,
                             'description': myTaskExecStatus['statusDescr'],
-                            'elapsedTime': datetime.datetime.today() - myTaskStart}
+                            'startTime': myTaskStart,
+                            'endTime': datetime.datetime.today(),
+                            }
             if myTaskExecStatus['statusFlag']:
                 myNumSucceededTasks += 1
                 if "warning" in myTaskExecStatus and myTaskExecStatus["warning"]:
@@ -102,15 +104,15 @@ def execTasks(aCcPyConf):
             myPrjStatusStr = str(myOldPrjState)
 
         Logger.debug(
-            "Finished with project %s. Status: %s. %u task(s) SUCCEEDED of which %d have WARNINGs, %u task(s) FAILED.  Elapsed time: %s" %
+            "Finished with project %s. Status: %s. %u task(s) SUCCEEDED of which %d have WARNINGs, %u task(s) FAILED.  Elapsed time: %s (started %s, ended %s)" %
             (prjName,
              myPrjStatusStr,
              myNumSucceededTasks,
              myNumSucceededTasksWithWarning,
              myNumFailedTasks,
-             util.formatTimeDelta(
-                 myPrjEnd -
-                 myPrjStart)))
+             util.formatTimeDelta(myPrjEnd - myPrjStart),
+             myPrjStart,
+             myPrjEnd))
         if len(prjVal['emailTo']):
             Logger.debug(
                 "Sending email notification as %s to %s using %s:%d" %
@@ -126,7 +128,9 @@ def execTasks(aCcPyConf):
                                            'numSucceededTasks': myNumSucceededTasks,
                                            'numFailedTasks': myNumFailedTasks,
                                            'numSucceededTasksWithWarning': myNumSucceededTasksWithWarning,
-                                           'elapsedTime': myPrjEnd - myPrjStart},
+                                           'startTime': myPrjStart,
+                                           'endTime': myPrjEnd,
+                                           },
                                           myTasksStatus,
                                           myFailedBecauseOfTaskError)
             myAttachmentText = report.makeAttachmentText(

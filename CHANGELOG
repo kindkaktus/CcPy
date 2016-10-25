@@ -1,6 +1,9 @@
 CHANGE HISTORY of the CcPy
 ---------------------------------------------------
 
+1.0.1 - 25 October 2016
+   - ADDED show start and end build time per task and project
+
  1.0 - 8 December 2015
     - ADDED allow attaching arbitrary files to email report
 

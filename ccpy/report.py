@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #
-#  Copyright (c) 2008-2015, Andrei Korostelev <andrei at korostelev dot net>
+#  Copyright (c) 2008-2016, Andrei Korostelev <andrei at korostelev dot net>
 #
 #  Before using this product in any way please read the license agreement.
 #  If you do not agree to the terms in this agreement you are not allowed
@@ -14,10 +14,6 @@
 CcPy reports
 """
 
-import sys
-import time
-import datetime
-import logging
 import cgi
 from string import Template
 
@@ -104,10 +100,10 @@ def makeEmailBody(aFormat, aSummary, aStatusPerTask, aBuildFailedBecauseOfTaskEr
 
     aFormat is one of util.EmailFormat.
     aSummary is a dictionary with a build summary.
-      Contains keys: 'prjName', 'prjStatus', 'numSucceededTasks', 'numSucceededTasksWithWarning', 'numFailedTasks', 'elapsedTime' as datetime.timedelta
+      Contains keys: 'prjName', 'prjStatus', 'numSucceededTasks', 'numSucceededTasksWithWarning', 'numFailedTasks', 'startTime' and 'endTime'
     aStatusPerTask is a sequence of build statuses per task
       Each task status is a dictionary with the following keys:
-      'name', 'status', 'description', 'elapsedTime' as datetime.timedelta and optionally 'allocatedTime' as int, 'stdout', 'stderr'
+      'name', 'status', 'description', 'startTime', 'endTime' and optionally 'allocatedTime' as int, 'stdout', 'stderr'
     aBuildFailedBecauseOfTaskError - flag indicating whether the build failed because of the failed task
     """
     if aFormat == EmailFormat.attachment:
@@ -126,11 +122,11 @@ def makeAttachmentText(aFormat, aStatusPerTask, aBuildFailedBecauseOfTaskError):
     myBody = ''
     for task in aStatusPerTask:
         myBody += '%(name)s => %(status)s. %(description)s' % task
-        if 'elapsedTime' in task:
-            myBody += '\nElapsed time: %s' % formatTimeDelta(task['elapsedTime'])
+        if 'startTime' in task and 'endTime' in task:
+            elapsed_time = task['endTime'] - task['startTime']
+            myBody += '\nElapsed time: %s (start: %s, end %s)' % (formatTimeDelta(elapsed_time), task['startTime'], task['endTime'])
             if 'allocatedTime' in task and task['allocatedTime'] > 0:
-                myUsedTimePercentage = getTotalSeconds(
-                    task['elapsedTime']) * 100 / task['allocatedTime']
+                myUsedTimePercentage = getTotalSeconds(elapsed_time) * 100 / task['allocatedTime']
                 myBody += ' (%0.2f%% of allocated time)' % myUsedTimePercentage
         if 'stdout' in task and len(task['stdout']):
             myBody += '\nStdout:\n%(stdout)s' % task
@@ -163,7 +159,7 @@ def _makeHtmlSummaryEmailBody(aSummary):
                           <H2>$product-$ver Integration Results for project $prjName</H2>
                           <H2>Status: $prjStatus</H2>
                           $numSucceeded task$succSuffix SUCCEEDED of which $numSucceededWithWarning have WARNINGs, $numFailed task$failedSuffix FAILED<BR>
-                          Elapsed time: $elapsedTime
+                          Elapsed time: $elapsedTime (started $startTime, ended $endTime)
                       </DIV>
                   </BODY>
                 </HTML>
@@ -180,7 +176,9 @@ def _makeHtmlSummaryEmailBody(aSummary):
         numSucceededWithWarning=int(aSummary['numSucceededTasksWithWarning']),
         numFailed=int(aSummary['numFailedTasks']),
         failedSuffix='' if int(aSummary['numFailedTasks']) == 1 else 's',
-        elapsedTime=formatTimeDelta(aSummary['elapsedTime']))
+        elapsedTime=formatTimeDelta(aSummary['endTime'] - aSummary['startTime']),
+        startTime=aSummary['startTime'],
+        endTime=aSummary['endTime'])
 
     return myBody
 
@@ -192,7 +190,7 @@ $sep1\r\n\
 \r\n\
 Status: $prjStatus\r\n\
 $numSucceeded task$succSuffix SUCCEEDED of which $numSucceededWithWarning have WARNINGs, $numFailed task$failedSuffix FAILED\r\n\
-Elapsed time: $elapsedTime\r\n\
+Elapsed time: $elapsedTime (started $startTime, ended $endTime)\r\n\
 $sep2\r\n\
 \r\n")
     myBody = mySummaryTempl.safe_substitute(
@@ -206,15 +204,17 @@ $sep2\r\n\
         numSucceededWithWarning=int(aSummary['numSucceededTasksWithWarning']),
         numFailed=int(aSummary['numFailedTasks']),
         failedSuffix='' if int(aSummary['numFailedTasks']) == 1 else 's',
-        elapsedTime=formatTimeDelta(aSummary['elapsedTime']),
+        elapsedTime=formatTimeDelta(aSummary['endTime'] - aSummary['startTime']),
+        startTime=aSummary['startTime'],
+        endTime=aSummary['endTime'],
         sep2="------------------------------------------------------------------------------------")
     for task in aStatusPerTask:
         myBody += '%(name)s => %(status)s. %(description)s' % task
-        if 'elapsedTime' in task:
-            myBody += '\nElapsed time: %s' % formatTimeDelta(task['elapsedTime'])
+        if 'startTime' in task and 'endTime' in task:
+            elapsed_time = task['endTime'] - task['startTime']
+            myBody += '\nElapsed time: %s (start: %s, end %s)' % (formatTimeDelta(elapsed_time), task['startTime'], task['endTime'])
             if 'allocatedTime' in task and task['allocatedTime'] > 0:
-                myUsedTimePercentage = getTotalSeconds(
-                    task['elapsedTime']) * 100 / task['allocatedTime']
+                myUsedTimePercentage = getTotalSeconds(elapsed_time) * 100 / task['allocatedTime']
                 myBody += ' (%0.2f%% of allocated time)' % myUsedTimePercentage
         if 'stdout' in task and len(task['stdout']):
             myBody += '\nStdout:\n%(stdout)s' % task
@@ -230,7 +230,7 @@ $sep2\r\n\
 def _makeHtmlEmailBody(aSummary, aStatusPerTask, aBuildFailedBecauseOfTaskError):
     myTaskTempl = Template("""
                  <TR>
-                   <TD>$taskName</TD><TD>$taskStatus</TD><TD>$taskDescription</TD><TD>$elapsedTime $usedTimePercentage</TD><TD>$stdout</TD><TD>$stderr</TD>
+                   <TD>$taskName</TD><TD>$taskStatus</TD><TD>$taskDescription</TD><TD>$elapsedTime (started $startTime, ended $endTime) $usedTimePercentage</TD><TD>$stdout</TD><TD>$stderr</TD>
                  </TR>
                  """)
     # TODO: make stderr and stdout columns bigger. WIDTH=25% does not help in
@@ -249,7 +249,7 @@ def _makeHtmlEmailBody(aSummary, aStatusPerTask, aBuildFailedBecauseOfTaskError)
                           <H2>$product-$ver Integration Results for project $prjName</H2>
                           <H2>Status: $prjStatus</H2>
                           $numSucceeded task$succSuffix SUCCEEDED of which $numSucceededWithWarning have WARNINGs, $numFailed task$failedSuffix FAILED<BR>
-                          Elapsed time: $elapsedTime
+                          Elapsed time: $elapsedTime (started $startTime, ended $endTime)
                           <TABLE CLASS='wikitable'>
                               <TR>
                                   <TH>Task</TH><TH>Status</TH><TH WIDTH=25%>Description</TH><TH>Elapsed Time</TH><TH WIDTH=25%>Stdout</TH><TH WIDTH=25%>Stderr</TH>
@@ -266,9 +266,9 @@ def _makeHtmlEmailBody(aSummary, aStatusPerTask, aBuildFailedBecauseOfTaskError)
 
     myTasks = ""
     for task in aStatusPerTask:
-        if 'allocatedTime' in task and task['allocatedTime'] > 0 and 'elapsedTime' in task:
-            myUsedTimePercentage = getTotalSeconds(
-                task['elapsedTime']) * 100 / task['allocatedTime']
+        elapsed_time = task['endTime'] - task['startTime'] if 'startTime' in task and 'endTime' in task else None
+        if 'allocatedTime' in task and task['allocatedTime'] > 0 and 'startTime' in task and 'endTime' in task:
+            myUsedTimePercentage = getTotalSeconds(elapsed_time) * 100 / task['allocatedTime']
         else:
             myUsedTimePercentage = None
 
@@ -276,8 +276,9 @@ def _makeHtmlEmailBody(aSummary, aStatusPerTask, aBuildFailedBecauseOfTaskError)
             taskName=task['name'],
             taskStatus=task['status'],
             taskDescription=task['description'],
-            elapsedTime=formatTimeDelta(
-                task['elapsedTime']) if 'elapsedTime' in task else '',
+            elapsedTime=formatTimeDelta(elapsed_time) if elapsed_time is not None else '',
+            startTime=task['startTime'] if 'startTime' in task else '',
+            endTime=task['endTime'] if 'endTime' in task else '',
             usedTimePercentage=' (%s%% of allocated time)' %
             myUsedTimePercentage if myUsedTimePercentage is not None else '',
             stdout="<pre>" +
@@ -306,7 +307,9 @@ def _makeHtmlEmailBody(aSummary, aStatusPerTask, aBuildFailedBecauseOfTaskError)
         numSucceededWithWarning=int(aSummary['numSucceededTasksWithWarning']),
         numFailed=int(aSummary['numFailedTasks']),
         failedSuffix='' if int(aSummary['numFailedTasks']) == 1 else 's',
-        elapsedTime=formatTimeDelta(aSummary['elapsedTime']),
+        elapsedTime=formatTimeDelta(aSummary['endTime'] - aSummary['startTime']),
+        startTime=aSummary['startTime'],
+        endTime=aSummary['endTime'],
         tasks=myTasks,
         error=myError)
 
