@@ -213,7 +213,9 @@ def sendEmailNotification(
                     attachment.add_header('Content-Disposition', 'attachment', filename=os.path.basename(file_path))
                     msg.attach(attachment)
             else:
-                msg.attach(MIMEText("<<Failed to attach " + file_path + " (file does not exist)>>", 'plain', 'utf-8'))
+                attachment = MIMEText("<<Failed to attach " + file_path + " (file does not exist)>>", 'plain', 'utf-8')
+                attachment.add_header('Content-Disposition', 'attachment', filename=os.path.basename(file_path))
+                msg.attach(attachment)
         if aFmt == EmailFormat.attachment and anAttachmentText is not None:
             attachment = MIMEText(to_utf8(anAttachmentText), 'plain', 'utf-8')
             attachment.add_header('Content-Disposition', 'attachment', filename='build.log')
