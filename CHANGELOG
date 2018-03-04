@@ -1,6 +1,9 @@
 CHANGE HISTORY of the CcPy
 ---------------------------------------------------
 
+1.0.2 - 4 March 2018
+   - CHANGED do not fetch git submodules
+
 1.0.1 - 25 October 2016
    - ADDED show start and end build time per task and project
 

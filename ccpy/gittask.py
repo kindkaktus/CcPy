@@ -65,7 +65,7 @@ class GitTask(task.Task):
                     and os.path.isdir(self._workingDir + "/.git")):
                 # Found git repo, getting the latest upstream
                 Logger.debug("Updating %s" % self._workingDir)
-                myCmd = "git fetch --all && git reset --hard @{upstream} && git submodule update --init --recursive"
+                myCmd = "git fetch --all && git reset --hard @{upstream}"
                 myProcess = subprocess.Popen(
                     myCmd,
                     shell=True,
@@ -97,7 +97,7 @@ class GitTask(task.Task):
             Logger.debug("Cloning '%s' to %s" % (self._url, self._workingDir))
             if not os.path.exists(self._workingDir):
                 os.makedirs(self._workingDir)
-            myCmd = "git clone --recursive %s %s" % (self._url, self._workingDir)
+            myCmd = "git clone %s %s" % (self._url, self._workingDir)
             myProcess = subprocess.Popen(
                 myCmd,
                 shell=True,
