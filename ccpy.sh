@@ -2,17 +2,18 @@
 
 # Startup script for ccpy
 # Usage:
-# ./ccpy.sh [--skip-update] - will subsequently perform the following actions:
+# ./ccpy.sh [--skip-update] [--fg] - will subsequently perform the following actions:
 #  1. stop ccpy if it is already running recursively killing all children spawned by ccpy
 #  2. unless --skip-update option is given, will update ccpy working copy if either .git or .svn directory is detected, discarding any local changes
-#  3. starts ccpy
+#  3. starts ccpy in background or in foreground, when --fg argument is given
 # ./ccpy.sh stop - stop ccpy recursively killing all children spawned by ccpy
 
 function usage()
 {
     echo "Usage: "
-    echo "./$0 [--skip-update]"
+    echo "./$0 [--skip-update] [--fg]"
     echo "./$0 stop"
+    exit 1
 }
 
 # usage _killtree <pid>
@@ -54,28 +55,50 @@ function update_ccpy_wc()
     popd > /dev/null
 }
 
-function start_ccpy()
+function start_ccpy_in_bg()
 {
     pushd $( dirname "${BASH_SOURCE[0]}" ) > /dev/null
     ./ccpyd.py
     popd > /dev/null
 }
 
+function start_ccpy_in_fg()
+{
+    pushd $( dirname "${BASH_SOURCE[0]}" ) > /dev/null
+    ./ccpyd.py --fg
+    popd > /dev/null
+}
+
 if [ $# -eq 0 ]; then
     stop_ccpy
     update_ccpy_wc
-    start_ccpy
+    start_ccpy_in_bg
+
 elif [ $# -eq 1 ]; then
     if [ x"$1" == x"stop" ]; then
         stop_ccpy
     elif [ x"$1" == x"--skip-update" ]; then
         stop_ccpy
-        start_ccpy
+        start_ccpy_in_bg
+    elif [ x"$1" == x"--fg" ]; then
+        stop_ccpy
+        update_ccpy_wc
+        start_ccpy_in_fg
     else
         usage
-        exit 1
     fi
+
+elif [ $# -eq 2 ]; then
+    if [[ x"$1" == x"--skip-update" && x"$2" == x"--fg" ]]; then
+        stop_ccpy
+        start_ccpy_in_fg
+    elif [[ x"$1" == x"--fg" && x"$2" == x"--skip-update" ]]; then
+        stop_ccpy
+        start_ccpy_in_fg
+    else
+        usage
+    fi
+
 else
     usage
-    exit 1
 fi

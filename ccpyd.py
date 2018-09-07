@@ -11,6 +11,9 @@
 #
 """
 CcPy daemon
+
+Usage ./ccpyd.py [--fg]
+   --fg - run in foreground (default is to run in background)
 """
 
 import sys
@@ -150,16 +153,21 @@ def execTasks(aCcPyConf):
                                        prjVal['emailServerPassword'])
     # Iterate thru projects
 
+def run_in_fg(argv):
+    return "--fg" in argv
 
-def main(argv=None):
+def main(argv):
     if sys.version_info[0] < 2 or (sys.version_info[0] == 2 and sys.version_info[1] < 5):
         sys.stderr.write("Python 2.5 or higher is required for the program to run.")
         return -1
 
     try:
-        #import os, pwd
-        # util.daemonize(pwd.getpwuid(os.getuid()).pw_dir)
-        util.daemonize()
+        if run_in_fg(argv):
+            print("Starting in foreground")
+        else:
+            print("Starting in background")
+            util.daemonize()
+
         myCcPydConf = ccpydconfparser.parse()
         if not myCcPydConf['logging']:
             myCcPydConf['logFile'] = '/dev/null'
@@ -193,4 +201,4 @@ def main(argv=None):
     return -3
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(sys.argv[1:]))
