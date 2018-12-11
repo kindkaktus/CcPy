@@ -114,8 +114,8 @@ def execTasks(aCcPyConf):
              myNumSucceededTasksWithWarning,
              myNumFailedTasks,
              util.formatTimeDelta(myPrjEnd - myPrjStart),
-             myPrjStart,
-             myPrjEnd))
+             str(myPrjStart),
+             str(myPrjEnd)))
         if len(prjVal['emailTo']):
             Logger.debug(
                 "Sending email notification as %s to %s using %s:%d" %
