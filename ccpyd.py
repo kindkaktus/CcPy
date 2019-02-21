@@ -78,7 +78,14 @@ def execTasks(aCcPyConf):
                 myTaskStatus['stderr'] = myTaskExecStatus['stderr']
 
             myTasksStatus.append(myTaskStatus)
-            Logger.debug('  Task finished. Status: %s', myTaskStatus)
+
+            myTaskStatus2Log = dict(myTaskStatus)
+            myTaskStatus2Log['startTime'] = str(myTaskStatus2Log['startTime'])
+            myTaskStatus2Log['endTime'] = str(myTaskStatus2Log['endTime'])
+            if 'allocatedTime' in myTaskStatus2Log:
+                myTaskStatus2Log['allocatedTime'] = "%s seconds" % myTaskStatus2Log['allocatedTime']
+            Logger.debug('  Task finished. Status: %s', myTaskStatus2Log)
+
             if myFailedBecauseOfTaskError:
                 break
         # End: Iterate thru tasks
@@ -153,8 +160,10 @@ def execTasks(aCcPyConf):
                                        prjVal['emailServerPassword'])
     # Iterate thru projects
 
+
 def run_in_fg(argv):
     return "--fg" in argv
+
 
 def main(argv):
     if sys.version_info[0] < 2 or (sys.version_info[0] == 2 and sys.version_info[1] < 5):
@@ -199,6 +208,7 @@ def main(argv):
 
     Logger.error("We should never get here.")
     return -3
+
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))
