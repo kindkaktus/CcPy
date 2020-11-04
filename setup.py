@@ -1,8 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 #
-#  Copyright (c) 2008-2016, Andrei Korostelev <andrei at korostelev dot net>
+#  Andrei Korostelev <andrei at korostelev dot net>
 #
 #  Before using this product in any way please read the license agreement.
 #  If you do not agree to the terms in this agreement you are not allowed
@@ -33,8 +33,8 @@ def main(argv=None):
 
 
 def usage():
-    sys.stderr.write("usage: python setup.py [install]")
-    sys.stderr.write("       python setup.py uninstall")
+    sys.stderr.write("usage: ./setup.py [install]")
+    sys.stderr.write("       ./setup.py uninstall")
 
 
 def install():

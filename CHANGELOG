@@ -1,6 +1,9 @@
 CHANGE HISTORY of the CcPy
 ---------------------------------------------------
 
+1.0.4 - 4 November 2020
+  - CHANGED: Explicitly indicate 'python3' iso vague 'python' in files shebang
+
 1.0.3 - 7 September 2018
    - ADDED allow running ccpy in background ("--fg" argument)
 

@@ -1,8 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#  HeadURL : $HeadURL: svn://korostelev.net/CcPy/Trunk/tst/enumtest.py $
-#  Id      : $Id: enumtest.py 78 2009-01-31 21:09:13Z akorostelev $
-#
 
 """
 Unit tests for enum

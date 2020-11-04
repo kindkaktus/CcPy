@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """Enumerated type support in Python
 
 Originally taken from http://cheeseshop.python.org/pypi/enum/ version 0.4.4
