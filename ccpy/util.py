@@ -194,8 +194,10 @@ def sendEmailNotification(
     """
     import smtplib
     from email.mime.text import MIMEText
+    from email.mime.base import MIMEBase
     from email.mime.multipart import MIMEMultipart
     from email.utils import formatdate
+    from email import encoders
 
     if aFmt not in EmailFormat:
         raise Exception("%s is not a valid email format" % aFmt)
@@ -205,10 +207,12 @@ def sendEmailNotification(
         msg = MIMEMultipart()
         for file_path in anExtraAttachments:
             if os.path.isfile(file_path):
-                with open(file_path, 'r') as f:
-                    attachment = MIMEText(to_utf8(f.read()), 'plain', 'utf-8')
-                    attachment.add_header('Content-Disposition', 'attachment', filename=os.path.basename(file_path))
-                    msg.attach(attachment)
+                attachment = MIMEBase('application', 'octet-stream')
+                with open(file_path, 'rb') as f:
+                    attachment.set_payload(f.read())
+                encoders.encode_base64(attachment)
+                attachment.add_header('Content-Disposition', 'attachment', filename=os.path.basename(file_path))
+                msg.attach(attachment)
             else:
                 attachment = MIMEText("<<Failed to attach " + file_path + " (file does not exist)>>", 'plain', 'utf-8')
                 attachment.add_header('Content-Disposition', 'attachment', filename=os.path.basename(file_path))
