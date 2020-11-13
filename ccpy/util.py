@@ -40,7 +40,6 @@ def _parseLogLevel(aLevelNameStr):
 
 
 def initLogger(aLoggerName, aLogFileName, anAppName, aLogLevelStr):
-    """ Initialize logger """
     myLogger = logging.getLogger(aLoggerName)
     if sys.platform == 'win32':
         myHandler = logging.FileHandler(aLogFileName)
