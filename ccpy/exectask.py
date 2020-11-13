@@ -101,7 +101,7 @@ class ExecTask(task.Task):
                     myStderrConsumer.join()
                     return {
                         "statusFlag": False,
-                        "statusDescr": "The execution of '%s %s' in %s was terminated because of timeout (after %u seconds)." %
+                        "statusDescr": "The execution of '%s %s' in %s was terminated because of a timeout (after %u seconds)." %
                         (self._executable,
                          self._args,
                          self._workingDir,

@@ -19,8 +19,6 @@ import signal
 import subprocess
 from .enum import Enum
 
-IS_PYTHON2 = sys.version_info < (3, 0)
-
 import logging
 import traceback
 import threading
@@ -63,7 +61,6 @@ def initLogger(aLoggerName, aLogFileName, anAppName, aLogLevelStr):
 
 
 def closeLogger(aLogger):
-    """ Deinitialize logger """
     aLogger.info('******************** Logging Finished ********************')
 
 
@@ -119,15 +116,7 @@ EmailFormat = Enum('plain', 'html', 'attachment')
 
 
 def to_utf8(s):
-    if IS_PYTHON2:
-        if isinstance(s, unicode):
-            return s.encode('utf-8')
-        else:
-            # just suppose it is already utf8. @todo proper implementation should have
-            # detected the encoding and convert to utf8 then...
-            return s
-    else:
-        return s.encode('utf-8')
+    return s.encode('utf-8')
 
 
 def to_unicode(s, logger=None):
@@ -136,18 +125,9 @@ def to_unicode(s, logger=None):
     with elements separated by one space
     """
     if isinstance(s, list) or isinstance(s, tuple):
-        if IS_PYTHON2:
-            s = " ".join(s)
-        else:
-            s = b" ".join(s)
+        s = b" ".join(s)
 
-    needs_decode = False
-    if IS_PYTHON2 and not isinstance(s, unicode):
-        needs_decode = True
-    if not IS_PYTHON2 and not isinstance(s, str):
-        needs_decode = True
-
-    if needs_decode:
+    if not isinstance(s, str):
         try:
             s = s.decode('utf-8')
         except UnicodeDecodeError as e:
@@ -324,7 +304,6 @@ def getTotalSeconds(aTimeDelta):
 
 
 class ProcOutputConsumerThread(threading.Thread):
-
     def __init__(self, aProc, aReadStdout=True, aLogger=None):
         self._proc = aProc
         self._readStdout = aReadStdout
@@ -341,15 +320,14 @@ class ProcOutputConsumerThread(threading.Thread):
                 self._logger.error("%s: %s. %s" % (type(e), str(e), formatTb()))
 
     @property
-    #@return output as unicode string
     def out(self):
+        """ @return output as unicode string """
         myOut = to_unicode(self._out, self._logger)
         return myOut.rstrip()
 
-# Kill child process group
-
 
 def kill_chld_pg(pgid):
+    """ Kill child process group """
     try:
         os.killpg(pgid, signal.SIGTERM)
         time.sleep(1)
@@ -361,10 +339,9 @@ def kill_chld_pg(pgid):
             raise
     #os.waitpid(-1, os.WNOHANG)
 
-# More precise than time.sleep
-
 
 def wait(interval):
+    """ Supposed to be more accurate than the time.sleep() counterpart """
     import threading
     finished = threading.Event()
     finished.wait(interval)
@@ -372,8 +349,8 @@ def wait(interval):
     del finished
 
 
-# Recursively remove all directories and files including the hidden ones in the given directory
 def clean_directory(dir):
+    """ Recursively remove all directories and files including the hidden ones in the given directory """
     if os.path.exists(dir):
         if os.path.isdir(dir):
             myCmd = "rm -rf ./..?* ./.[!.]* ./*"

@@ -88,7 +88,7 @@ class MakeTask(task.Task):
                     myStderrConsumer.join()
                     return {
                         "statusFlag": False,
-                        "statusDescr": "'%s' in %s terminated because of timeout (after %u seconds)." %
+                        "statusDescr": "'%s' in %s terminated because of a timeout (after %u seconds)." %
                         (myCmd,
                          self._workingDir,
                          self._timeout),
