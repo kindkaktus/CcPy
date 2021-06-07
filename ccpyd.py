@@ -125,12 +125,13 @@ def execTasks(aCcPyConf):
              str(myPrjEnd)))
         if len(prjVal['emailTo']):
             Logger.debug(
-                "Sending email notification as %s to %s using %s:%d" %
+                "Sending email notification as %s to %s via %s:%d (security: %s)" %
                 (prjVal['emailFormat'],
                  ", ".join(
                     prjVal['emailTo']),
                     prjVal['emailServerHost'],
-                    prjVal['emailServerPort']))
+                    prjVal['emailServerPort'],
+                    prjVal['emailServerSecurity']))
             mySubj = "Integration status for %s: %s" % (prjName, myPrjStatusStr)
             myBody = report.makeEmailBody(prjVal['emailFormat'],
                                           {'prjName': prjName,
@@ -156,6 +157,7 @@ def execTasks(aCcPyConf):
                                        prjVal['emailFormat'],
                                        prjVal['emailServerHost'],
                                        prjVal['emailServerPort'],
+                                       prjVal['emailServerSecurity'],
                                        prjVal['emailServerUsername'],
                                        prjVal['emailServerPassword'])
     # Iterate thru projects

@@ -1,6 +1,9 @@
 CHANGE HISTORY of the CcPy
 ---------------------------------------------------
 
+1.0.5 - 7 June 2021
+  - ADDED: Support for email security (tls, starttls and none)
+
 1.0.4 - 4 November 2020
   - CHANGED: Explicitly indicate 'python3' iso vague 'python' in files shebang
 

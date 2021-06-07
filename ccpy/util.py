@@ -112,6 +112,7 @@ def _close_all_fds():
             pass
 
 EmailFormat = Enum('plain', 'html', 'attachment')
+EmailSecurity = Enum('none', 'tls', 'starttls')
 
 
 def to_utf8(s):
@@ -156,6 +157,7 @@ def sendEmailNotification(
         aFmt,
         anSmtpSvrHost,
         anSmtpSvrPort,
+        aSecurity,
         aSmtpSvrUser,
         aSmtpSvrPassword):
     """
@@ -169,6 +171,7 @@ def sendEmailNotification(
     anExtraAttachments - extra files to attach
     aFmt - format, one of EmailFormat
     anSmtpSvrHost, anSmtpSvrPort - SMTP Server location
+    aSecurity - SMTP relay security
     aSmtpSvrUser, aSmtpSvrPassword - SMTP Server credentials (skipped if None)
     """
     import smtplib
@@ -211,12 +214,19 @@ def sendEmailNotification(
     msg['To'] = ', '.join(aTo)
     msg['Date'] = formatdate()
 
-    mySmtpSvr = smtplib.SMTP(anSmtpSvrHost, anSmtpSvrPort)
-    if aSmtpSvrUser and (aSmtpSvrPassword is not None):
-        mySmtpSvr.login(aSmtpSvrUser, aSmtpSvrPassword)
-
-    mySmtpSvr.sendmail(aFrom, aTo, msg.as_string())
-    mySmtpSvr.quit()
+    if aSecurity == EmailSecurity.tls:
+        with smtplib.SMTP_SSL(anSmtpSvrHost, anSmtpSvrPort) as svr:
+            if aSmtpSvrUser and (aSmtpSvrPassword is not None):
+                svr.login(aSmtpSvrUser, aSmtpSvrPassword)
+            svr.sendmail(aFrom, aTo, msg.as_string())
+    else:
+        with smtplib.SMTP(anSmtpSvrHost, anSmtpSvrPort) as svr:
+            if aSecurity == EmailSecurity.starttls:
+                svr.ehlo()
+                svr.starttls()
+            if aSmtpSvrUser and (aSmtpSvrPassword is not None):
+                svr.login(aSmtpSvrUser, aSmtpSvrPassword)
+            svr.sendmail(aFrom, aTo, msg.as_string())
 
 
 class SysSingletonCreateError(Exception):

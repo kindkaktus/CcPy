@@ -22,7 +22,7 @@ Quick start
 ---------------------
 
 Prerequisites:
-    CcPy requires Python 2.5+ or 3.x
+    CcPy requires Python 2.7 or 3.x
 
 To install
 -------------
@@ -263,6 +263,12 @@ CcPy uses two config files (xml format):
         Default     : 25
         Required    : no
 
+        Node        : security (subelement of the "emailNotification" element)
+        Description : email relay security
+        Type        : 'tls' or 'starttls' or 'none'
+        Default     : 'None'
+        Required    : no
+
         Node        : username (subelement of the "emailNotification" element)
         Description : SMTP server username
         Type        : string
@@ -281,7 +287,7 @@ Author
 ---------------------
 
 Andrei Korostelev andrei at korostelev dot net
-2008-2015
+2008-2021
 
 
 Licensing

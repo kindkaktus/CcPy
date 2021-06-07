@@ -16,7 +16,7 @@ import logging
 from copy import deepcopy
 
 from .common import LoggerName
-from .util import EmailFormat, formatTb
+from .util import EmailFormat, EmailSecurity, formatTb
 from . import svntask
 from . import gittask
 from . import maketask
@@ -52,9 +52,16 @@ def _get_elem_bool_value(element, default_value):
         return default_value
 
 
-def _get_elem_email_value(element, default_value):
+def _get_elem_email_format_value(element, default_value):
     if element is not None:
         return EmailFormat[element.text]
+    else:
+        return default_value
+
+
+def _get_elem_email_security_value(element, default_value):
+    if element is not None:
+        return EmailSecurity[element.text]
     else:
         return default_value
 
@@ -133,6 +140,7 @@ class Projects:
                tasks,
                emailFrom, emailTo, emailFormat,
                emailServerHost, emailServerPort,
+               emailServerSecurity,
                emailServerUsername, emailServerPassword,
                emailAttachments,
                failOnError):
@@ -151,6 +159,7 @@ class Projects:
                                'emailFormat': emailFormat,
                                'emailServerHost': emailServerHost,
                                'emailServerPort': emailServerPort,
+                               'emailServerSecurity': emailServerSecurity,
                                'emailServerUsername': emailServerUsername,
                                'emailServerPassword': emailServerPassword,
                                'emailAttachments': emailAttachments,
@@ -216,13 +225,18 @@ def parse(aCcPyConfigFileName=DefCcPyConfigFileName):
             tasks = _get_elem_tasks_value(projectElem.find('./tasks'), None)
             emailFrom = _get_elem_str_value(projectElem.find('./emailNotification/from'), "")
             emailTo = _get_elem_list_value(projectElem.find('./emailNotification/to'), None)
-            emailFormat = _get_elem_email_value(
+            emailFormat = _get_elem_email_format_value(
                 projectElem.find('./emailNotification/format'),
                 EmailFormat.attachment)
             emailServerHost = _get_elem_str_value(
                 projectElem.find('./emailNotification/server'),
                 'localhost')
-            emailServerPort = _get_elem_int_value(projectElem.find('./emailNotification/port'), 25)
+            emailServerPort = _get_elem_int_value(
+                projectElem.find('./emailNotification/port'),
+                25)
+            emailServerSecurity = _get_elem_email_security_value(
+                projectElem.find('./emailNotification/security'),
+                EmailSecurity.none)
             emailServerUsername = _get_elem_str_value(
                 projectElem.find('./emailNotification/username'),
                 None)
@@ -241,6 +255,7 @@ def parse(aCcPyConfigFileName=DefCcPyConfigFileName):
                             emailFormat=emailFormat,
                             emailServerHost=emailServerHost,
                             emailServerPort=emailServerPort,
+                            emailServerSecurity=emailServerSecurity,
                             emailServerUsername=emailServerUsername,
                             emailServerPassword=emailServerPassword,
                             emailAttachments=emailAttachments,
