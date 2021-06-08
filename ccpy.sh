@@ -21,7 +21,7 @@ function _killtree()
 {
     local _pid=$1
 
-    kill -stop ${_pid} # to prevent the process from producing more children while killing its current children
+    kill -STOP ${_pid} # to prevent the process from producing more children while killing its current children
     for _child in $(pgrep -P ${_pid}); do
         _killtree ${_child}
     done
