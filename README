@@ -125,7 +125,7 @@ CcPy uses two config files (xml format):
 
       Node        : failOnError (subelement of the "project" element)
       Description : This flag controls whether CcPy should immediately stop executing the rest project tasks
-                    and render the entire project status to FAILED once one of the project tasks fails
+                    and render the entire project status to FAILED once one of the project executable tasks fails
       Type        : boolean ("on/yes/true" or "off/no/false")
       Default     : yes
       Required    : no
