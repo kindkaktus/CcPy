@@ -12,6 +12,6 @@ CcPy global variables
 """
 
 ProductName = 'CcPy'
-ProductVersion = '1.0.5'
+ProductVersion = '1.0.6'
 DaemonName = 'ccpyd'
 LoggerName = 'ccpyd'

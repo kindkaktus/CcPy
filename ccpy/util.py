@@ -15,6 +15,7 @@ Various helper utilities
 import os
 import time
 import sys
+import re
 import signal
 import subprocess
 from .enum import Enum
@@ -137,6 +138,13 @@ def to_unicode(s, logger=None):
                     (str(e), formatTb()))
             s = s.decode('utf-8', 'replace')
     return s
+
+
+def stip_bash_control_output(text):
+    """
+    Remove bash control symbols typically used for coloring of the terminal output but just clog the plain output
+    """
+    return re.sub(r'\x1b(\[.*?[@-~]|\].*?(\x07|\x1b\\))', '', text)
 
 
 def body_mime_type(aFmt):
@@ -331,8 +339,9 @@ class ProcOutputConsumerThread(threading.Thread):
     @property
     def out(self):
         """ @return output as unicode string """
-        myOut = to_unicode(self._out, self._logger)
-        return myOut.rstrip()
+        myOut = to_unicode(self._out, self._logger).rstrip()
+        myOut = stip_bash_control_output(myOut)
+        return myOut
 
 
 def kill_chld_pg(pgid):

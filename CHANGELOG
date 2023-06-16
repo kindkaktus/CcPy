@@ -1,6 +1,9 @@
 CHANGE HISTORY of the CcPy
 ---------------------------------------------------
 
+1.0.6 - 16 June 2023
+  - ADDED: Strip bash control sequences from log output
+
 1.0.5 - 7 June 2021
   - ADDED: Support for email security (tls, starttls and none)
 
