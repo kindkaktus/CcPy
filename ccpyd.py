@@ -70,7 +70,7 @@ def execTasks(aCcPyConf):
                 myTaskStatus['status'] = 'FAILED'
                 myNumFailedTasks += 1
                 if prjVal['failOnError'] or not isinstance(task, exectask.ExecTask):
-                    # do not fail the entire build on executable task error when 'failOnError' is set
+                    # fail the entire build on non-executable task error and on on executable task error when 'failOnError' is set
                     myFailedBecauseOfTaskError = True
             if 'stdout' in myTaskExecStatus:
                 myTaskStatus['stdout'] = myTaskExecStatus['stdout']
