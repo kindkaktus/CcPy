@@ -96,9 +96,9 @@ def makeEmailBody(aFormat, aSummary, aStatusPerTask, aBuildFailedBecauseOfTaskEr
     Produces the email body in the requested format
 
     aFormat is one of util.EmailFormat.
-    aSummary is a dictionary with a build summary.
-      Contains keys: 'prjName', 'prjStatus', 'numSucceededTasks', 'numSucceededTasksWithWarning', 'numFailedTasks', 'startTime' and 'endTime'
-    aStatusPerTask is a sequence of build statuses per task
+    aSummary is a dictionary with a build summary as:
+      {'prjName', 'prjStatus', 'numSucceededTasks', 'numSucceededTasksWithWarning', 'numFailedTasks', 'startTime', 'endTime'}
+    aStatusPerTask is a list of dicts holding build statuses per task
       Each task status is a dictionary with the following keys:
       'name', 'status', 'description', 'startTime', 'endTime' and optionally 'allocatedTime' as int, 'stdout', 'stderr'
     aBuildFailedBecauseOfTaskError - flag indicating whether the build failed because of the failed task
