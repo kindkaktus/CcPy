@@ -377,8 +377,8 @@ def clean_directory(dir):
                 shell=True,
                 cwd=dir,
                 stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE)
-            myStdout, myStderr = myProcess.communicate()
+                stderr=subprocess.STDOUT)
+            myStdout, _ = myProcess.communicate()
             if myProcess.returncode != 0:
                 return {
                     "statusFlag": False,
@@ -386,8 +386,7 @@ def clean_directory(dir):
                     (myCmd,
                      dir,
                      myProcess.returncode),
-                    "stdout": myStdout.rstrip(),
-                    "stderr": myStderr.rstrip()}
+                    "output": myStdout.rstrip()}
         else:
             os.remove(dir)
     return {"statusFlag": True}

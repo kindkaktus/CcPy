@@ -100,7 +100,7 @@ def makeEmailBody(aFormat, aSummary, aStatusPerTask, aBuildFailedBecauseOfTaskEr
       {'prjName', 'prjStatus', 'numSucceededTasks', 'numSucceededTasksWithWarning', 'numFailedTasks', 'startTime', 'endTime'}
     aStatusPerTask is a list of dicts holding build statuses per task
       Each task status is a dictionary with the following keys:
-      'name', 'status', 'description', 'startTime', 'endTime' and optionally 'allocatedTime' as int, 'stdout', 'stderr'
+      'name', 'status', 'description', 'startTime', 'endTime' and optionally 'allocatedTime' as int, 'output'
     aBuildFailedBecauseOfTaskError - flag indicating whether the build failed because of the failed task
     """
     if aFormat == EmailFormat.attachment:
@@ -125,10 +125,8 @@ def makeAttachmentText(aFormat, aStatusPerTask, aBuildFailedBecauseOfTaskError):
             if 'allocatedTime' in task and task['allocatedTime'] > 0:
                 myUsedTimePercentage = getTotalSeconds(elapsed_time) * 100 / task['allocatedTime']
                 myBody += ' (%0.2f%% of allocated time)' % myUsedTimePercentage
-        if 'stdout' in task and len(task['stdout']):
-            myBody += '\nStdout:\n%(stdout)s' % task
-        if 'stderr' in task and len(task['stderr']):
-            myBody += '\nStderr:\n%(stderr)s' % task
+        if 'output' in task and len(task['output']):
+            myBody += '\nOutput:\n%(output)s' % task
         myBody += "\n--------\n\n"
 
     if aBuildFailedBecauseOfTaskError:
@@ -213,10 +211,8 @@ $sep2\r\n\
             if 'allocatedTime' in task and task['allocatedTime'] > 0:
                 myUsedTimePercentage = getTotalSeconds(elapsed_time) * 100 / task['allocatedTime']
                 myBody += ' (%0.2f%% of allocated time)' % myUsedTimePercentage
-        if 'stdout' in task and len(task['stdout']):
-            myBody += '\nStdout:\n%(stdout)s' % task
-        if 'stderr' in task and len(task['stderr']):
-            myBody += '\nStderr:\n%(stderr)s' % task
+        if 'output' in task and len(task['output']):
+            myBody += '\nOutput:\n%(output)s' % task
         myBody += "\n--------\n\n"
 
     if aBuildFailedBecauseOfTaskError:
@@ -227,11 +223,9 @@ $sep2\r\n\
 def _makeHtmlEmailBody(aSummary, aStatusPerTask, aBuildFailedBecauseOfTaskError):
     myTaskTempl = Template("""
                  <TR>
-                   <TD>$taskName</TD><TD>$taskStatus</TD><TD>$taskDescription</TD><TD>$elapsedTime (started $startTime, ended $endTime) $usedTimePercentage</TD><TD>$stdout</TD><TD>$stderr</TD>
+                   <TD>$taskName</TD><TD>$taskStatus</TD><TD>$taskDescription</TD><TD>$elapsedTime (started $startTime, ended $endTime) $usedTimePercentage</TD><TD>$output</TD>
                  </TR>
                  """)
-    # TODO: make stderr and stdout columns bigger. WIDTH=25% does not help in
-    # email, but it is ok on saved html
     myBodyTempl = Template("""
                 <HTML>
                   <HEAD>
@@ -249,7 +243,7 @@ def _makeHtmlEmailBody(aSummary, aStatusPerTask, aBuildFailedBecauseOfTaskError)
                           Elapsed time: $elapsedTime (started $startTime, ended $endTime)
                           <TABLE CLASS='wikitable'>
                               <TR>
-                                  <TH>Task</TH><TH>Status</TH><TH WIDTH=25%>Description</TH><TH>Elapsed Time</TH><TH WIDTH=25%>Stdout</TH><TH WIDTH=25%>Stderr</TH>
+                                  <TH>Task</TH><TH>Status</TH><TH WIDTH=25%>Description</TH><TH>Elapsed Time</TH><TH WIDTH=50%>Output</TH>
                               </TR>
                               $tasks
                               <TR>
@@ -278,18 +272,7 @@ def _makeHtmlEmailBody(aSummary, aStatusPerTask, aBuildFailedBecauseOfTaskError)
             endTime=task['endTime'] if 'endTime' in task else '',
             usedTimePercentage=' (%s%% of allocated time)' %
             myUsedTimePercentage if myUsedTimePercentage is not None else '',
-            stdout="<pre>" +
-            cgi.escape(
-                task.get(
-                    'stdout',
-                    ' ')) +
-            "</pre>",
-            stderr="<pre>" +
-            cgi.escape(
-                task.get(
-                    'stderr',
-                    ' ')) +
-            "</pre>")
+            output="<pre>" + cgi.escape(task.get('output', ' ')) + "</pre>")
 
     myError = "FAILING the project because of the failed task" if aBuildFailedBecauseOfTaskError else ''
 

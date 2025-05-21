@@ -12,13 +12,15 @@
 """
 CcPy daemon
 
-Usage ./ccpyd.py [--fg]
+Usage ./ccpyd.py [--fg|--conf]
    --fg - run in foreground (default is to run in background)
+   --conf - specify the location of ccpyd.conf, defaults to /etc/ccpyd.conf
 """
 
 import sys
 import datetime
 import logging
+import getopt
 
 import ccpy.ccpydconfparser as ccpydconfparser
 import ccpy.ccpyconfparser as ccpyconfparser
@@ -72,10 +74,8 @@ def execTasks(aCcPyConf):
                 if prjVal['failOnError'] or not isinstance(task, exectask.ExecTask):
                     # fail the entire build on non-executable task error and on on executable task error when 'failOnError' is set
                     myFailedBecauseOfTaskError = True
-            if 'stdout' in myTaskExecStatus:
-                myTaskStatus['stdout'] = myTaskExecStatus['stdout']
-            if 'stderr' in myTaskExecStatus:
-                myTaskStatus['stderr'] = myTaskExecStatus['stderr']
+            if 'output' in myTaskExecStatus:
+                myTaskStatus['output'] = myTaskExecStatus['output']
 
             myTasksStatus.append(myTaskStatus)
 
@@ -163,40 +163,36 @@ def execTasks(aCcPyConf):
     # Iterate thru projects
 
 
-def run_in_fg(argv):
-    return "--fg" in argv
-
-
 def main(argv):
-    if sys.version_info[0] < 2 or (sys.version_info[0] == 2 and sys.version_info[1] < 5):
-        sys.stderr.write("Python 2.5 or higher is required for the program to run.")
-        return -1
-
     try:
-        if run_in_fg(argv):
-            print("Starting in foreground")
+        app_name = common.ProductName + ' v.' + common.ProductVersion
+        fg = False
+        conf_path = ccpydconfparser.DefCcPydConfigFileName
+        opts, _ = getopt.getopt(argv, '', ["fg", "conf="])
+        for opt, arg in opts:
+            if opt == "--fg":
+                fg = True
+            if opt == "--conf":
+                conf_path = arg
+
+        if fg:
+            print("Starting in foreground. Config at {}".format(conf_path))
         else:
-            print("Starting in background")
+            print("Starting in background. Config at {}".format(conf_path))
             util.daemonize()
 
-        myCcPydConf = ccpydconfparser.parse()
-        if not myCcPydConf['logging']:
-            myCcPydConf['logFile'] = '/dev/null'
-        Logger = util.initLogger(
-            common.LoggerName,
-            myCcPydConf['logFile'],
-            common.ProductName +
-            ' v.' +
-            common.ProductVersion,
-            myCcPydConf['logLevel'])
+        ccpyd_conf = ccpydconfparser.parse(conf_path)
+        if not ccpyd_conf['logging']:
+            ccpyd_conf['logFile'] = '/dev/null'
+        Logger = util.initLogger(common.LoggerName, ccpyd_conf['logFile'], app_name, ccpyd_conf['logLevel'])
     except Exception as e:
         sys.stderr.write("%s. %s. %s" % (type(e), str(e), util.formatTb()))
         return -1
 
     try:
-        mySysSingleton = util.SysSingleton(common.DaemonName)
-        myCcPyConf = myCcPydConf['ccpyConfig']
-        execTasks(myCcPyConf)
+        app_singleton = util.SysSingleton(common.DaemonName)
+        ccpy_conf = ccpyd_conf['ccpyConfig']
+        execTasks(ccpy_conf)
         util.closeLogger(Logger)
         return 0
     except BaseException as e:

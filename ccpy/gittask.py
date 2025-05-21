@@ -68,10 +68,9 @@ class GitTask(task.Task):
                     shell=True,
                     cwd=self._workingDir,
                     stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE)
-                myStdout, myStderr = myProcess.communicate()
+                    stderr=subprocess.STDOUT)
+                myStdout, _ = myProcess.communicate()
                 myStdout = to_unicode(myStdout, Logger)
-                myStderr = to_unicode(myStderr, Logger)
 
                 if myProcess.returncode != 0:
                     return {
@@ -80,15 +79,13 @@ class GitTask(task.Task):
                         (myCmd,
                          self._workingDir,
                          myProcess.returncode),
-                        "stdout": myStdout.rstrip(),
-                        "stderr": myStderr.rstrip()}
+                        "output": myStdout.rstrip()}
                 return {
                     "statusFlag": True,
                     "statusDescr": "'%s' in %s completed successfully." %
                     (myCmd,
                      self._workingDir),
-                    "stdout": myStdout.rstrip(),
-                    "stderr": myStderr.rstrip()}
+                    "output": myStdout.rstrip()}
 
             # No git repository found, cloning the repo
             Logger.debug("Cloning '%s' to %s" % (self._url, self._workingDir))
@@ -99,10 +96,9 @@ class GitTask(task.Task):
                 myCmd,
                 shell=True,
                 stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE)
-            myStdout, myStderr = myProcess.communicate()
+                stderr=subprocess.STDOUT)
+            myStdout, _ = myProcess.communicate()
             myStdout = to_unicode(myStdout, Logger)
-            myStderr = to_unicode(myStderr, Logger)
 
             if myProcess.returncode != 0:
                 return {
@@ -110,12 +106,10 @@ class GitTask(task.Task):
                     "statusDescr": "'%s' finished with return code %d." %
                     (myCmd,
                      myProcess.returncode),
-                    "stdout": myStdout.rstrip(),
-                    "stderr": myStderr.rstrip()}
+                    "output": myStdout.rstrip()}
             return {"statusFlag": True,
                     "statusDescr": "'%s' completed successfully." % myCmd,
-                    "stdout": myStdout.rstrip(),
-                    "stderr": myStderr.rstrip()}
+                    "output": myStdout.rstrip()}
         except OSError as e:
             return {"statusFlag": False,
                     "statusDescr": "Failed to execute '%s'. Error: %s" % (myCmd, str(e))}

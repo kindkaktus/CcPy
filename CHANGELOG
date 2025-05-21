@@ -1,6 +1,9 @@
 CHANGE HISTORY of the CcPy
 ---------------------------------------------------
 
+1.0.7 - 21 May 2025
+  - CHANGED: Combine stdout and stderror in the output to easier matching them during troubleshooting
+
 1.0.6 - 16 June 2023
   - ADDED: Strip bash control sequences from log output
 

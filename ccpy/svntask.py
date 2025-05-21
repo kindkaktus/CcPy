@@ -71,10 +71,9 @@ class SvnTask(task.Task):
                     myCmd,
                     shell=True,
                     stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE)
-                myStdout, myStderr = myProcess.communicate()
+                    stderr=subprocess.STDOUT)
+                myStdout, _ = myProcess.communicate()
                 myStdout = to_unicode(myStdout, Logger)
-                myStderr = to_unicode(myStderr, Logger)
 
                 if myProcess.returncode != 0:
                     return {
@@ -82,12 +81,10 @@ class SvnTask(task.Task):
                         "statusDescr": "'%s' finished with return code %d." %
                         (myCmd,
                          myProcess.returncode),
-                        "stdout": myStdout.rstrip(),
-                        "stderr": myStderr.rstrip()}
+                        "output": myStdout.rstrip()}
                 return {"statusFlag": True,
                         "statusDescr": "'%s' completed successfully." % myCmd,
-                        "stdout": myStdout.rstrip(),
-                        "stderr": myStderr.rstrip()}
+                        "output": myStdout.rstrip()}
 
             # No svn working copy found, performing svn checkout
             Logger.debug("Checking out '%s' to %s" % (self._url, self._workingDir))
@@ -98,10 +95,9 @@ class SvnTask(task.Task):
                 myCmd,
                 shell=True,
                 stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE)
-            myStdout, myStderr = myProcess.communicate()
+                stderr=subprocess.STDOUT)
+            myStdout, _ = myProcess.communicate()
             myStdout = to_unicode(myStdout, Logger)
-            myStderr = to_unicode(myStderr, Logger)
 
             if myProcess.returncode != 0:
                 return {
@@ -109,12 +105,10 @@ class SvnTask(task.Task):
                     "statusDescr": "'%s' finished with return code %d." %
                     (myCmd,
                      myProcess.returncode),
-                    "stdout": myStdout.rstrip(),
-                    "stderr": myStderr.rstrip()}
+                    "output": myStdout.rstrip()}
             return {"statusFlag": True,
                     "statusDescr": "'%s' completed successfully." % myCmd,
-                    "stdout": myStdout.rstrip(),
-                    "stderr": myStderr.rstrip()}
+                    "output": myStdout.rstrip()}
         except OSError as e:
             return {"statusFlag": False,
                     "statusDescr": "Failed to execute '%s'. Error: %s" % (myCmd, str(e))}

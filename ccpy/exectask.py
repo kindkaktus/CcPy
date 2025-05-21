@@ -75,17 +75,17 @@ class ExecTask(task.Task):
                 myCmd,
                 shell=False,
                 cwd=self._workingDir,
-                stderr=subprocess.PIPE,
                 stdout=subprocess.PIPE,
+                # combine stdout and stderr in single output to make it easier
+                # for to match these two in (large) log outputs
+                stderr=subprocess.STDOUT,
                 preexec_fn=os.setpgrp,
                 env=myEnv)
             # grab pgid immediately because we could not do it after the group leader dies
             myPgid = os.getpgid(myProcess.pid)
 
-            myStdoutConsumer = util.ProcOutputConsumerThread(myProcess, True, Logger)
-            myStderrConsumer = util.ProcOutputConsumerThread(myProcess, False, Logger)
-            myStdoutConsumer.start()
-            myStderrConsumer.start()
+            myOutputConsumer = util.ProcOutputConsumerThread(myProcess, aReadStdout=True, aLogger=Logger)
+            myOutputConsumer.start()
 
             while myProcess.poll() is None:
                 time.sleep(1)
@@ -97,8 +97,7 @@ class ExecTask(task.Task):
                         "The execution of %s (pid %d, pgid %d) is timed out after %d seconds, killing all processes of its group" %
                         (myCmd, myPgid, myProcess.pid, self._timeout))
                     util.kill_chld_pg(myPgid)
-                    myStdoutConsumer.join()
-                    myStderrConsumer.join()
+                    myOutputConsumer.join()
                     return {
                         "statusFlag": False,
                         "statusDescr": "The execution of '%s %s' in %s was terminated because of a timeout (after %u seconds)." %
@@ -106,8 +105,7 @@ class ExecTask(task.Task):
                          self._args,
                          self._workingDir,
                          self._timeout),
-                        "stdout": myStdoutConsumer.out,
-                        "stderr": myStderrConsumer.out}
+                        "output": myOutputConsumer.out}
 
             # This may happen that we're here because parent finished but some its childern are not,
             # so we need to cleanup any possible leftovers also to make sure we can
@@ -116,8 +114,7 @@ class ExecTask(task.Task):
                 "The execution of %s (pid %d, pgid %d) is finished, cleaning up by killing any remaining processes of its group" %
                 (myCmd, myPgid, myProcess.pid))
             util.kill_chld_pg(myPgid)
-            myStdoutConsumer.join()
-            myStderrConsumer.join()
+            myOutputConsumer.join()
 
             # success
             if myProcess.returncode == 0:
@@ -127,8 +124,7 @@ class ExecTask(task.Task):
                     (self._executable,
                      self._args,
                      self._workingDir),
-                    "stdout": myStdoutConsumer.out,
-                    "stderr": myStderrConsumer.out}
+                    "output": myOutputConsumer.out}
 
             # warning exit code
             if self._warningExitCode is not None and myProcess.returncode == self._warningExitCode:
@@ -140,8 +136,7 @@ class ExecTask(task.Task):
                      self._args,
                      self._workingDir,
                      myProcess.returncode),
-                    "stdout": myStdoutConsumer.out,
-                    "stderr": myStderrConsumer.out}
+                    "output": myOutputConsumer.out}
 
             # error
             return {
@@ -151,8 +146,7 @@ class ExecTask(task.Task):
                  self._args,
                  self._workingDir,
                  myProcess.returncode),
-                "stdout": myStdoutConsumer.out,
-                "stderr": myStderrConsumer.out}
+                "output": myOutputConsumer.out}
         except OSError as e:
             return {
                 "statusFlag": False,

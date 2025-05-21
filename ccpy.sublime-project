@@ -2,13 +2,7 @@
 	"folders":
 	[
 		{
-			"path": "conf"
-		},
-		{
-			"path": "ccpy"
-		},
-		{
-			"path": "tst"
+			"path": "."
 		}
 	]
 }

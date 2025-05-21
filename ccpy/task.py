@@ -25,8 +25,7 @@ class Task:
         Return dictionary:
             "statusFlag"  : task execution success flag
             "statusDescr" : brief user-oriented description of the task execution status
-            "stderr": optional, stderr output, if applicable
-            "stdout": optional, stdout output, if applicable
+            "output": optional, combined stdout and stderr output, if applicable
         Throw Exception
         """
         raise NotImplementedError("No method defined to execute the task")
