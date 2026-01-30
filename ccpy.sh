@@ -2,11 +2,10 @@
 
 # Startup script for ccpy
 # Usage:
-# ./ccpy.sh [--skip-update] [--fg] - will subsequently perform the following actions:
-#  1. stop ccpy if it is already running recursively killing all children spawned by ccpy
-#  2. unless --skip-update option is given, will update ccpy working copy if either .git or .svn directory is detected, discarding any local changes
-#  3. starts ccpy in background or in foreground, when --fg argument is given
-# ./ccpy.sh stop - stop ccpy recursively killing all children spawned by ccpy
+# ./ccpy.sh [--skip-update] [--fg] - will subsequently do the following:
+#  1. unless --skip-update option is given, will update ccpy working copy if either .git or .svn directory is detected, discarding any local changes
+#  2. starts ccpy in background or in foreground, when --fg argument is given
+# ./ccpy.sh stop - stop ccpy recursively killing all children spawned by ccpy. It is highly recommended to reboot after stopping ccpy!
 
 function usage()
 {
@@ -33,11 +32,23 @@ function _killtree()
     fi
 }
 
+function is_ccpy_running()
+{
+    if [ -f /var/run/ccpyd.pid ] ; then
+        local _pid=$(cat /var/run/ccpyd.pid)
+        if kill -0 ${_pid} > /dev/null 2>&1; then
+            return 0
+        fi
+    fi
+    return 1
+}
+
 function stop_ccpy()
 {
     if [ -f /var/run/ccpyd.pid ] ; then
         local _pid=$(cat /var/run/ccpyd.pid)
         _killtree ${_pid}
+        echo "ccpy has been stopped. IT IS HIGHLY RECOMMENDED to reboot to clean up any orphan jobs"
     fi
 }
 
@@ -70,7 +81,10 @@ function start_ccpy_in_fg()
 }
 
 if [ $# -eq 0 ]; then
-    stop_ccpy
+    if is_ccpy_running ; then
+        echo "WARNING: ccpy is still running, not starting"
+        return 1
+    fi
     update_ccpy_wc
     start_ccpy_in_bg
 
@@ -78,10 +92,16 @@ elif [ $# -eq 1 ]; then
     if [ x"$1" == x"stop" ]; then
         stop_ccpy
     elif [ x"$1" == x"--skip-update" ]; then
-        stop_ccpy
+        if is_ccpy_running ; then
+            echo "WARNING: ccpy is still running, not starting"
+            return 1
+        fi
         start_ccpy_in_bg
     elif [ x"$1" == x"--fg" ]; then
-        stop_ccpy
+        if is_ccpy_running ; then
+            echo "WARNING: ccpy is still running, not starting"
+            return 1
+        fi
         update_ccpy_wc
         start_ccpy_in_fg
     else
@@ -90,10 +110,16 @@ elif [ $# -eq 1 ]; then
 
 elif [ $# -eq 2 ]; then
     if [[ x"$1" == x"--skip-update" && x"$2" == x"--fg" ]]; then
-        stop_ccpy
+        if is_ccpy_running ; then
+            echo "WARNING: ccpy is still running, not starting"
+            return 1
+        fi
         start_ccpy_in_fg
     elif [[ x"$1" == x"--fg" && x"$2" == x"--skip-update" ]]; then
-        stop_ccpy
+        if is_ccpy_running ; then
+            echo "WARNING: ccpy is still running, not starting"
+            return 1
+        fi
         start_ccpy_in_fg
     else
         usage
