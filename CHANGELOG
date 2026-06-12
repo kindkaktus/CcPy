@@ -1,6 +1,9 @@
 CHANGE HISTORY of the CcPy
 ---------------------------------------------------
 
+1.0.9 - 12 June 2026
+  - ADDED: Possibility to store SMTP server password in env. variable
+
 1.0.8 - 30 January 2026
   - CHANGED: Exit once running ccpy instance is detected iso forcibly stopping it
 

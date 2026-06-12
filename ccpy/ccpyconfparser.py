@@ -11,8 +11,9 @@
 CcPy project configuration file parser
 """
 
-import xml.etree.ElementTree as ET
 import logging
+import os
+import xml.etree.ElementTree as ET
 from copy import deepcopy
 
 from .common import LoggerName
@@ -31,6 +32,27 @@ def _get_elem_str_value(element, default_value):
         return element.text
     else:
         return default_value
+
+
+def _get_email_password_value(project_element):
+    password_element = project_element.find('./emailNotification/password')
+    password_env_var_element = project_element.find('./emailNotification/passwordEnvVar')
+
+    if password_element is not None and password_env_var_element is not None:
+        raise Exception(
+            "emailNotification/password and emailNotification/passwordEnvVar cannot be used together")
+
+    if password_env_var_element is None:
+        return _get_elem_str_value(password_element, None)
+
+    password_env_var = password_env_var_element.text
+    if not password_env_var:
+        raise Exception("emailNotification/passwordEnvVar must contain an environment variable name")
+    if password_env_var not in os.environ:
+        raise Exception("Environment variable '%s' configured in emailNotification/passwordEnvVar is not set" %
+                        password_env_var)
+
+    return os.environ[password_env_var]
 
 
 def _get_elem_int_value(element, default_value):
@@ -240,9 +262,7 @@ def parse(aCcPyConfigFileName=DefCcPyConfigFileName):
             emailServerUsername = _get_elem_str_value(
                 projectElem.find('./emailNotification/username'),
                 None)
-            emailServerPassword = _get_elem_str_value(
-                projectElem.find('./emailNotification/password'),
-                None)
+            emailServerPassword = _get_email_password_value(projectElem)
             emailAttachments = []
             for emailAttachment in projectElem.findall('./emailNotification/attachment'):
                 emailAttachments.append(emailAttachment.text)

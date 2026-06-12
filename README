@@ -227,6 +227,16 @@ CcPy uses two config files (xml format):
       Default     : N/A
       Required    : no
 
+        Example using an environment variable for the SMTP password:
+
+          <emailNotification>
+            <from>buildserver@company.com</from>
+            <to>developer@company.com</to>
+            <server>smtp.company.com</server>
+            <username>buildserver</username>
+            <passwordEnvVar>CCPY_SMTP_PASSWORD</passwordEnvVar>
+          </emailNotification>
+
         Node        : from (subelement of the "emailNotification" element)
         Description : sender's email address
         Type        : string
@@ -277,6 +287,15 @@ CcPy uses two config files (xml format):
 
         Node        : password (subelement of the "emailNotification" element)
         Description : SMTP server password
+        Type        : string
+        Default     : not supplied
+        Required    : no
+
+        Node        : passwordEnvVar (subelement of the "emailNotification" element)
+        Description : name of an environment variable containing the SMTP server password.
+                      Use this instead of "password" to avoid storing the password in ccpy.conf.
+                      The environment variable must be set when ccpy.conf is parsed.
+                      It cannot be used together with "password".
         Type        : string
         Default     : not supplied
         Required    : no

@@ -17,6 +17,7 @@ Unit tests for CcPy config parser
 
 import unittest
 import sys
+import os
 
 sys.path.append("..")
 import ccpy.ccpyconfparser as ccpyconfparser
@@ -191,6 +192,53 @@ class CcPyConfParserTestCase(unittest.TestCase):
 
     def testBadConfig1(self):
         self.assertRaises(ccpyconfparser.ParseError, ccpyconfparser.parse, "ccpy.conf.bad.1")
+
+    def testEmailPasswordFromEnv(self):
+        myEnvVarName = 'CCPY_TEST_SMTP_PASSWORD'
+        myOldEnvVarValue = os.environ.get(myEnvVarName)
+        os.environ[myEnvVarName] = 'env-secret'
+
+        try:
+            myProjects = ccpyconfparser.parse("ccpy.conf.good.password-env")
+            self.assertEqual(
+                myProjects['ProductWithEnvPassword']['emailServerPassword'],
+                'env-secret')
+        finally:
+            if myOldEnvVarValue is None:
+                del os.environ[myEnvVarName]
+            else:
+                os.environ[myEnvVarName] = myOldEnvVarValue
+
+    def testMissingEmailPasswordEnvRaises(self):
+        myEnvVarName = 'CCPY_TEST_MISSING_SMTP_PASSWORD'
+        myOldEnvVarValue = os.environ.get(myEnvVarName)
+        if myEnvVarName in os.environ:
+            del os.environ[myEnvVarName]
+
+        try:
+            self.assertRaises(
+                ccpyconfparser.ParseError,
+                ccpyconfparser.parse,
+                "ccpy.conf.bad.password-env-missing")
+        finally:
+            if myOldEnvVarValue is not None:
+                os.environ[myEnvVarName] = myOldEnvVarValue
+
+    def testEmailPasswordAndEnvTogetherRaise(self):
+        myEnvVarName = 'CCPY_TEST_SMTP_PASSWORD'
+        myOldEnvVarValue = os.environ.get(myEnvVarName)
+        os.environ[myEnvVarName] = 'env-secret'
+
+        try:
+            self.assertRaises(
+                ccpyconfparser.ParseError,
+                ccpyconfparser.parse,
+                "ccpy.conf.bad.password-and-env")
+        finally:
+            if myOldEnvVarValue is None:
+                del os.environ[myEnvVarName]
+            else:
+                os.environ[myEnvVarName] = myOldEnvVarValue
 
 if __name__ == '__main__':
     unittest.main()
