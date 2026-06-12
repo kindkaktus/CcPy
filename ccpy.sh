@@ -66,8 +66,18 @@ function update_ccpy_wc()
     popd > /dev/null
 }
 
+function load_system_environment()
+{
+    if [ -f /etc/environment ]; then
+        set -a
+        . /etc/environment
+        set +a
+    fi
+}
+
 function start_ccpy_in_bg()
 {
+    load_system_environment
     pushd $( dirname "${BASH_SOURCE[0]}" ) > /dev/null
     ./ccpyd.py
     popd > /dev/null
@@ -75,6 +85,7 @@ function start_ccpy_in_bg()
 
 function start_ccpy_in_fg()
 {
+    load_system_environment
     pushd $( dirname "${BASH_SOURCE[0]}" ) > /dev/null
     ./ccpyd.py --fg
     popd > /dev/null

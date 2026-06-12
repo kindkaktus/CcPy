@@ -299,6 +299,9 @@ CcPy uses two config files (xml format):
         Type        : string
         Default     : not supplied
         Required    : no
+        Notes       : use setup_ccpy_smtp_password_env.sh to persist the variable in /etc/environment:
+                        sudo ./setup_ccpy_smtp_password_env.sh 'CCPY_SMTP_PASSWORD'='real-password'
+                      ccpy.sh loads /etc/environment before starting CcPy.
 
 
 
