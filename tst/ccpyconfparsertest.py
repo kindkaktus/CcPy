@@ -90,6 +90,7 @@ class CcPyConfParserTestCase(unittest.TestCase):
             self.assertEqual(myTask.url, "https://company.com/repos/product2/mk")
             self.assertEqual(myTask.workingDir, "/ProductBuilds/mk")
             self.assertTrue(myTask.preCleanWorkingDir)
+            self.assertEqual(myTask.runAsUser, "keytalk")
 
             myTask = myTasks[1]
             self.assertTrue(isinstance(myTask, maketask.MakeTask))
@@ -123,6 +124,7 @@ class CcPyConfParserTestCase(unittest.TestCase):
             self.assertEqual(myTask.url, "https://company.com/repos/product2/Common")
             self.assertEqual(myTask.workingDir, "/ProductBuilds/Common")
             self.assertFalse(myTask.preCleanWorkingDir)
+            self.assertEqual(myTask.runAsUser, "keytalk")
 
             # Product3 project
             myProjName = "Product3"
@@ -141,6 +143,7 @@ class CcPyConfParserTestCase(unittest.TestCase):
             self.assertEqual(myTask.url, "https://company.com/repos/product3/server")
             self.assertEqual(myTask.workingDir, "/ProductBuilds/server")
             self.assertFalse(myTask.preCleanWorkingDir)
+            self.assertEqual(myTask.runAsUser, None)
 
             # Product4 project
             myProjName = "Product4"

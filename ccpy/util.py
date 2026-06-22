@@ -17,6 +17,7 @@ import time
 import sys
 import re
 import signal
+import shlex
 import subprocess
 from .enum import Enum
 
@@ -367,25 +368,88 @@ def wait(interval):
     del finished
 
 
-def clean_directory(dir):
+def _get_run_as_user_info(aRunAsUser):
+    if aRunAsUser is None:
+        return None
+
+    import pwd
+    return pwd.getpwnam(aRunAsUser)
+
+
+def _get_run_as_user_preexec(aUserInfo):
+    if aUserInfo is None:
+        return None
+
+    def _preexec():
+        os.setgid(aUserInfo.pw_gid)
+        os.initgroups(aUserInfo.pw_name, aUserInfo.pw_gid)
+        os.setuid(aUserInfo.pw_uid)
+
+    return _preexec
+
+
+def _get_run_as_user_env(aUserInfo):
+    if aUserInfo is None:
+        return None
+
+    myEnv = os.environ.copy()
+    myEnv['HOME'] = aUserInfo.pw_dir
+    myEnv['LOGNAME'] = aUserInfo.pw_name
+    myEnv['USER'] = aUserInfo.pw_name
+    myEnv['SHELL'] = aUserInfo.pw_shell
+    return myEnv
+
+
+def run_command(aCmd, aCwd=None, aRunAsUser=None, aLogger=None):
+    """ Run shell command, optionally as the given Linux user. """
+    myUserInfo = _get_run_as_user_info(aRunAsUser)
+    myProcess = subprocess.Popen(
+        aCmd,
+        shell=True,
+        cwd=aCwd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        preexec_fn=_get_run_as_user_preexec(myUserInfo),
+        env=_get_run_as_user_env(myUserInfo))
+    myStdout, _ = myProcess.communicate()
+    return myProcess.returncode, to_unicode(myStdout, aLogger)
+
+
+def ensure_directory(aDir, aRunAsUser=None, aLogger=None):
+    """ Create directory, optionally as the given Linux user. """
+    if os.path.exists(aDir):
+        return {"statusFlag": True}
+
+    if aRunAsUser is None:
+        os.makedirs(aDir)
+        return {"statusFlag": True}
+
+    myCmd = "mkdir -p %s" % shlex.quote(aDir)
+    myReturnCode, myStdout = run_command(myCmd, aRunAsUser=aRunAsUser, aLogger=aLogger)
+    if myReturnCode != 0:
+        return {
+            "statusFlag": False,
+            "statusDescr": "'%s' finished with return code %d." % (myCmd, myReturnCode),
+            "output": myStdout.rstrip()}
+    return {
+        "statusFlag": True,
+        "statusDescr": "'%s' completed successfully." % myCmd,
+        "output": myStdout.rstrip()}
+
+
+def clean_directory(dir, aRunAsUser=None):
     """ Recursively remove all directories and files including the hidden ones in the given directory """
     if os.path.exists(dir):
         if os.path.isdir(dir):
             myCmd = "rm -rf ./..?* ./.[!.]* ./*"
-            myProcess = subprocess.Popen(
-                myCmd,
-                shell=True,
-                cwd=dir,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT)
-            myStdout, _ = myProcess.communicate()
-            if myProcess.returncode != 0:
+            myReturnCode, myStdout = run_command(myCmd, aCwd=dir, aRunAsUser=aRunAsUser)
+            if myReturnCode != 0:
                 return {
                     "statusFlag": False,
                     "statusDescr": "'%s' in %s finished with return code %d." %
                     (myCmd,
                      dir,
-                     myProcess.returncode),
+                     myReturnCode),
                     "output": myStdout.rstrip()}
         else:
             os.remove(dir)

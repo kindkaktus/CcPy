@@ -109,10 +109,21 @@ def _get_elem_tasks_value(element, default_value):
                 preCleanWorkingDirectory = _get_elem_bool_value(
                     task.find('./preCleanWorkingDirectory'),
                     False)
+                runAsUser = _get_elem_str_value(task.find('./runAsUser'), None)
                 if task.attrib['type'] == 'svn':
-                    tasks.append(svntask.SvnTask(url, workingDirectory, preCleanWorkingDirectory))
+                    tasks.append(
+                        svntask.SvnTask(
+                            url,
+                            workingDirectory,
+                            preCleanWorkingDirectory,
+                            runAsUser))
                 else:  # git
-                    tasks.append(gittask.GitTask(url, workingDirectory, preCleanWorkingDirectory))
+                    tasks.append(
+                        gittask.GitTask(
+                            url,
+                            workingDirectory,
+                            preCleanWorkingDirectory,
+                            runAsUser))
             else:
                 Logger.warning('Unsupported sourcecontrol type ' + task.attrib['type'])
 

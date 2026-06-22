@@ -13,23 +13,23 @@ Svn task
 """
 
 import os
-import subprocess
 import logging
 
 from . import task
 from .common import LoggerName
-from .util import to_unicode, clean_directory
+from .util import clean_directory, ensure_directory, run_command
 
 Logger = logging.getLogger(LoggerName)
 
 
 class SvnTask(task.Task):
 
-    def __init__(self, url, workingDir, preCleanWorkingDir):
+    def __init__(self, url, workingDir, preCleanWorkingDir, runAsUser=None):
         task.Task.__init__(self)
         self._url = url
         self._workingDir = workingDir
         self._preCleanWorkingDir = preCleanWorkingDir
+        self._runAsUser = runAsUser
 
     @property
     def url(self):
@@ -43,19 +43,22 @@ class SvnTask(task.Task):
     def preCleanWorkingDir(self):
         return self._preCleanWorkingDir
 
+    @property
+    def runAsUser(self):
+        return self._runAsUser
+
     def __str__(self):
-        return "Task: '%s', repository url: '%s', working directory: '%s', clean working directory before check out: '%s'" \
-               % (self.__class__.__name__, self._url, self._workingDir, self._preCleanWorkingDir)
+        return "Task: '%s', repository url: '%s', working directory: '%s', clean working directory before check out: '%s', run as user: '%s'" \
+               % (self.__class__.__name__, self._url, self._workingDir, self._preCleanWorkingDir, self._runAsUser)
 
     def execute(self):
-        if self._preCleanWorkingDir:
-            Logger.debug("Cleaning %s" % self._workingDir)
-            myCleanStatus = clean_directory(self._workingDir)
-            if not myCleanStatus['statusFlag']:
-                return myCleanStatus
-
         myCmd = ''
         try:
+            if self._preCleanWorkingDir:
+                Logger.debug("Cleaning %s" % self._workingDir)
+                myCleanStatus = clean_directory(self._workingDir, self._runAsUser)
+                if not myCleanStatus['statusFlag']:
+                    return myCleanStatus
 
             Logger.debug("Executing %s" % self)
             if (os.path.exists(self._workingDir +
@@ -67,20 +70,17 @@ class SvnTask(task.Task):
                 Logger.debug("Updating %s" % self._workingDir)
                 myCmd = "svn revert --recursive --non-interactive {0} && svn up --non-interactive {0}".format(
                     self._workingDir)
-                myProcess = subprocess.Popen(
+                myReturnCode, myStdout = run_command(
                     myCmd,
-                    shell=True,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.STDOUT)
-                myStdout, _ = myProcess.communicate()
-                myStdout = to_unicode(myStdout, Logger)
+                    aRunAsUser=self._runAsUser,
+                    aLogger=Logger)
 
-                if myProcess.returncode != 0:
+                if myReturnCode != 0:
                     return {
                         "statusFlag": False,
                         "statusDescr": "'%s' finished with return code %d." %
                         (myCmd,
-                         myProcess.returncode),
+                         myReturnCode),
                         "output": myStdout.rstrip()}
                 return {"statusFlag": True,
                         "statusDescr": "'%s' completed successfully." % myCmd,
@@ -88,27 +88,25 @@ class SvnTask(task.Task):
 
             # No svn working copy found, performing svn checkout
             Logger.debug("Checking out '%s' to %s" % (self._url, self._workingDir))
-            if not os.path.exists(self._workingDir):
-                os.makedirs(self._workingDir)
+            myEnsureDirStatus = ensure_directory(self._workingDir, self._runAsUser, Logger)
+            if not myEnsureDirStatus['statusFlag']:
+                return myEnsureDirStatus
             myCmd = "svn co --non-interactive %s %s" % (self._url, self._workingDir)
-            myProcess = subprocess.Popen(
+            myReturnCode, myStdout = run_command(
                 myCmd,
-                shell=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT)
-            myStdout, _ = myProcess.communicate()
-            myStdout = to_unicode(myStdout, Logger)
+                aRunAsUser=self._runAsUser,
+                aLogger=Logger)
 
-            if myProcess.returncode != 0:
+            if myReturnCode != 0:
                 return {
                     "statusFlag": False,
                     "statusDescr": "'%s' finished with return code %d." %
                     (myCmd,
-                     myProcess.returncode),
+                     myReturnCode),
                     "output": myStdout.rstrip()}
             return {"statusFlag": True,
                     "statusDescr": "'%s' completed successfully." % myCmd,
                     "output": myStdout.rstrip()}
-        except OSError as e:
+        except Exception as e:
             return {"statusFlag": False,
                     "statusDescr": "Failed to execute '%s'. Error: %s" % (myCmd, str(e))}

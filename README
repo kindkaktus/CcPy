@@ -160,6 +160,14 @@ CcPy uses two config files (xml format):
           Default     : off
           Required    : no
 
+          Node        : runAsUser (subelement of the "sourcecontrol" element)
+          Description : Linux user name to run this source control task as.
+                        Useful when ccpy is started as root from cron, but git or svn working copies
+                        should be owned and updated by a dedicated build user.
+          Type        : string
+          Default     : current ccpy process user
+          Required    : no
+
         Node        : make (subelement of the "project/tasks" element)
         Description : make settings element used to execute makefiles
         Type        : element with subelements

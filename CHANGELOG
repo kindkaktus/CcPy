@@ -1,6 +1,9 @@
 CHANGE HISTORY of the CcPy
 ---------------------------------------------------
 
+1.0.10 - 22 June 2026
+  - ADDED: Possibility to run git and svn source control tasks as a specified Linux user
+
 1.0.9 - 12 June 2026
   - ADDED: Possibility to store SMTP server password in env. variable
 
