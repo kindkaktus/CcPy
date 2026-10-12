@@ -194,9 +194,10 @@ def main(argv):
             util.daemonize()
 
         ccpyd_conf = ccpydconfparser.parse(conf_path)
-        if not ccpyd_conf['logging']:
-            ccpyd_conf['logFile'] = '/dev/null'
-        Logger = util.initLogger(common.LoggerName, ccpyd_conf['logFile'], app_name, ccpyd_conf['logLevel'])
+        if ccpyd_conf['logging']:
+            Logger = util.initLogger(common.LoggerName, ccpyd_conf['logFile'], app_name, ccpyd_conf['logLevel'])
+        else:
+            Logger = util.initLogger(common.LoggerName, '/dev/null', app_name, 'CRITICAL')
     except Exception as e:
         sys.stderr.write("%s. %s. %s" % (type(e), str(e), util.formatTb()))
         return -1

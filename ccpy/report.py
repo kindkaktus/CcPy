@@ -11,7 +11,7 @@
 CcPy reports
 """
 
-import cgi
+import html
 from string import Template
 
 from . import common
@@ -272,7 +272,7 @@ def _makeHtmlEmailBody(aSummary, aStatusPerTask, aBuildFailedBecauseOfTaskError)
             endTime=task['endTime'] if 'endTime' in task else '',
             usedTimePercentage=' (%s%% of allocated time)' %
             myUsedTimePercentage if myUsedTimePercentage is not None else '',
-            output="<pre>" + cgi.escape(task.get('output', ' ')) + "</pre>")
+            output="<pre>" + html.escape(task.get('output', ' '), quote=False) + "</pre>")
 
     myError = "FAILING the project because of the failed task" if aBuildFailedBecauseOfTaskError else ''
 

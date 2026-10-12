@@ -87,22 +87,35 @@ class CcPydTestCase(unittest.TestCase):
         self.assertEqual(send_email.call_count, 3)
         self._assertAllProjectsIntegrated()
 
-    def testMainExitCode(self):
+    def _runMain(self, aLoggingConf, aEmailErrors):
+        """ Run ccpyd main() in foreground, return (exit code, initLogger call arguments) """
         ccpyd_conf = os.path.join(self._dir, 'ccpyd.conf')
         with open(ccpyd_conf, 'w') as f:
-            f.write('<ccpyd><ccpyConfig>%s</ccpyConfig><logging enabled="on"/></ccpyd>' % self._ccpyConf)
-        argv = ['--fg', '--conf', ccpyd_conf]
+            f.write('<ccpyd><ccpyConfig>%s</ccpyConfig>%s</ccpyd>' % (self._ccpyConf, aLoggingConf))
         # keep logging to the test log: main() would otherwise redirect and close the shared logger
-        for func, replacement in [('initLogger', lambda *args: self._logger), ('closeLogger', lambda *args: None)]:
-            patcher = mock.patch.object(ccpyd.util, func, replacement)
-            patcher.start()
-            self.addCleanup(patcher.stop)
-        with mock.patch.object(ccpyd.util, 'sendEmailNotification'):
-            self.assertEqual(ccpyd.main(argv), 0)
-        with mock.patch.object(ccpyd.util, 'sendEmailNotification', side_effect=[None, OSError(101, 'Network is unreachable'), None]):
-            self.assertEqual(ccpyd.main(argv), -1)
+        with mock.patch.object(ccpyd.util, 'initLogger', return_value=self._logger) as init_logger, \
+                mock.patch.object(ccpyd.util, 'closeLogger'), \
+                mock.patch.object(ccpyd.util, 'sendEmailNotification', side_effect=aEmailErrors):
+            exit_code = ccpyd.main(['--fg', '--conf', ccpyd_conf])
+        init_logger.assert_called_once_with(common.LoggerName, mock.ANY, mock.ANY, mock.ANY)
+        return exit_code, init_logger.call_args[0]
+
+    def testMainExitCode(self):
+        logging_conf = '<logging enabled="on"><file>/tmp/ccpyd.log</file><level>INFO</level></logging>'
+        exit_code, logger_args = self._runMain(logging_conf, [None, None, None])
+        self.assertEqual(exit_code, 0)
+        self.assertEqual((logger_args[1], logger_args[3]), ('/tmp/ccpyd.log', 'INFO'))
+        exit_code, _ = self._runMain(logging_conf, [None, OSError(101, 'Network is unreachable'), None])
+        self.assertEqual(exit_code, -1)
         self._assertAllProjectsIntegrated()
 
+    def testMainWithLoggingDisabled(self):
+        for logging_conf in ['<logging enabled="off"><file>/tmp/ccpyd.log</file></logging>', '']:
+            with self.subTest(logging_conf=logging_conf):
+                exit_code, logger_args = self._runMain(logging_conf, [None, None, None])
+                self.assertEqual(exit_code, 0)
+                self.assertEqual(logger_args[1], '/dev/null')
+        self._assertAllProjectsIntegrated()
 
 if __name__ == '__main__':
     unittest.main()
