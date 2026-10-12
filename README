@@ -231,6 +231,7 @@ CcPy uses two config files (xml format):
 
       Node        : emailNotification (subelement of the "project" element)
       Description : contains settings for sending email notifications with integration results
+                    Sending is retried up to 5 times (after 30, 60, 120 and 240 seconds) on network errors and temporary (4xx) SMTP errors
       Type        : element with subelements
       Default     : N/A
       Required    : no

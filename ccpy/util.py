@@ -20,6 +20,7 @@ import signal
 import shlex
 import subprocess
 from .enum import Enum
+from .common import LoggerName
 
 import logging
 import traceback
@@ -115,6 +116,11 @@ def _close_all_fds():
 
 EmailFormat = Enum('plain', 'html', 'attachment')
 EmailSecurity = Enum('none', 'tls', 'starttls')
+# Retry sending email notifications to survive short network or SMTP server outages (30+60+120+240 sec)
+EmailMaxSendAttempts = 5
+EmailFirstRetryDelaySec = 30
+# Without timeout a connection to an unresponsive SMTP server blocks forever
+EmailSmtpTimeoutSec = 60
 
 
 def to_utf8(s):
@@ -151,7 +157,7 @@ def stip_bash_control_output(text):
 def body_mime_type(aFmt):
     if aFmt == EmailFormat.plain:
         return "plain"
-    elif aFmt in (EmailFormat.plain, EmailFormat.attachment):
+    elif aFmt in (EmailFormat.html, EmailFormat.attachment):
         return "html"
     raise Exception("Unsupported email format " + str(aFmt))
 
@@ -168,9 +174,14 @@ def sendEmailNotification(
         anSmtpSvrPort,
         aSecurity,
         aSmtpSvrUser,
-        aSmtpSvrPassword):
+        aSmtpSvrPassword,
+        aMaxAttempts=EmailMaxSendAttempts,
+        aFirstRetryDelaySec=EmailFirstRetryDelaySec):
     """
-    Sends email notification
+    Sends email notification.
+    Transient errors (network or temporary SMTP 4xx) are retried up to aMaxAttempts attempts in total,
+    the delay between attempts starts at aFirstRetryDelaySec and doubles after each attempt.
+    The error of the last attempt is raised when all attempts fail; permanent errors are raised at once.
 
     aFrom - sender address
     aTo - list or tuple of correspondent addresses
@@ -182,16 +193,56 @@ def sendEmailNotification(
     anSmtpSvrHost, anSmtpSvrPort - SMTP Server location
     aSecurity - SMTP relay security
     aSmtpSvrUser, aSmtpSvrPassword - SMTP Server credentials (skipped if None)
+    aMaxAttempts - how many times to try sending the email, at least 1
+    aFirstRetryDelaySec - delay before the second attempt
+    """
+    if aFmt not in EmailFormat:
+        raise Exception("%s is not a valid email format" % aFmt)
+    if aMaxAttempts < 1:
+        raise Exception("Invalid number of email send attempts %s" % aMaxAttempts)
+
+    msg = _makeEmailMessage(aFrom, aTo, aSubj, aBody, anAttachmentText, anExtraAttachments, aFmt)
+
+    logger = logging.getLogger(LoggerName)
+    delaySec = aFirstRetryDelaySec
+    for attempt in range(1, aMaxAttempts + 1):
+        try:
+            _sendEmailMessage(msg, aFrom, aTo, anSmtpSvrHost, anSmtpSvrPort, aSecurity, aSmtpSvrUser, aSmtpSvrPassword)
+            if attempt > 1:
+                logger.info("Email sent on attempt %d of %d" % (attempt, aMaxAttempts))
+            return
+        except Exception as e:
+            if attempt == aMaxAttempts or not _isTransientSmtpError(e):
+                raise
+            logger.warning("Attempt %d of %d to send email failed with %s: %s. Retrying in %d seconds." %
+                           (attempt, aMaxAttempts, type(e).__name__, str(e), delaySec))
+            time.sleep(delaySec)
+            delaySec *= 2
+
+
+def _isTransientSmtpError(anError):
+    """
+    Return True if sending email may succeed when retried later
     """
     import smtplib
+    if isinstance(anError, (smtplib.SMTPServerDisconnected, smtplib.SMTPConnectError)):
+        return True
+    if isinstance(anError, smtplib.SMTPResponseException):
+        # 4xx is a temporary failure, 5xx a permanent one (e.g. wrong credentials)
+        return 400 <= anError.smtp_code < 500
+    if isinstance(anError, smtplib.SMTPException):
+        # e.g. all recipients refused, server does not support STARTTLS
+        return False
+    # Network errors, e.g. network unreachable, connection refused or reset, timeout, DNS failure
+    return isinstance(anError, OSError)
+
+
+def _makeEmailMessage(aFrom, aTo, aSubj, aBody, anAttachmentText, anExtraAttachments, aFmt):
     from email.mime.text import MIMEText
     from email.mime.base import MIMEBase
     from email.mime.multipart import MIMEMultipart
     from email.utils import formatdate
     from email import encoders
-
-    if aFmt not in EmailFormat:
-        raise Exception("%s is not a valid email format" % aFmt)
 
     if len(anExtraAttachments) > 0 or (aFmt == EmailFormat.attachment and anAttachmentText is not None):
         # Email with attachments
@@ -222,20 +273,24 @@ def sendEmailNotification(
     msg['From'] = aFrom
     msg['To'] = ', '.join(aTo)
     msg['Date'] = formatdate()
+    return msg
 
+
+def _sendEmailMessage(aMsg, aFrom, aTo, anSmtpSvrHost, anSmtpSvrPort, aSecurity, aSmtpSvrUser, aSmtpSvrPassword):
+    import smtplib
     if aSecurity == EmailSecurity.tls:
-        with smtplib.SMTP_SSL(anSmtpSvrHost, anSmtpSvrPort) as svr:
+        with smtplib.SMTP_SSL(anSmtpSvrHost, anSmtpSvrPort, timeout=EmailSmtpTimeoutSec) as svr:
             if aSmtpSvrUser and (aSmtpSvrPassword is not None):
                 svr.login(aSmtpSvrUser, aSmtpSvrPassword)
-            svr.sendmail(aFrom, aTo, msg.as_string())
+            svr.sendmail(aFrom, aTo, aMsg.as_string())
     else:
-        with smtplib.SMTP(anSmtpSvrHost, anSmtpSvrPort) as svr:
+        with smtplib.SMTP(anSmtpSvrHost, anSmtpSvrPort, timeout=EmailSmtpTimeoutSec) as svr:
             if aSecurity == EmailSecurity.starttls:
                 svr.ehlo()
                 svr.starttls()
             if aSmtpSvrUser and (aSmtpSvrPassword is not None):
                 svr.login(aSmtpSvrUser, aSmtpSvrPassword)
-            svr.sendmail(aFrom, aTo, msg.as_string())
+            svr.sendmail(aFrom, aTo, aMsg.as_string())
 
 
 class SysSingletonCreateError(Exception):

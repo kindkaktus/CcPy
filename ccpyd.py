@@ -33,11 +33,16 @@ import ccpy.report as report
 
 
 def execTasks(aCcPyConf):
-    """ Execute tasks from the ccpy project configuration file and send email report for each project """
+    """
+    Execute tasks from the ccpy project configuration file and send email report for each project
+    Return names of the projects whose email report could not be sent
+    A failed email report is logged and does not stop integration of the remaining projects
+    """
     Logger = logging.getLogger(common.LoggerName)
     Logger.debug("Loading configuration from %s" % aCcPyConf)
     myProjects = ccpyconfparser.parse(aCcPyConf)
     Logger.debug("%u project(s) queued for integration", len(myProjects))
+    myPrjsWithFailedEmail = []
 
     # Iterate thru projects
     for prjName, prjVal in myProjects:
@@ -148,19 +153,26 @@ def execTasks(aCcPyConf):
                 prjVal['emailFormat'],
                 myTasksStatus,
                 myFailedBecauseOfTaskError)
-            util.sendEmailNotification(prjVal['emailFrom'],
-                                       prjVal['emailTo'],
-                                       mySubj,
-                                       myBody,
-                                       myAttachmentText,
-                                       prjVal['emailAttachments'],
-                                       prjVal['emailFormat'],
-                                       prjVal['emailServerHost'],
-                                       prjVal['emailServerPort'],
-                                       prjVal['emailServerSecurity'],
-                                       prjVal['emailServerUsername'],
-                                       prjVal['emailServerPassword'])
+            try:
+                util.sendEmailNotification(prjVal['emailFrom'],
+                                           prjVal['emailTo'],
+                                           mySubj,
+                                           myBody,
+                                           myAttachmentText,
+                                           prjVal['emailAttachments'],
+                                           prjVal['emailFormat'],
+                                           prjVal['emailServerHost'],
+                                           prjVal['emailServerPort'],
+                                           prjVal['emailServerSecurity'],
+                                           prjVal['emailServerUsername'],
+                                           prjVal['emailServerPassword'])
+            except Exception as e:
+                Logger.error("Failed to send email notification for project %s. %s: %s. %s" %
+                             (prjName, type(e), str(e), util.formatTb()))
+                myPrjsWithFailedEmail.append(prjName)
     # Iterate thru projects
+
+    return myPrjsWithFailedEmail
 
 
 def main(argv):
@@ -192,9 +204,9 @@ def main(argv):
     try:
         app_singleton = util.SysSingleton(common.DaemonName)
         ccpy_conf = ccpyd_conf['ccpyConfig']
-        execTasks(ccpy_conf)
+        prjs_with_failed_email = execTasks(ccpy_conf)
         util.closeLogger(Logger)
-        return 0
+        return -1 if prjs_with_failed_email else 0
     except BaseException as e:
         Logger.error("%s: %s. %s" % (type(e), str(e), util.formatTb()))
         util.closeLogger(Logger)
